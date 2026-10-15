@@ -98,7 +98,19 @@ The exact startup steps may depend on the installed libraries and project config
 
 NeuroGuardian AI is a student project and is not a substitute for professional medical advice, diagnosis, or treatment.
 
+## Project Screenshots
 
+### 1. Login Page
+![NeuroGuardian AI Login Page](screenshots/login.png)
+
+### 2. Registration Page
+![NeuroGuardian AI Registration Page](screenshots/registration.png)
+
+### 3. Dashboard
+![NeuroGuardian AI Dashboard](screenshots/dashboard.png)
+
+### 4. CT/MRI Scan Page
+![NeuroGuardian AI CT MRI Page](screenshots/CTMRI.png)
 
 \## Author
 
