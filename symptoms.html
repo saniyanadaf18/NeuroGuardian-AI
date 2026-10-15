@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroGuardian AI - Symptom Screening</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --ink:#101B2D;
+      --paper:#F4F6F8;
+      --panel:#FFFFFF;
+      --line:#E2E8F0;
+      --teal:#35708A;
+      --teal-deep:#24506A;
+      --green:#3F9142;
+      --amber:#C98A1D;
+      --red:#C0392B;
+      --text:#17202B;
+      --text-muted:#64748B;
+      --radius:18px;
+      --shadow:0 10px 30px rgba(16,27,45,.08);
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      font-family:'Inter',sans-serif;
+      background:var(--paper);
+      color:var(--text);
+      padding:40px;
+    }
+
+    .container{
+      max-width:900px;
+      margin:0 auto;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:30px;
+    }
+
+    .header h1{
+      font-family:'Fraunces',serif;
+      color:var(--ink);
+      font-size:2rem;
+    }
+
+    .back-btn{
+      background:var(--teal);
+      color:white;
+      text-decoration:none;
+      padding:10px 18px;
+      border-radius:12px;
+      font-weight:600;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:28px;
+      box-shadow:var(--shadow);
+    }
+
+    .card h2{
+      font-family:'Fraunces',serif;
+      color:var(--ink);
+      margin-bottom:12px;
+    }
+
+    .card p{
+      color:var(--text-muted);
+      margin-bottom:22px;
+      line-height:1.6;
+    }
+
+    .section-title{
+      font-weight:700;
+      color:var(--ink);
+      margin:20px 0 14px;
+      font-size:1rem;
+    }
+
+    .checkbox-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    .checkbox-item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    .checkbox-item input{
+      width:18px;
+      height:18px;
+    }
+
+    .form-group{
+      margin-top:22px;
+    }
+
+    label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:600;
+      color:var(--ink);
+    }
+
+    textarea,
+    select{
+      width:100%;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      font-size:15px;
+      font-family:'Inter',sans-serif;
+      background:#fff;
+    }
+
+    textarea{
+      resize:vertical;
+      min-height:120px;
+    }
+
+    .buttons{
+      display:flex;
+      gap:14px;
+      margin-top:28px;
+    }
+
+    .submit-btn{
+      background:var(--teal);
+      color:white;
+      border:none;
+      padding:14px 22px;
+      border-radius:12px;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .cancel-btn{
+      background:#E5E7EB;
+      color:#111827;
+      text-decoration:none;
+      padding:14px 22px;
+      border-radius:12px;
+      font-weight:600;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    @media(max-width:768px){
+      body{
+        padding:20px;
+      }
+
+      .checkbox-grid{
+        grid-template-columns:1fr;
+      }
+
+      .header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:16px;
+      }
+
+      .buttons{
+        flex-direction:column;
+      }
+
+      .submit-btn,
+      .cancel-btn{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>🩺 Symptom Screening</h1>
+      <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <div class="card">
+      <h2>Neurological & Eye Symptom Assessment</h2>
+      <p>
+        Select the symptoms you are experiencing. This information will be used
+        for AI-assisted neurological screening.
+      </p>
+
+      <div class="section-title">Select your symptoms</div>
+
+      <div class="checkbox-grid">
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Headache
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Migraine
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Dizziness
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Blurred Vision
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Eye Pain
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Watery Eyes
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Sensitivity to Light
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Sensitivity to Sound
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Nausea or Vomiting
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Numbness
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Weakness
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox">
+          Difficulty Speaking
+        </label>
+
+      </div>
+
+      <div class="form-group">
+        <label>How severe is your headache?</label>
+        <select>
+          <option>Select severity</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+          <option>Very Severe</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Additional symptoms or notes</label>
+        <textarea placeholder="Describe your symptoms in detail..."></textarea>
+      </div>
+
+      <div class="buttons">
+        <button class="submit-btn" onclick="submitSymptoms()">
+          Analyze Symptoms
+        </button>
+
+        <a href="dashboard.html" class="cancel-btn">
+          Cancel
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    function submitSymptoms(){
+      alert("Symptoms submitted successfully. Returning to Dashboard.");
+      window.location.href = "dashboard.html";
+    }
+  </script>
+
+</body>
+</html>

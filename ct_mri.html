@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroGuardian AI — CT / MRI Analysis</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;color:#17202b}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:linear-gradient(180deg,#101b2d,#16283f);color:white;padding:28px;display:flex;flex-direction:column;gap:24px;position:sticky;top:0;height:100vh;z-index:1000}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:44px;height:44px;border-radius:12px;background:#8fd1b3;display:flex;align-items:center;justify-content:center;color:#0f172a;font-weight:bold}
+.brand h2{font-size:20px}
+.brand p{color:#aab7c8;font-size:11px;margin-top:3px}
+.nav{display:flex;flex-direction:column;gap:8px}
+.nav a{color:#d7dfea;text-decoration:none;padding:12px 14px;border-radius:10px;display:flex;align-items:center;gap:10px;transition:.2s}
+.nav a:hover,.nav a.active{background:rgba(255,255,255,.1);color:white}
+.sidebar-footer{margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:20px}
+.logout-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#1e293b;color:white;cursor:pointer;font-weight:bold}
+.main{padding:28px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.topbar-left{display:flex;align-items:center;gap:15px}
+.menu-btn{display:none;width:44px;height:44px;border:none;border-radius:10px;background:white;font-size:22px;cursor:pointer}
+.topbar h1{font-size:30px;color:#101b2d;margin-bottom:6px}
+.topbar p{color:#64748b}
+.profile{display:flex;align-items:center;gap:10px}
+.avatar{width:46px;height:46px;border-radius:50%;background:#35708a;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.container{max-width:1200px;margin:auto}
+.card{background:white;border:1px solid #e2e8f0;border-radius:18px;padding:24px;box-shadow:0 10px 30px rgba(16,27,45,.07);margin-bottom:22px}
+.card h2{color:#101b2d;margin-bottom:10px}
+.card-description{color:#64748b;line-height:1.6;margin-bottom:22px}
+.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.upload-box{border:2px dashed #cbd5e1;border-radius:16px;padding:30px;text-align:center;background:#f8fafc;transition:.2s}
+.upload-box:hover{border-color:#35708a;background:#f1f7f9}
+.upload-icon{font-size:50px;margin-bottom:12px}
+.upload-box h3{margin-bottom:8px;color:#101b2d}
+.upload-box p{color:#64748b;font-size:14px;margin-bottom:18px;line-height:1.5}
+.file-input{display:none}
+.upload-btn{display:inline-block;padding:11px 18px;border-radius:9px;background:#35708a;color:white;cursor:pointer;font-weight:bold}
+.file-info{display:none;margin-top:16px;padding:12px;background:#eaf3f6;border-radius:10px;color:#17202b;font-size:14px;word-break:break-word}
+.analyze-section{text-align:center;margin-top:24px}
+.analyze-btn{border:none;padding:14px 30px;border-radius:10px;background:#c98a1d;color:white;font-size:16px;font-weight:bold;cursor:pointer}
+.analyze-btn:hover{opacity:.9}
+.analyze-btn:disabled{cursor:not-allowed}
+.processing{display:none;margin-top:18px;padding:14px;border-radius:10px;background:#eef6f8;color:#35708a;text-align:center}
+.result{display:none}
+.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.status{padding:8px 14px;border-radius:50px;background:#fbf0dc;color:#c98a1d;font-size:13px;font-weight:bold}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.result-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:13px;padding:18px}
+.result-box h4{color:#101b2d;margin-bottom:8px}
+.result-box p{color:#64748b;line-height:1.6;font-size:14px}
+.predictions{margin-top:20px}
+.prediction-row{display:flex;justify-content:space-between;gap:15px;padding:12px 0;border-bottom:1px solid #e2e8f0;color:#475569}
+.prediction-row:last-child{border-bottom:none}
+.scan-preview{margin-top:20px;padding:18px;border:1px solid #e2e8f0;border-radius:13px;background:#f8fafc}
+.scan-preview img{display:block;max-width:100%;max-height:420px;margin:12px auto 0;border-radius:10px;border:1px solid #cbd5e1;background:#111827}
+.warning{margin-top:20px;padding:18px;border-radius:13px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;line-height:1.6}
+.disclaimer{margin-top:20px;padding:15px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;color:#64748b;font-size:13px;line-height:1.6}
+.success-note{display:none;margin-top:15px;padding:12px;border-radius:10px;background:#edf8f1;color:#237342;border:1px solid #cdebd7;font-size:14px}
+.error-note{display:none;margin-top:15px;padding:12px;border-radius:10px;background:#fff1f2;color:#b42318;border:1px solid #fecdd3;font-size:14px}
+@media(max-width:960px){
+.layout{grid-template-columns:1fr}
+.sidebar{position:fixed;left:-280px;top:0;width:260px;height:100vh;transition:.3s}
+.sidebar.open{left:0}
+.menu-btn{display:block}
+.main{width:100%}
+.upload-grid{grid-template-columns:1fr}
+.result-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+.main{padding:16px}
+.topbar{align-items:flex-start}
+.topbar h1{font-size:24px}
+.topbar p{font-size:13px}
+.profile{display:none}
+.card{padding:18px;border-radius:15px}
+.upload-box{padding:22px 15px}
+.result-grid{grid-template-columns:1fr}
+.result-header{flex-direction:column;align-items:flex-start;gap:10px}
+.analyze-btn{width:100%}
+}
+</style>
+<script src="ng-core.js"></script>
+</head>
+
+<body>
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+    <div class="brand">
+        <div class="brand-logo">NG</div>
+        <div>
+            <h2>NeuroGuardian AI</h2>
+            <p>Neurology & Eye Screening Platform</p>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <a href="dashboard.html">🏠 Dashboard</a>
+        <a href="ai_chat.html">🤖 AI Health Assistant</a>
+        <a href="blood_report.html">🩸 Blood Reports</a>
+        <a href="brain_disease.html">🧠 Brain Disease Detection</a>
+        <a href="ct_mri.html" class="active">🩻 CT / MRI Reports</a>
+        <a href="migraine_analysis.html">🤕 Migraine Analysis</a>
+        <a href="vision.html">👁️ Vision Test</a>
+        <a href="eye_neuro_screening.html">📷 Eye Scanning</a>
+        <a href="Dashboard.html">📋 Report History</a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+</aside>
+
+<main class="main">
+
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-btn" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+        <div>
+            <h1>CT / MRI AI Analysis</h1>
+            <p>Upload a brain CT or MRI image for AI-based preliminary screening</p>
+        </div>
+    </div>
+
+    <div class="profile">
+        <div class="avatar" id="avatar">S</div>
+        <div>
+            <strong id="profileName">Patient Profile</strong>
+            <div style="color:#64748b;font-size:13px;">NeuroGuardian AI</div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+<div class="card">
+    <h2>🩻 Brain Imaging AI Screening</h2>
+    <p class="card-description">
+        Upload one brain CT slice or one brain MRI image. The backend uses
+        an actual image-classification model for the selected scan type.
+        CT screening is for stroke / no-stroke patterns, while MRI screening
+        is for glioma, meningioma, pituitary tumor, or no-tumor patterns.
+    </p>
+
+    <div class="upload-grid">
+
+        <div class="upload-box">
+            <div class="upload-icon">🩻</div>
+            <h3>Brain CT Scan</h3>
+            <p>Upload a clear brain CT image (JPG, JPEG, PNG, WEBP or BMP).</p>
+
+            <label class="upload-btn">
+                Select CT Image
+                <input type="file" id="ctFile" class="file-input"
+                       accept=".jpg,.jpeg,.png,.webp,.bmp,image/jpeg,image/png,image/webp,image/bmp"
+                       onchange="handleFile('ct')">
+            </label>
+
+            <div class="file-info" id="ctInfo"></div>
+        </div>
+
+        <div class="upload-box">
+            <div class="upload-icon">🧠</div>
+            <h3>Brain MRI</h3>
+            <p>Upload a clear brain MRI image (JPG, JPEG, PNG, WEBP or BMP).</p>
+
+            <label class="upload-btn">
+                Select MRI Image
+                <input type="file" id="mriFile" class="file-input"
+                       accept=".jpg,.jpeg,.png,.webp,.bmp,image/jpeg,image/png,image/webp,image/bmp"
+                       onchange="handleFile('mri')">
+            </label>
+
+            <div class="file-info" id="mriInfo"></div>
+        </div>
+
+    </div>
+
+    <div class="analyze-section">
+        <button class="analyze-btn" id="analyzeBtn" onclick="analyzeScan()">
+            🔍 Analyze Scan
+        </button>
+    </div>
+
+    <div class="processing" id="processing">
+        <strong id="processingText">Loading AI model and analyzing image...</strong>
+    </div>
+
+    <div class="success-note" id="successNote"></div>
+    <div class="error-note" id="errorNote"></div>
+</div>
+
+<div class="card result" id="result">
+
+    <div class="result-header">
+        <div>
+            <h2 id="resultTitle">AI Result</h2>
+            <p id="resultSub" style="color:#64748b;margin-top:5px;"></p>
+        </div>
+        <div class="status" id="status">Screening Result</div>
+    </div>
+
+    <div class="result-grid">
+
+        <div class="result-box">
+            <h4>🧠 Prediction</h4>
+            <p id="prediction">-</p>
+        </div>
+
+        <div class="result-box">
+            <h4>📊 Confidence</h4>
+            <p id="confidence">-</p>
+        </div>
+
+        <div class="result-box">
+            <h4>🔎 Possible Condition</h4>
+            <p id="condition">-</p>
+        </div>
+
+        <div class="result-box">
+            <h4>🩺 Recommendation</h4>
+            <p id="recommendation">-</p>
+        </div>
+
+        <div class="result-box">
+            <h4>🤖 AI Model</h4>
+            <p id="model">-</p>
+        </div>
+
+        <div class="result-box">
+            <h4>💾 Database</h4>
+            <p id="database">-</p>
+        </div>
+
+    </div>
+
+    <div class="predictions result-box">
+        <h4>Top Model Predictions</h4>
+        <div id="predictionList"></div>
+    </div>
+
+    <div class="scan-preview">
+        <strong>🖼️ Uploaded Scan</strong>
+        <img id="scanPreviewImage" alt="Uploaded CT or MRI scan">
+    </div>
+
+    <div class="warning">
+        <strong>Important:</strong>
+        This is an AI research/educational screening result, not a confirmed
+        medical diagnosis. A qualified radiologist or neurologist must review
+        the complete scan and clinical history before any diagnosis or treatment.
+    </div>
+
+    <div class="disclaimer" id="disclaimer">
+        The model works on the uploaded image as a screening aid. A single
+        image/slice cannot represent the complete medical study.
+    </div>
+
+</div>
+
+</div>
+</main>
+</div>
+
+<script>
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("open");
+}
+
+function getSession(){
+    try{
+        if(window.NG && typeof window.NG.getSession === "function"){
+            return window.NG.getSession();
+        }
+    }catch(error){
+        console.warn("Session read failed:", error);
+    }
+    return null;
+}
+
+function getApiBase(){
+    return window.location.protocol === "file:"
+        ? "http://127.0.0.1:5000"
+        : "";
+}
+
+function showMessage(type, message){
+    const success = document.getElementById("successNote");
+    const error = document.getElementById("errorNote");
+
+    success.style.display = "none";
+    error.style.display = "none";
+
+    if(type === "success"){
+        success.textContent = message;
+        success.style.display = "block";
+    }else{
+        error.textContent = message;
+        error.style.display = "block";
+    }
+}
+
+function setProcessing(show, message){
+    const box = document.getElementById("processing");
+    const text = document.getElementById("processingText");
+    const button = document.getElementById("analyzeBtn");
+
+    if(show){
+        box.style.display = "block";
+        text.textContent = message || "Processing...";
+        button.disabled = true;
+        button.style.opacity = ".6";
+    }else{
+        box.style.display = "none";
+        button.disabled = false;
+        button.style.opacity = "1";
+    }
+}
+
+function handleFile(type){
+    const input = document.getElementById(
+        type === "ct" ? "ctFile" : "mriFile"
+    );
+
+    const info = document.getElementById(
+        type === "ct" ? "ctInfo" : "mriInfo"
+    );
+
+    if(!input.files.length){
+        info.style.display = "none";
+        return;
+    }
+
+    const file = input.files[0];
+
+    info.innerHTML =
+        "📄 <strong>" +
+        escapeHtml(file.name) +
+        "</strong><br>" +
+        (file.size / (1024 * 1024)).toFixed(2) +
+        " MB";
+
+    info.style.display = "block";
+
+    // Only one scan type at a time.
+    if(type === "ct"){
+        document.getElementById("mriFile").value = "";
+        document.getElementById("mriInfo").style.display = "none";
+    }else{
+        document.getElementById("ctFile").value = "";
+        document.getElementById("ctInfo").style.display = "none";
+    }
+}
+
+function escapeHtml(value){
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+function displayResult(data, file){
+    const result = document.getElementById("result");
+
+    document.getElementById("resultTitle").textContent =
+        data.scan_type + " AI Screening Result";
+
+    document.getElementById("resultSub").textContent =
+        file.name;
+
+    document.getElementById("prediction").textContent =
+        data.prediction || "-";
+
+    document.getElementById("confidence").textContent =
+        (data.confidence ?? 0) + "%";
+
+    document.getElementById("condition").textContent =
+        data.possible_condition || "-";
+
+    document.getElementById("recommendation").textContent =
+        data.recommendation || "-";
+
+    document.getElementById("model").textContent =
+        data.model || "-";
+
+    document.getElementById("database").textContent =
+        data.database_saved
+            ? "✓ Saved to SQLite"
+            : "Not saved (no logged-in user session)";
+
+    const status = document.getElementById("status");
+
+    if(data.level === "red"){
+        status.textContent = "Higher-Risk Screening Result";
+        status.style.background = "#fde8e8";
+        status.style.color = "#b42318";
+    }else if(data.level === "yellow"){
+        status.textContent = "Review Recommended";
+        status.style.background = "#fff4d6";
+        status.style.color = "#9a6700";
+    }else{
+        status.textContent = "No Target Pattern Detected";
+        status.style.background = "#e8f6ed";
+        status.style.color = "#237342";
+    }
+
+    const list = document.getElementById("predictionList");
+    list.innerHTML = "";
+
+    (data.top_predictions || []).forEach(item => {
+        const row = document.createElement("div");
+        row.className = "prediction-row";
+
+        const label = document.createElement("span");
+        label.textContent = item.label;
+
+        const score = document.createElement("strong");
+        score.textContent = item.confidence + "%";
+
+        row.appendChild(label);
+        row.appendChild(score);
+        list.appendChild(row);
+    });
+
+    document.getElementById("disclaimer").textContent =
+        data.disclaimer ||
+        "AI screening only. This is not a medical diagnosis.";
+
+    const preview = document.getElementById("scanPreviewImage");
+    preview.src = URL.createObjectURL(file);
+
+    result.style.display = "block";
+    result.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+    });
+}
+
+async function analyzeScan(){
+
+    const ctInput = document.getElementById("ctFile");
+    const mriInput = document.getElementById("mriFile");
+
+    const ct = ctInput.files[0];
+    const mri = mriInput.files[0];
+
+    if(!ct && !mri){
+        showMessage(
+            "error",
+            "Please upload a CT or MRI image first."
+        );
+        return;
+    }
+
+    if(ct && mri){
+        showMessage(
+            "error",
+            "Please upload only one scan at a time."
+        );
+        return;
+    }
+
+    const file = ct || mri;
+    const scanType = ct ? "ct" : "mri";
+
+    if(file.size > 10 * 1024 * 1024){
+        showMessage(
+            "error",
+            "Please upload an image smaller than 10 MB."
+        );
+        return;
+    }
+
+    const session = getSession();
+
+    setProcessing(
+        true,
+        "Sending " + scanType.toUpperCase() +
+        " image to the AI model..."
+    );
+
+    showMessage(
+        "success",
+        "AI analysis started..."
+    );
+
+    try{
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        if(session && session.email){
+            formData.append(
+                "user_email",
+                session.email
+            );
+        }
+
+        const response = await fetch(
+            getApiBase() +
+            "/api/analyze-" +
+            scanType,
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+        const data = await response.json();
+
+        if(!response.ok || !data.success){
+            throw new Error(
+                data.message ||
+                "AI analysis failed."
+            );
+        }
+
+        displayResult(
+            data,
+            file
+        );
+
+        showMessage(
+            "success",
+            "✓ " +
+            scanType.toUpperCase() +
+            " prediction completed successfully."
+        );
+
+    }catch(error){
+
+        console.error(
+            "CT/MRI analysis error:",
+            error
+        );
+
+        showMessage(
+            "error",
+            error.message ||
+            "CT/MRI analysis failed."
+        );
+
+    }finally{
+
+        setProcessing(
+            false
+        );
+    }
+}
+
+function logout(){
+
+    if(!confirm(
+        "Do you want to logout from NeuroGuardian AI?"
+    )){
+        return;
+    }
+
+    try{
+        if(window.NG && typeof window.NG.logout === "function"){
+            window.NG.logout();
+            return;
+        }
+    }catch(error){
+        console.warn("NG logout failed:", error);
+    }
+
+    localStorage.removeItem("ng_session");
+    localStorage.removeItem("session");
+    window.location.href = "Login.html";
+}
+
+(function loadProfile(){
+
+    const session = getSession();
+
+    if(session && session.name){
+        document.getElementById("profileName").textContent =
+            session.name;
+
+        document.getElementById("avatar").textContent =
+            session.name.charAt(0).toUpperCase();
+    }
+
+})();
+</script>
+
+</body>
+</html>

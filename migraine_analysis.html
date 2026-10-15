@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="ng-core.js"></script>
+<title>NeuroGuardian AI | Migraine Analysis</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f5f7fb;color:#182230}
+:root{--p:#5b5bd6;--p2:#8173ed;--border:#e5e8f0;--muted:#687386;--danger:#c83d4c;--warn:#b97912;--ok:#247b57}
+.topbar{height:70px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:15px;position:sticky;top:0;z-index:20}.back{width:42px;height:42px;border:1px solid var(--border);border-radius:12px;background:#fff;font-size:22px;cursor:pointer}.brand{font-weight:800;font-size:19px}.brand span{color:var(--p)}.lang{margin-left:auto;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff}
+.wrap{max-width:1180px;margin:26px auto;padding:0 18px}.hero{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;border-radius:24px;padding:30px;margin-bottom:20px;box-shadow:0 10px 30px rgba(91,91,214,.18)}.hero h1{margin:0 0 8px;font-size:31px}.hero p{margin:0;line-height:1.6;max-width:800px;opacity:.94}.notice{margin-top:18px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.24);padding:12px 14px;border-radius:12px;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(290px,.75fr);gap:20px}.card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 5px 20px rgba(25,35,60,.045)}.card h2{font-size:19px;margin:0 0 6px}.sub{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:17px}.step{display:flex;gap:12px;align-items:flex-start}.num{min-width:32px;height:32px;border-radius:50%;background:#efeeff;color:#4b45b9;display:flex;align-items:center;justify-content:center;font-weight:800}
+label.title{display:block;font-size:14px;font-weight:700;margin:16px 0 8px}input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:11px;font:inherit;background:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(91,91,214,.08)}textarea{min-height:85px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.options{display:flex;flex-wrap:wrap;gap:9px}.option{position:relative}.option input{position:absolute;opacity:0;width:1px}.option span{display:block;padding:10px 13px;border:1px solid var(--border);border-radius:10px;background:#fafbfe;cursor:pointer;font-size:13px;transition:.15s}.option input:checked+span{border-color:var(--p);background:#f0efff;color:#4640ad;font-weight:700}
+.headmap{height:210px;border:1px solid var(--border);border-radius:15px;background:linear-gradient(#fff,#f8f8ff);position:relative;overflow:hidden;margin-top:10px}.head{position:absolute;width:145px;height:175px;border:3px solid #8c8ed0;border-radius:48% 48% 44% 44%;left:50%;top:16px;transform:translateX(-50%);background:#fafaff}.pin{position:absolute;width:23px;height:23px;border-radius:50%;border:2px solid #fff;background:#b5b7e8;box-shadow:0 2px 7px #8885;cursor:pointer}.pin.active{background:var(--p);transform:scale(1.12)}.p1{left:31%;top:55px}.p2{left:42%;top:32px}.p3{left:55%;top:32px}.p4{left:66%;top:55px}.p5{left:50%;top:125px}.zones{font-size:12px;color:var(--muted);margin-top:8px}
+.scale{display:grid;grid-template-columns:repeat(11,1fr);gap:5px}.scale button{border:1px solid var(--border);background:#fff;border-radius:8px;padding:9px 0;cursor:pointer}.scale button.active{background:var(--p);color:#fff;border-color:var(--p)}.scale-label{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:6px}
+.result{position:static}.scorebox{text-align:center;padding:18px;background:#f8f8ff;border:1px solid #e7e5ff;border-radius:15px}.score{font-size:42px;font-weight:850;color:var(--p)}.meter{height:10px;background:#e8e9f1;border-radius:20px;overflow:hidden;margin:10px 0}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8c84f4,var(--p));transition:.5s}.badge{display:inline-block;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800;background:#efefff;color:#4c45b7}.warning,.safe{padding:13px;border-radius:12px;font-size:13px;line-height:1.55;margin-top:14px}.warning{background:#fff0f1;border:1px solid #f0b9c0;color:#8c2431}.safe{background:#eff9f4;border:1px solid #bfe4d2;color:#216c4e}.result ul{padding-left:19px;line-height:1.65;color:#536071}.history div{padding:11px;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5}.history div:last-child{border-bottom:0}.redirect{margin-top:18px}.btns{display:flex;gap:10px;margin-top:18px}.primary,.secondary{border:0;border-radius:11px;padding:12px 17px;font-weight:800;cursor:pointer}.primary{background:var(--p);color:#fff}.secondary{background:#eceef4;color:#273142}.full{width:100%}
+.redirect{background:#191a36;color:#fff;border-radius:18px;padding:22px;margin-top:4px}.redirect p{color:#cdd0e8;line-height:1.5;font-size:13px}.redirect button{background:#fff;color:#27275b;border:0;border-radius:10px;padding:11px 15px;font-weight:800;cursor:pointer}.disclaimer{font-size:12px;color:#6b7482;line-height:1.6;margin-top:16px}.hidden{display:none}footer{text-align:center;color:#8992a0;font-size:12px;padding:12px 0 35px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.result{position:static}.hero h1{font-size:26px}}@media(max-width:600px){.topbar{padding:0 14px}.wrap{padding:0 12px}.hero{padding:22px}.row{grid-template-columns:1fr}.card{padding:17px}.scale{gap:3px}.scale button{padding:8px 0}.brand{font-size:16px}}
+</style>
+</head>
+<body>
+<header class="topbar"><button class="back" onclick="location.href='Dashboard.html'" aria-label="Back">←</button><div class="brand">Neuro<span>Guardian</span> AI</div><select class="lang" id="lang" onchange="changeLang()"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option><option value="ur">اردو</option></select></header>
+<main class="wrap">
+<section class="hero"><h1 id="title">Migraine Analysis</h1><p id="intro">AI-assisted headache screening that looks at your pain pattern, associated symptoms, triggers and frequency. It is a screening tool, not a medical diagnosis.</p><div class="notice">⚠️ If a headache is sudden and extremely severe, or occurs with new weakness, trouble speaking, confusion, seizure, sudden vision loss, fever/stiff neck, or after significant head injury, seek urgent medical assessment.</div></section>
+<div class="layout"><div>
+<section class="card"><div class="step"><div class="num">1</div><div><h2>Headache Pattern</h2><div class="sub">Describe your current/recent headache pattern.</div></div></div>
+<label class="title">Where do you feel the pain?</label><div class="headmap"><div class="head"></div><button class="pin p1" data-zone="Left side" aria-label="Left side"></button><button class="pin p2" data-zone="Forehead" aria-label="Forehead"></button><button class="pin p3" data-zone="Temple" aria-label="Temple"></button><button class="pin p4" data-zone="Right side" aria-label="Right side"></button><button class="pin p5" data-zone="Back of head/neck" aria-label="Back of head/neck"></button></div><div class="zones" id="zones">Selected: none</div>
+<div class="row"><div><label class="title">Pain intensity</label><div class="scale" id="painScale"></div><div class="scale-label"><span>0 — no pain</span><span>10 — worst</span></div></div><div><label class="title">How often?</label><select id="freq"><option value="0">First/rare episode</option><option value="1">Less than weekly</option><option value="2">1–3 days/week</option><option value="3">4+ days/week</option><option value="4">Almost daily</option></select></div></div>
+<div class="row"><div><label class="title">Typical duration</label><select id="duration"><option value="0">Less than 1 hour</option><option value="1">1–4 hours</option><option value="2">4–24 hours</option><option value="3">More than 24 hours</option></select></div><div><label class="title">Pain quality</label><div class="options"><label class="option"><input type="checkbox" name="quality" value="pulsating"><span>Throbbing / pulsating</span></label><label class="option"><input type="checkbox" name="quality" value="pressure"><span>Pressure / tightness</span></label><label class="option"><input type="checkbox" name="quality" value="stabbing"><span>Stabbing</span></label></div></div></div>
+</section>
+<section class="card"><div class="step"><div class="num">2</div><div><h2>Migraine-Associated Symptoms</h2><div class="sub">Select symptoms that occur during the headache.</div></div></div><div class="options"><label class="option"><input type="checkbox" name="sym" value="light"><span>💡 Light sensitivity</span></label><label class="option"><input type="checkbox" name="sym" value="sound"><span>🔊 Sound sensitivity</span></label><label class="option"><input type="checkbox" name="sym" value="nausea"><span>🤢 Nausea</span></label><label class="option"><input type="checkbox" name="sym" value="vomit"><span>Vomiting</span></label><label class="option"><input type="checkbox" name="sym" value="activity"><span>Worse with activity</span></label><label class="option"><input type="checkbox" name="sym" value="dizzy"><span>Dizziness</span></label><label class="option"><input type="checkbox" name="sym" value="neck"><span>Neck pain</span></label></div></section>
+<section class="card"><div class="step"><div class="num">3</div><div><h2>Aura Screening</h2><div class="sub">Aura may involve temporary visual, sensory or speech changes before or during a headache.</div></div></div><div class="options"><label class="option"><input type="checkbox" name="aura" value="visual"><span>Flashing lights / zig-zags</span></label><label class="option"><input type="checkbox" name="aura" value="blind"><span>Temporary blind spot</span></label><label class="option"><input type="checkbox" name="aura" value="tingle"><span>Tingling / numbness</span></label><label class="option"><input type="checkbox" name="aura" value="none"><span>No aura symptoms</span></label></div></section>
+<section class="card"><div class="step"><div class="num">4</div><div><h2>Triggers & Relief</h2><div class="sub">Select things that commonly appear before or around your headache.</div></div></div><div class="options"><label class="option"><input type="checkbox" name="trigger" value="sleep"><span>Poor / irregular sleep</span></label><label class="option"><input type="checkbox" name="trigger" value="stress"><span>Stress</span></label><label class="option"><input type="checkbox" name="trigger" value="screen"><span>Long screen time</span></label><label class="option"><input type="checkbox" name="trigger" value="food"><span>Missed meals</span></label><label class="option"><input type="checkbox" name="trigger" value="water"><span>Dehydration</span></label><label class="option"><input type="checkbox" name="trigger" value="hormone"><span>Hormonal changes</span></label><label class="option"><input type="checkbox" name="trigger" value="caffeine"><span>Caffeine change</span></label><label class="option"><input type="checkbox" name="trigger" value="none"><span>No clear trigger</span></label></div><label class="title">What gives you relief?</label><div class="options"><label class="option"><input type="checkbox" name="relief" value="sleep"><span>Sleep/rest</span></label><label class="option"><input type="checkbox" name="relief" value="dark"><span>Dark/quiet room</span></label><label class="option"><input type="checkbox" name="relief" value="water"><span>Hydration</span></label><label class="option"><input type="checkbox" name="relief" value="medicine"><span>Usual medication</span></label></div></section>
+<section class="card"><div class="step"><div class="num">5</div><div><h2>Safety Check & Notes</h2><div class="sub">These answers can change the urgency of the recommendation.</div></div></div><div class="options"><label class="option"><input type="checkbox" name="red" value="sudden"><span>New sudden, extremely severe headache</span></label><label class="option"><input type="checkbox" name="red" value="weak"><span>New weakness/numbness on one side</span></label><label class="option"><input type="checkbox" name="red" value="speech"><span>New trouble speaking</span></label><label class="option"><input type="checkbox" name="red" value="confusion"><span>New confusion/fainting</span></label><label class="option"><input type="checkbox" name="red" value="fever"><span>High fever or stiff neck</span></label><label class="option"><input type="checkbox" name="red" value="vision"><span>Sudden vision loss</span></label><label class="option"><input type="checkbox" name="red" value="injury"><span>Headache after significant head injury</span></label></div><label class="title">Additional notes</label><textarea id="notes" placeholder="Describe anything important about your headache..."></textarea><div class="btns"><button class="primary" onclick="analyze()">Analyze Migraine Pattern</button><button class="secondary" onclick="resetAll()">Reset</button></div></section>
+</div>
+<aside>
+<section class="card result"><h2>Screening Result</h2><div class="sub">Pattern estimate based only on the information entered.</div><div class="scorebox"><div class="score" id="score">0%</div><div class="meter"><i id="meter"></i></div><span class="badge" id="pattern">Not analyzed</span></div><p id="summary" style="line-height:1.55;color:#5e6878"></p><div id="safety"></div><h3>What you can do next</h3><ul id="next"><li>Complete the assessment to receive guidance.</li></ul></section>
+<section class="card"><h2>Headache Diary</h2><div class="sub">Saved only in this browser using local storage.</div><div class="history" id="history"><div>No entries yet.</div></div><button class="secondary full" style="margin-top:12px" onclick="clearHistory()">Clear Diary</button></section>
+<div class="redirect"><h3 style="margin-top:0">Neurological symptoms?</h3><p>If you are concerned about weakness, speech changes, confusion, seizures, coordination problems or other neurological warning signs, use the separate Brain Disease screening module.</p><button onclick="location.href='brain_disease.html'">Open Brain Disease Screening →</button></div>
+<div class="disclaimer">NeuroGuardian AI provides screening and tracking support. It cannot confirm migraine, determine the exact cause of a headache, or replace examination by a qualified healthcare professional.</div>
+</aside></div><footer>NeuroGuardian AI • Migraine Analysis • Screening support only</footer></main>
+<script>
+let pain=0,zones=[];
+const scale=document.getElementById('painScale');for(let i=0;i<=10;i++){const b=document.createElement('button');b.textContent=i;b.onclick=()=>{pain=i;document.querySelectorAll('#painScale button').forEach(x=>x.classList.remove('active'));b.classList.add('active')};scale.appendChild(b)}
+document.querySelectorAll('.pin').forEach(p=>p.onclick=()=>{p.classList.toggle('active');const z=p.dataset.zone;if(zones.includes(z))zones.splice(zones.indexOf(z),1);else zones.push(z);document.getElementById('zones').textContent='Selected: '+(zones.length?zones.join(', '):'none')});
+function vals(n){return [...document.querySelectorAll('input[name="'+n+'"]:checked')].map(x=>x.value)}
+function analyze(){
+const freq=+document.getElementById('freq').value;
+const dur=+document.getElementById('duration').value;
+const sym=vals('sym');
+const aura=vals('aura');
+const quality=vals('quality');
+const triggers=vals('trigger');
+const relief=vals('relief');
+const red=vals('red');
+
+let score=0;
+const features=[];
+
+/* ================= RED FLAGS ================= */
+if(red.length){
+  let redReasons=[];
+  if(red.includes('sudden')) redReasons.push('sudden, extremely severe headache');
+  if(red.includes('weak')) redReasons.push('new one-sided weakness or numbness');
+  if(red.includes('speech')) redReasons.push('new trouble speaking');
+  if(red.includes('confusion')) redReasons.push('new confusion or fainting');
+  if(red.includes('fever')) redReasons.push('fever or stiff neck');
+  if(red.includes('vision')) redReasons.push('sudden vision loss');
+  if(red.includes('injury')) redReasons.push('headache after significant head injury');
+
+  document.getElementById('score').textContent='Urgent';
+  document.getElementById('meter').style.width='100%';
+  document.getElementById('pattern').textContent='Red-flag headache pattern';
+  document.getElementById('summary').textContent=
+    'The selected safety answers are not appropriate to classify as a routine migraine pattern. This screening cannot determine the cause. Urgent medical assessment may be needed.';
+
+  document.getElementById('safety').innerHTML=
+    '<div class="warning"><b>Urgent attention:</b> You selected: '+
+    redReasons.join(', ')+
+    '. Do not rely on this migraine screening result. Seek appropriate medical evaluation, especially when symptoms are sudden, severe, new, or worsening.</div>';
+
+  const next=document.getElementById('next');
+  next.innerHTML='';
+  [
+    'Do not use this result to self-diagnose migraine.',
+    'Seek urgent medical assessment for new or severe red-flag symptoms.',
+    'If safe to do so, keep a record of when the headache started and what symptoms occurred.'
+  ].forEach(x=>{
+    const li=document.createElement('li');
+    li.textContent=x;
+    next.appendChild(li);
+  });
+
+  saveEntry('Red-flag headache pattern',0,pain);
+  document.querySelector('.result').scrollIntoView({behavior:'smooth'});
+  return;
+}
+
+/* ================= MIGRAINE FEATURES ================= */
+const hasNausea=sym.includes('nausea')||sym.includes('vomit');
+const hasSensory=sym.includes('light')||sym.includes('sound');
+const hasActivity=sym.includes('activity');
+const hasPulsating=quality.includes('pulsating');
+const hasOneSide=zones.some(z=>['Left side','Right side','Temple'].includes(z));
+const hasAura=aura.some(x=>x!=='none');
+
+if(hasNausea){score+=3;features.push('nausea/vomiting');}
+if(sym.includes('light')){score+=3;features.push('light sensitivity');}
+if(sym.includes('sound')){score+=3;features.push('sound sensitivity');}
+if(hasActivity){score+=2;features.push('activity-related worsening');}
+if(hasPulsating){score+=3;features.push('pulsating pain');}
+if(hasOneSide){score+=2;features.push('one-sided/temple pain');}
+if(hasAura){score+=2;features.push('aura-type symptoms');}
+
+/* Frequency and duration support the pattern but do not diagnose it. */
+if(freq>=2) score+=2;
+if(freq>=3) score+=1;
+if(dur>=1 && dur<=2) score+=2;
+
+/* Triggers are supporting context, not proof of migraine. */
+const migraineTriggers=['sleep','stress','screen','food','water','hormone','caffeine'];
+const selectedTriggers=triggers.filter(x=>migraineTriggers.includes(x) && x!=='none');
+if(selectedTriggers.length) score+=Math.min(selectedTriggers.length,2);
+
+/* Relief can support a headache pattern but is never treated as diagnostic. */
+if(relief.includes('sleep')||relief.includes('dark')) score+=1;
+
+score=Math.min(score,30);
+
+/* ================= PATTERN CLASSIFICATION ================= */
+let pattern,summary;
+
+const coreCount=[
+  hasNausea,
+  sym.includes('light'),
+  sym.includes('sound'),
+  hasActivity,
+  hasPulsating,
+  hasOneSide,
+  hasAura
+].filter(Boolean).length;
+
+if(
+  (hasPulsating && hasNausea && (hasOneSide || hasSensory)) ||
+  (coreCount>=4 && pain>=5)
+){
+  pattern='Strong migraine-like pattern';
+  summary='Several features commonly associated with migraine are present: '+
+    features.slice(0,5).join(', ')+
+    '. This is a screening pattern, not a diagnosis.';
+}else if(coreCount>=2 || (hasPulsating && hasOneSide)){
+  pattern='Possible migraine features';
+  summary='Some migraine-associated features are present. The overall pattern may be consistent with migraine, but other headache causes can also produce similar symptoms.';
+}else if(pain>0 || zones.length || freq>0 || dur>0 || quality.length){
+  pattern='Non-specific headache pattern';
+  summary='The current answers describe a headache but do not contain enough migraine-specific features to classify it as a strong migraine-like pattern.';
+}else{
+  pattern='Insufficient information';
+  summary='Please provide headache details and associated symptoms before relying on the screening result.';
+}
+
+/* ================= RESULT UI ================= */
+document.getElementById('score').textContent=score+'/30';
+document.getElementById('meter').style.width=((score/30)*100)+'%';
+document.getElementById('pattern').textContent=pattern;
+document.getElementById('summary').textContent=summary;
+
+document.getElementById('safety').innerHTML=
+  '<div class="safe"><b>Screening note:</b> This result estimates a symptom pattern only. '+
+  'It does not confirm migraine and does not rule out other causes of headache.</div>';
+
+const next=document.getElementById('next');
+next.innerHTML='';
+
+[
+  'Keep a headache diary with date, duration, severity and associated symptoms.',
+  'Record possible triggers such as sleep changes, stress, missed meals, dehydration or caffeine changes.',
+  'Note whether light, sound, nausea, activity or pulsating pain occur with the headache.',
+  'If headaches are frequent, changing, unusually severe or affecting daily life, discuss the pattern with a qualified healthcare professional.'
+].forEach(x=>{
+  const li=document.createElement('li');
+  li.textContent=x;
+  next.appendChild(li);
+});
+
+saveEntry(pattern,score,pain);
+saveMigraineReportToDatabase(pattern,score,pain,{freq:freq,dur:dur,sym:sym,aura:aura,quality:quality,triggers:triggers,relief:relief,red:red,zones:zones,summary:summary});
+document.querySelector('.result').scrollIntoView({behavior:'smooth'});
+}
+function saveEntry(pattern,score,pain){let h=JSON.parse(localStorage.getItem('ngMigraine')||'[]');h.unshift({date:new Date().toLocaleString(),pattern,score,pain});h=h.slice(0,8);localStorage.setItem('ngMigraine',JSON.stringify(h));renderHistory()}function renderHistory(){let h=JSON.parse(localStorage.getItem('ngMigraine')||'[]'),box=document.getElementById('history');box.innerHTML=h.length?h.map(x=>`<div><b>${x.pattern}</b><br>${x.date} • Pattern score ${x.score}/15 • Pain ${x.pain}/10</div>`).join(''):'<div>No entries yet.</div>'}function clearHistory(){localStorage.removeItem('ngMigraine');renderHistory()}function resetAll(){location.reload()}
+const translations={en:{title:'Migraine Analysis',intro:'AI-assisted headache screening that looks at your pain pattern, associated symptoms, triggers and frequency. It is a screening tool, not a medical diagnosis.'},hi:{title:'माइग्रेन विश्लेषण',intro:'यह आपकी सिरदर्द की प्रकृति, संबंधित लक्षण, ट्रिगर और आवृत्ति के आधार पर स्क्रीनिंग करता है। यह मेडिकल निदान नहीं है।'},mr:{title:'मायग्रेन विश्लेषण',intro:'हे साधन डोकेदुखीची पद्धत, संबंधित लक्षणे, ट्रिगर आणि वारंवारता यांचे स्क्रीनिंग करते. हे वैद्यकीय निदान नाही.'},ur:{title:'مائگرین تجزیہ',intro:'یہ آپ کے سر درد کی نوعیت، متعلقہ علامات، محرکات اور فریکوئنسی کی بنیاد پر اسکریننگ کرتا ہے۔ یہ طبی تشخیص نہیں ہے۔'}};
+function changeLang(){const t=translations[document.getElementById('lang').value];document.getElementById('title').textContent=t.title;document.getElementById('intro').textContent=t.intro}renderHistory();
+
+async function saveMigraineReportToDatabase(pattern,score,pain,data){
+  try{
+    const session=window.NG&&typeof NG.getSession==="function"?NG.getSession():null;
+    if(!session||!session.email)return;
+    const API_BASE=window.location.protocol==="file:"?"http://127.0.0.1:5000":"";
+    const report={module:"migraine",title:"Migraine Analysis",tier:"green",summary:pattern+". "+(data.summary||""),details:{"Pattern":pattern,"Pattern Score":(score||0)+"/30","Pain":(pain||0)+"/10","Pain Areas":(data.zones||[]).join(", ")||"none","Frequency":document.getElementById("freq")?.selectedOptions?.[0]?.text||"-","Duration":document.getElementById("duration")?.selectedOptions?.[0]?.text||"-","Pain Quality":(data.quality||[]).join(", ")||"none","Associated Symptoms":(data.sym||[]).join(", ")||"none","Aura":(data.aura||[]).join(", ")||"none","Triggers":(data.triggers||[]).join(", ")||"none","Relief":(data.relief||[]).join(", ")||"none","Safety Flags":(data.red||[]).join(", ")||"none","Summary":data.summary||"-"},user:session.email};
+    const response=await fetch(API_BASE+"/api/reports",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(report)});
+    const result=await response.json();
+    if(!response.ok||!result.success){console.error("Migraine database save failed:",result);return;}
+    console.log("✓ Migraine report saved to database.");
+  }catch(error){console.error("Migraine database error:",error);}
+}
+
+</script></body></html>

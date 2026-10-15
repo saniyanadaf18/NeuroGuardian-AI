@@ -1,0 +1,3413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NeuroGuardian AI - Blood Report Analysis</title>
+<script src="ng-core.js"></script>
+
+<!-- PDF.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --ink:#101B2D;
+    --paper:#F4F6F8;
+    --panel:#FFFFFF;
+    --line:#DDE6EC;
+    --teal:#35708A;
+    --teal-dark:#24566F;
+    --green:#3F9142;
+    --green-bg:#E8F5E9;
+    --amber:#C98A1D;
+    --amber-bg:#FFF4DE;
+    --red:#C0392B;
+    --red-bg:#FBE7E5;
+    --muted:#64748B;
+    --radius:18px;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    height:76px;
+    background:white;
+    border-bottom:1px solid var(--line);
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 30px;
+
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:13px;
+}
+
+.logo{
+    width:46px;
+    height:46px;
+    border-radius:12px;
+
+    background:#91D5BD;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-weight:bold;
+    color:#173B4F;
+}
+
+.brand h2{
+    font-family:Georgia,serif;
+    color:#18344C;
+    font-size:21px;
+}
+
+.brand p{
+    font-size:11px;
+    color:#71879A;
+    margin-top:3px;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.language-label{
+    color:#617A8E;
+    font-size:13px;
+}
+
+#languageSelect{
+    border:1px solid #CCD9E1;
+    border-radius:8px;
+    padding:9px 13px;
+    background:white;
+    color:#18344C;
+    cursor:pointer;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.container{
+    max-width:1200px;
+    margin:28px auto;
+    padding:0 20px 70px;
+}
+
+/* BACK BUTTON */
+
+.back-row{
+    margin-bottom:20px;
+}
+
+.back-dashboard{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+
+    text-decoration:none;
+
+    background:#35708A;
+    color:white;
+
+    padding:11px 18px;
+
+    border-radius:10px;
+
+    font-weight:bold;
+    font-size:14px;
+
+    transition:.2s;
+}
+
+.back-dashboard:hover{
+    background:#24566F;
+    transform:translateY(-1px);
+}
+
+/* PAGE TITLE */
+
+.page-title{
+    margin-bottom:22px;
+}
+
+.page-title h1{
+    font-family:Georgia,serif;
+    font-size:32px;
+    color:#18344C;
+    margin-bottom:7px;
+}
+
+.page-title p{
+    color:#6A8092;
+    line-height:1.6;
+}
+
+/* =========================
+   UPLOAD CARD
+========================= */
+
+.upload-card{
+    background:white;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:28px;
+
+    box-shadow:0 5px 20px rgba(25,55,80,.05);
+
+    margin-bottom:22px;
+}
+
+.upload-card h2{
+    font-family:Georgia,serif;
+    color:#18344C;
+    margin-bottom:8px;
+}
+
+.upload-description{
+    color:#647C8E;
+    line-height:1.6;
+    margin-bottom:20px;
+}
+
+.upload-area{
+    border:2px dashed #7DA9BB;
+    border-radius:15px;
+
+    background:#F8FBFC;
+
+    padding:35px 20px;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    display:block;
+
+    transition:.2s;
+}
+
+.upload-area:hover{
+    background:#EEF7FA;
+    border-color:#35708A;
+}
+
+.upload-icon{
+    font-size:45px;
+    margin-bottom:10px;
+}
+
+.upload-area h3{
+    color:#29475C;
+    margin-bottom:7px;
+}
+
+.upload-area p{
+    color:#71879A;
+    font-size:14px;
+}
+
+#pdfInput{
+    display:none;
+}
+
+/* FILE LIST */
+
+.file-list{
+    margin-top:18px;
+}
+
+.file-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:12px;
+
+    padding:12px 14px;
+
+    border:1px solid #DCE5EB;
+    border-radius:10px;
+
+    margin-bottom:8px;
+
+    background:#F8FAFB;
+}
+
+.file-name{
+    color:#315B73;
+    font-weight:bold;
+    word-break:break-word;
+}
+
+.remove-file{
+    border:none;
+    background:#FBE5E3;
+    color:#A52929;
+
+    padding:7px 10px;
+
+    border-radius:7px;
+
+    cursor:pointer;
+}
+
+.button-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:18px;
+}
+
+.analyze-btn,
+.reset-btn{
+    border-radius:9px;
+    padding:13px 22px;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.analyze-btn{
+    border:none;
+    background:#35708A;
+    color:white;
+}
+
+.analyze-btn:hover{
+    background:#285D73;
+}
+
+.analyze-btn:disabled{
+    background:#A8BBC5;
+    cursor:not-allowed;
+}
+
+.reset-btn{
+    border:1px solid #CCD9E1;
+    background:white;
+    color:#425D70;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+    display:none;
+
+    background:white;
+    border:1px solid var(--line);
+
+    border-radius:14px;
+
+    padding:28px;
+
+    text-align:center;
+
+    margin-bottom:20px;
+}
+
+.loading-icon{
+    font-size:38px;
+    margin-bottom:10px;
+}
+
+.loading p{
+    color:#35708A;
+}
+
+/* =========================
+   RESULTS
+========================= */
+
+#reportResult{
+    display:none;
+}
+
+.section-card{
+    background:white;
+    border:1px solid var(--line);
+    border-radius:18px;
+
+    padding:26px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 5px 20px rgba(25,55,80,.04);
+}
+
+.section-title{
+    font-family:Georgia,serif;
+    color:#18344C;
+    font-size:23px;
+
+    margin-bottom:15px;
+}
+
+/* =========================
+   OVERALL STATUS
+========================= */
+
+.status{
+    display:inline-block;
+
+    padding:9px 15px;
+
+    border-radius:20px;
+
+    font-size:13px;
+    font-weight:bold;
+
+    margin-bottom:15px;
+}
+
+.status-green{
+    background:var(--green-bg);
+    color:#19743B;
+}
+
+.status-yellow{
+    background:var(--amber-bg);
+    color:#956200;
+}
+
+.status-red{
+    background:var(--red-bg);
+    color:#A52929;
+}
+
+.summary-box{
+    background:#F6FAFB;
+    border:1px solid #DCE8ED;
+
+    border-radius:12px;
+
+    padding:20px;
+
+    line-height:1.75;
+
+    color:#334E60;
+}
+
+/* =========================
+   SEVERITY SCORE
+========================= */
+
+.severity-wrapper{
+    margin-top:20px;
+}
+
+.severity-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:8px;
+}
+
+.severity-number{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.severity-bar{
+    height:12px;
+    background:#E8EDF2;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.severity-fill{
+    height:100%;
+    width:0%;
+    background:#35708A;
+
+    transition:width .6s ease;
+}
+
+.severity-label{
+    margin-top:8px;
+    color:#64748B;
+    font-size:14px;
+}
+
+/* =========================
+   TEST CARDS
+========================= */
+
+.test-card{
+    background:white;
+    border:1px solid #DCE5EB;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    margin-bottom:14px;
+}
+
+.test-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:7px;
+}
+
+.test-name{
+    font-family:Georgia,serif;
+    font-size:18px;
+    font-weight:bold;
+    color:#23445A;
+}
+
+.test-value{
+    font-size:19px;
+    font-weight:bold;
+    color:#35708A;
+}
+
+.test-range{
+    font-size:13px;
+    color:#708596;
+
+    margin-bottom:10px;
+}
+
+.result-badge{
+    display:inline-block;
+
+    padding:5px 10px;
+
+    border-radius:15px;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    margin-bottom:12px;
+}
+
+.badge-normal{
+    background:#E5F5EB;
+    color:#19743B;
+}
+
+.badge-low,
+.badge-high{
+    background:#FFF2D7;
+    color:#956200;
+}
+
+.badge-significant{
+    background:#FDE5E5;
+    color:#A52929;
+}
+
+.explanation-box,
+.symptom-box,
+.home-box,
+.doctor-box{
+    padding:14px;
+
+    border-radius:8px;
+
+    line-height:1.65;
+
+    margin-top:10px;
+}
+
+.explanation-box{
+    background:#F8FAFB;
+    border-left:4px solid #79A9BB;
+}
+
+.symptom-box{
+    background:#FFFAF0;
+    border-left:4px solid #E0B35D;
+}
+
+.home-box{
+    background:#F1FAF5;
+    border-left:4px solid #70B48E;
+}
+
+.doctor-box{
+    background:#F4F7FB;
+    border-left:4px solid #6F91B5;
+}
+
+.box-title{
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+/* =========================
+   RECOMMENDATIONS
+========================= */
+
+.recommendation{
+    display:flex;
+
+    gap:15px;
+
+    padding:19px;
+
+    border-radius:13px;
+
+    margin-bottom:12px;
+
+    line-height:1.65;
+}
+
+.recommendation-icon{
+    font-size:27px;
+    min-width:35px;
+}
+
+.recommendation-home{
+    background:#EEF9F2;
+    border:1px solid #CCE8D6;
+}
+
+.recommendation-doctor{
+    background:#FFF7E8;
+    border:1px solid #EFD8A4;
+}
+
+.recommendation-emergency{
+    background:#FFF0F0;
+    border:1px solid #EDC0C0;
+}
+
+.recommendation h3{
+    margin-bottom:5px;
+    font-size:16px;
+}
+
+/* =========================
+   HEADACHE CONNECTION
+========================= */
+
+.headache-analysis{
+    background:#F5F9FC;
+
+    border:1px solid #D9E5EB;
+
+    border-radius:13px;
+
+    padding:20px;
+
+    line-height:1.75;
+}
+
+/* =========================
+   REPORT TEXT
+========================= */
+
+.extracted-section{
+    display:none;
+}
+
+.extracted-text{
+    background:#F7F9FA;
+
+    border:1px solid #DCE5EB;
+
+    border-radius:10px;
+
+    padding:15px;
+
+    max-height:280px;
+
+    overflow-y:auto;
+
+    white-space:pre-wrap;
+
+    font-size:12px;
+
+    line-height:1.5;
+
+    color:#607687;
+}
+
+/* =========================
+   MEDICAL NOTICE
+========================= */
+
+.medical-notice{
+    background:#FFF8E8;
+
+    border:1px solid #EFD49B;
+
+    border-radius:13px;
+
+    padding:19px;
+
+    line-height:1.65;
+
+    color:#71551B;
+}
+
+.medical-notice strong{
+    display:block;
+    margin-bottom:7px;
+}
+
+/* =========================
+   URDU
+========================= */
+
+body.urdu{
+    direction:rtl;
+}
+
+body.urdu .header{
+    direction:rtl;
+}
+
+body.urdu .back-dashboard{
+    direction:rtl;
+}
+
+body.urdu .explanation-box,
+body.urdu .symptom-box,
+body.urdu .home-box,
+body.urdu .doctor-box{
+    border-left:none;
+    border-right:4px solid #79A9BB;
+}
+
+body.urdu .symptom-box{
+    border-right-color:#E0B35D;
+}
+
+body.urdu .home-box{
+    border-right-color:#70B48E;
+}
+
+body.urdu .doctor-box{
+    border-right-color:#6F91B5;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+    .header{
+        padding:0 14px;
+    }
+
+    .brand h2{
+        font-size:17px;
+    }
+
+    .brand p{
+        display:none;
+    }
+
+    .language-label{
+        display:none;
+    }
+
+    .container{
+        padding:0 12px 40px;
+        margin-top:20px;
+    }
+
+    .page-title h1{
+        font-size:27px;
+    }
+
+    .upload-card,
+    .section-card{
+        padding:18px;
+    }
+
+    .test-top{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .recommendation{
+        flex-direction:column;
+    }
+
+}
+
+
+/* ===== realistic blood report additions ===== */
+.sum-table{margin:0 0 16px;padding:14px;border-radius:16px;background:#f6f8fb;border:1px solid #e1e7ef}
+.sum-row{display:grid;grid-template-columns:1.4fr .8fr 1fr;gap:8px;align-items:center;padding:9px 0;border-top:1px solid #e1e7ef}
+.sum-row:first-of-type{border-top:none}
+.sum-name{font-weight:700;font-size:14px}
+.sum-val{font-weight:700;font-size:14px;text-align:center}
+.sum-status{text-align:right}
+.sum-range{font-weight:400;font-size:11px;color:#6b7a8c;margin-top:2px}
+.test-unit{font-size:12px;font-weight:400;color:#6b7a8c}
+.range-bar{position:relative;height:10px;border-radius:6px;background:#e6ebf1;margin:16px 0 4px}
+.range-zone{position:absolute;top:0;bottom:0;background:#bfe3cc;border-radius:6px}
+.range-marker{position:absolute;top:-4px;width:6px;height:18px;margin-left:-3px;border-radius:3px;background:#1f8a52}
+.range-marker.m-low,.range-marker.m-high{background:#c98a1d}
+.range-marker.m-significant{background:#c0392b}
+.range-labels{position:relative;height:16px;font-size:11px;color:#6b7a8c;margin-bottom:6px}
+.range-labels span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.dev-text{font-size:13px;font-weight:700;margin:8px 0 2px}
+.dev-low,.dev-high{color:#c98a1d}
+.dev-significant{color:#c0392b}
+.src-tag{font-size:11px;color:#6b7a8c;margin:4px 0 10px;line-height:1.4}
+.hnote-box{margin-top:10px;padding:12px;border-radius:12px;background:#eef4fb;border:1px solid #d3e1f1;font-size:14px;line-height:1.5}
+.notfound-box{margin-top:14px;padding:14px;border-radius:14px;background:#f3f6fa;border:1px dashed #b8c4d2;font-size:14px;line-height:1.5}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="logo">
+            NG
+        </div>
+
+        <div>
+
+            <h2>
+                NeuroGuardian AI
+            </h2>
+
+            <p id="headerSubtitle">
+                Neurology & Eye Screening Platform
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <span
+            class="language-label"
+            id="languageLabel">
+            Language
+        </span>
+
+        <select id="languageSelect">
+
+            <option value="en">
+                🇬🇧 English
+            </option>
+
+            <option value="hi">
+                🇮🇳 हिन्दी
+            </option>
+
+            <option value="mr">
+                🇮🇳 मराठी
+            </option>
+
+            <option value="ur">
+                اردو
+            </option>
+
+        </select>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="container">
+
+
+    <!-- BACK TO DASHBOARD -->
+
+    <div class="back-row">
+
+        <a
+            href="Dashboard.html"
+            class="back-dashboard"
+            id="backDashboard">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- PAGE TITLE -->
+
+    <div class="page-title">
+
+        <h1 id="pageTitle">
+            Blood Report Analysis
+        </h1>
+
+        <p id="pageSubtitle">
+
+            Upload your blood test reports and NeuroGuardian AI
+            will review the available laboratory values and explain
+            possible health associations in your selected language.
+
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         UPLOAD CARD
+    ====================================================== -->
+
+    <section class="upload-card">
+
+        <h2 id="uploadTitle">
+            Upload Blood Reports
+        </h2>
+
+        <p
+            class="upload-description"
+            id="uploadDescription">
+
+            You can upload one or more PDF blood reports.
+            The module focuses on laboratory information that may
+            be relevant when evaluating headache, neurological
+            symptoms, fatigue, dizziness and general health.
+
+        </p>
+
+
+        <label
+            class="upload-area"
+            for="pdfInput">
+
+            <div class="upload-icon">
+                🩸
+            </div>
+
+            <h3 id="chooseFile">
+                Choose PDF Blood Reports
+            </h3>
+
+            <p id="uploadHint">
+                Click here to select one or multiple PDF reports
+            </p>
+
+        </label>
+
+
+        <input
+            type="file"
+            id="pdfInput"
+            accept=".pdf,application/pdf"
+            multiple>
+
+
+        <!-- FILE LIST -->
+
+        <div
+            class="file-list"
+            id="fileList">
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="button-row">
+
+            <button
+                class="analyze-btn"
+                id="analyzeBtn"
+                onclick="analyzeReports()"
+                disabled>
+
+                🔍 Analyze Reports
+
+            </button>
+
+
+            <button
+                class="reset-btn"
+                id="resetBtn"
+                onclick="resetReports()">
+
+                ↻ Reset
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         LOADING
+    ====================================================== -->
+
+    <div
+        class="loading"
+        id="loading">
+
+        <div class="loading-icon">
+            🤖
+        </div>
+
+        <p id="loadingText">
+            NeuroGuardian AI is reading and analyzing your reports...
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         RESULT
+    ====================================================== -->
+
+    <section id="reportResult">
+
+
+        <!-- =================================================
+             OVERALL SUMMARY
+        ================================================== -->
+
+        <div class="section-card">
+
+            <h2
+                class="section-title"
+                id="summaryTitle">
+
+                🧠 AI Report Summary
+
+            </h2>
+
+
+            <div
+                id="overallStatus"
+                class="status status-yellow">
+            </div>
+
+
+            <div
+                class="summary-box"
+                id="overallExplanation">
+            </div>
+
+
+            <!-- SEVERITY -->
+
+            <div class="severity-wrapper">
+
+                <div class="severity-header">
+
+                    <strong id="severityTitle">
+                        Overall Report Severity
+                    </strong>
+
+                    <span
+                        class="severity-number"
+                        id="severityNumber">
+
+                        0/100
+
+                    </span>
+
+                </div>
+
+
+                <div class="severity-bar">
+
+                    <div
+                        class="severity-fill"
+                        id="severityFill">
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="severity-label"
+                    id="severityLabel">
+
+                    No significant abnormality detected.
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             TEST ANALYSIS
+        ================================================== -->
+
+        <div class="section-card">
+
+            <h2
+                class="section-title"
+                id="testsTitle">
+
+                🧪 Detailed Blood Test Analysis
+
+            </h2>
+
+            <div id="testCards">
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             HEADACHE CONNECTION
+        ================================================== -->
+
+        <div class="section-card">
+
+            <h2
+                class="section-title"
+                id="headacheTitle">
+
+                🤕 Headache & Blood Report Connection
+
+            </h2>
+
+
+            <div
+                class="headache-analysis"
+                id="headacheExplanation">
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             RECOMMENDATIONS
+        ================================================== -->
+
+        <div class="section-card">
+
+            <h2
+                class="section-title"
+                id="recommendationTitle">
+
+                🏠 What Should You Do Next?
+
+            </h2>
+
+
+            <!-- HOME -->
+
+            <div
+                class="recommendation recommendation-home">
+
+                <div class="recommendation-icon">
+                    🏠
+                </div>
+
+                <div>
+
+                    <h3 id="homeTitle">
+                        Home Support
+                    </h3>
+
+                    <p id="homeRecommendation">
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- DOCTOR -->
+
+            <div
+                class="recommendation recommendation-doctor">
+
+                <div class="recommendation-icon">
+                    👨‍⚕️
+                </div>
+
+                <div>
+
+                    <h3 id="doctorTitle">
+                        Doctor Consultation
+                    </h3>
+
+                    <p id="doctorRecommendation">
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- EMERGENCY -->
+
+            <div
+                class="recommendation recommendation-emergency">
+
+                <div class="recommendation-icon">
+                    🚨
+                </div>
+
+                <div>
+
+                    <h3 id="emergencyTitle">
+                        Emergency Warning
+                    </h3>
+
+                    <p id="emergencyRecommendation">
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             EXTRACTED TEXT
+        ================================================== -->
+
+        <div
+            class="section-card extracted-section"
+            id="extractedSection">
+
+            <h2
+                class="section-title"
+                id="extractedTitle">
+
+                📄 Extracted Report Text
+
+            </h2>
+
+
+            <div
+                class="extracted-text"
+                id="extractedText">
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             MEDICAL NOTICE
+        ================================================== -->
+
+        <div class="medical-notice">
+
+            <strong id="disclaimerTitle">
+
+                ⚠️ Important Medical Notice
+
+            </strong>
+
+            <span id="disclaimerText">
+
+                This module provides educational screening support only.
+                It does not diagnose brain tumor, stroke, migraine,
+                neurological disease or any other medical condition.
+                Blood tests must be interpreted together with symptoms,
+                medical history, physical examination and appropriate
+                investigations by a qualified healthcare professional.
+
+            </span>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+/* =========================================================
+   PDF.JS
+========================================================= */
+
+const PDFJS_WORKERS = [
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
+    "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js"
+];
+
+if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKERS[0];
+}
+
+function loadScriptOnce(src){
+    return new Promise(function(resolve,reject){
+        const el = document.createElement("script");
+        el.src = src;
+        el.onload = resolve;
+        el.onerror = function(){ reject(new Error("load failed")); };
+        document.head.appendChild(el);
+    });
+}
+
+/* makes sure the PDF reader library is available (tries a backup CDN) */
+async function ensurePdfJs(){
+    if(window.pdfjsLib){
+        if(!pdfjsLib.GlobalWorkerOptions.workerSrc){
+            pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKERS[0];
+        }
+        return true;
+    }
+    try{
+        await loadScriptOnce(
+            "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"
+        );
+        pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKERS[1];
+        return !!window.pdfjsLib;
+    }catch(e){
+        return false;
+    }
+}
+
+/* shows any hidden error on screen (useful on phones) */
+function showPageMessage(msg){
+    let box = document.getElementById("ngErrorBox");
+    if(!box){
+        box = document.createElement("div");
+        box.id = "ngErrorBox";
+        box.style.cssText =
+            "position:fixed;left:10px;right:10px;top:10px;z-index:100000;" +
+            "background:#fde8e8;color:#8a1f1f;border:1px solid #e3a3a3;" +
+            "border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.4;" +
+            "box-shadow:0 6px 18px rgba(0,0,0,.2)";
+        box.onclick = function(){ box.remove(); };
+        document.body.appendChild(box);
+    }
+    box.textContent = msg + "  (tap to close)";
+}
+
+window.addEventListener("error", function(e){
+    showPageMessage("Page error: " + (e.message || "unknown"));
+});
+
+
+/* =========================================================
+   LANGUAGE TRANSLATIONS
+========================================================= */
+
+const translations = {
+
+    en: {
+
+        headerSubtitle:
+        "Neurology & Eye Screening Platform",
+
+        language:
+        "Language",
+
+        back:
+        "← Back to Dashboard",
+
+        pageTitle:
+        "Blood Report Analysis",
+
+        pageSubtitle:
+        "Upload your blood test reports and NeuroGuardian AI will review the available laboratory values and explain possible health associations in your selected language.",
+
+        uploadTitle:
+        "Upload Blood Reports",
+
+        uploadDescription:
+        "You can upload one or more PDF blood reports. The module focuses on laboratory information that may be relevant when evaluating headache, neurological symptoms, fatigue, dizziness and general health.",
+
+        chooseFile:
+        "Choose PDF Blood Reports",
+
+        uploadHint:
+        "Click here to select one or multiple PDF reports",
+
+        analyze:
+        "🔍 Analyze Reports",
+
+        reset:
+        "↻ Reset",
+
+        loading:
+        "NeuroGuardian AI is reading and analyzing your reports...",
+
+        summary:
+        "🧠 AI Report Summary",
+
+        severity:
+        "Overall Report Severity",
+
+        tests:
+        "🧪 Detailed Blood Test Analysis",
+
+        headache:
+        "🤕 Headache & Blood Report Connection",
+
+        recommendation:
+        "🏠 What Should You Do Next?",
+
+        home:
+        "Home Support",
+
+        doctor:
+        "Doctor Consultation",
+
+        emergency:
+        "Emergency Warning",
+
+        extracted:
+        "📄 Extracted Report Text",
+
+        normalStatus:
+        "🟢 No Major Abnormality Detected",
+
+        attentionStatus:
+        "🟡 Some Results Need Attention",
+
+        significantStatus:
+        "🔴 Significant Abnormal Result Detected",
+
+        normalSeverity:
+        "The available values do not show a major abnormality in this screening.",
+
+        moderateSeverity:
+        "Some values are outside or close to the stated reference range. These findings should be reviewed in context.",
+
+        highSeverity:
+        "One or more findings are significantly abnormal. A healthcare professional should review the report, especially if symptoms are present.",
+
+        normal:
+        "Normal",
+
+        low:
+        "Low",
+
+        high:
+        "High",
+
+        significant:
+        "Significant",
+
+        possibleSymptoms:
+        "Possible symptoms / associations",
+
+        explanation:
+        "Explanation",
+
+        homeAdvice:
+        "Home support should focus on adequate hydration, regular balanced meals, adequate sleep and avoiding known headache triggers. Do not start high-dose supplements based only on this report.",
+
+        doctorAdvice:
+        "Discuss abnormal or persistent findings with a qualified healthcare professional, particularly if headaches, dizziness, weakness, unusual fatigue or visual symptoms continue.",
+
+        emergencyAdvice:
+        "Seek urgent medical care for a sudden extremely severe headache, new weakness or numbness, facial drooping, difficulty speaking, seizure, fainting, major vision loss, severe confusion or rapidly worsening symptoms.",
+
+        headacheConnection:
+        "Blood tests cannot diagnose migraine, brain tumor or stroke. They can sometimes identify general health factors that may contribute to symptoms such as fatigue, weakness, dizziness or headache. Headache diagnosis requires symptom history and clinical assessment.",
+
+        noData:
+        "No supported laboratory values were detected. Please make sure the PDF contains readable blood-test results.",
+
+        extracted:
+        "The text below was extracted from the uploaded PDF files for review."
+
+    },
+
+
+    hi: {
+
+        headerSubtitle:
+        "न्यूरोलॉजी और आई स्क्रीनिंग प्लेटफ़ॉर्म",
+
+        language:
+        "भाषा",
+
+        back:
+        "← डैशबोर्ड पर वापस जाएँ",
+
+        pageTitle:
+        "ब्लड रिपोर्ट विश्लेषण",
+
+        pageSubtitle:
+        "अपनी ब्लड टेस्ट रिपोर्ट अपलोड करें। NeuroGuardian AI उपलब्ध लैब वैल्यू को देखकर संभावित स्वास्थ्य संबंधी जानकारी आपकी चुनी हुई भाषा में समझाएगा।",
+
+        uploadTitle:
+        "ब्लड रिपोर्ट अपलोड करें",
+
+        uploadDescription:
+        "आप एक या कई PDF ब्लड रिपोर्ट अपलोड कर सकते हैं। यह मॉड्यूल सिरदर्द, न्यूरोलॉजिकल लक्षण, थकान, चक्कर और सामान्य स्वास्थ्य से संबंधित लैब जानकारी को स्क्रीन करता है।",
+
+        chooseFile:
+        "PDF ब्लड रिपोर्ट चुनें",
+
+        uploadHint:
+        "एक या कई PDF रिपोर्ट चुनने के लिए क्लिक करें",
+
+        analyze:
+        "🔍 रिपोर्ट का विश्लेषण करें",
+
+        reset:
+        "↻ रीसेट",
+
+        loading:
+        "NeuroGuardian AI आपकी रिपोर्ट पढ़ और विश्लेषण कर रहा है...",
+
+        summary:
+        "🧠 AI रिपोर्ट सारांश",
+
+        severity:
+        "कुल रिपोर्ट गंभीरता",
+
+        tests:
+        "🧪 विस्तृत ब्लड टेस्ट विश्लेषण",
+
+        headache:
+        "🤕 सिरदर्द और ब्लड रिपोर्ट का संबंध",
+
+        recommendation:
+        "🏠 अब आपको क्या करना चाहिए?",
+
+        home:
+        "घर पर सहायता",
+
+        doctor:
+        "डॉक्टर से सलाह",
+
+        emergency:
+        "आपातकालीन चेतावनी",
+
+        extracted:
+        "📄 रिपोर्ट से निकाला गया टेक्स्ट",
+
+        normalStatus:
+        "🟢 कोई बड़ी असामान्यता नहीं मिली",
+
+        attentionStatus:
+        "🟡 कुछ परिणामों पर ध्यान देने की आवश्यकता है",
+
+        significantStatus:
+        "🔴 महत्वपूर्ण असामान्य परिणाम मिला",
+
+        normalSeverity:
+        "इस स्क्रीनिंग में उपलब्ध वैल्यू में कोई बड़ी असामान्यता नहीं दिखी।",
+
+        moderateSeverity:
+        "कुछ वैल्यू सामान्य सीमा से बाहर या उसके करीब हैं। इन परिणामों को व्यक्ति के लक्षणों और मेडिकल हिस्ट्री के साथ देखा जाना चाहिए।",
+
+        highSeverity:
+        "एक या अधिक परिणाम काफी असामान्य हैं। विशेषकर लक्षण होने पर डॉक्टर द्वारा रिपोर्ट की समीक्षा करवाना उचित है।",
+
+        normal:
+        "सामान्य",
+
+        low:
+        "कम",
+
+        high:
+        "अधिक",
+
+        significant:
+        "महत्वपूर्ण",
+
+        possibleSymptoms:
+        "संभावित लक्षण / संबंध",
+
+        explanation:
+        "व्याख्या",
+
+        homeAdvice:
+        "पर्याप्त पानी पिएँ, नियमित संतुलित भोजन लें, पर्याप्त नींद लें और सिरदर्द के ज्ञात ट्रिगर से बचें। केवल इस रिपोर्ट के आधार पर हाई-डोज सप्लीमेंट शुरू न करें।",
+
+        doctorAdvice:
+        "असामान्य या लगातार बने रहने वाले परिणामों के लिए योग्य डॉक्टर से सलाह लें, खासकर यदि सिरदर्द, चक्कर, कमजोरी, असामान्य थकान या दृष्टि संबंधी समस्या बनी रहे।",
+
+        emergencyAdvice:
+        "अचानक बहुत तेज सिरदर्द, नई कमजोरी या सुन्नपन, चेहरे का टेढ़ा होना, बोलने में परेशानी, दौरा, बेहोशी, गंभीर दृष्टि हानि, भ्रम या तेजी से बिगड़ते लक्षण होने पर तुरंत चिकित्सा सहायता लें।",
+
+        headacheConnection:
+        "ब्लड टेस्ट से माइग्रेन, ब्रेन ट्यूमर या स्ट्रोक का निदान नहीं किया जा सकता। ब्लड टेस्ट कभी-कभी ऐसे सामान्य स्वास्थ्य कारण दिखा सकते हैं जो थकान, कमजोरी, चक्कर या सिरदर्द से जुड़े हो सकते हैं। सिरदर्द का मूल्यांकन लक्षणों और डॉक्टर की जांच से किया जाता है।",
+
+        noData:
+        "कोई समर्थित लैब वैल्यू नहीं मिली। सुनिश्चित करें कि PDF में पढ़ने योग्य ब्लड टेस्ट परिणाम मौजूद हैं।",
+
+        extracted:
+        "नीचे अपलोड की गई PDF से निकाला गया टेक्स्ट दिया गया है।"
+
+    },
+
+
+    mr: {
+
+        headerSubtitle:
+        "न्यूरोलॉजी आणि आय स्क्रीनिंग प्लॅटफॉर्म",
+
+        language:
+        "भाषा",
+
+        back:
+        "← डॅशबोर्डवर परत जा",
+
+        pageTitle:
+        "ब्लड रिपोर्ट विश्लेषण",
+
+        pageSubtitle:
+        "तुमचा ब्लड टेस्ट रिपोर्ट अपलोड करा. NeuroGuardian AI उपलब्ध लॅब मूल्यांचे विश्लेषण करून संभाव्य आरोग्यविषयक माहिती निवडलेल्या भाषेत समजावून सांगेल.",
+
+        uploadTitle:
+        "ब्लड रिपोर्ट अपलोड करा",
+
+        uploadDescription:
+        "तुम्ही एक किंवा अनेक PDF ब्लड रिपोर्ट अपलोड करू शकता. हे मॉड्यूल डोकेदुखी, न्यूरोलॉजिकल लक्षणे, थकवा, चक्कर आणि सामान्य आरोग्याशी संबंधित लॅब माहिती तपासते.",
+
+        chooseFile:
+        "PDF ब्लड रिपोर्ट निवडा",
+
+        uploadHint:
+        "एक किंवा अनेक PDF रिपोर्ट निवडण्यासाठी क्लिक करा",
+
+        analyze:
+        "🔍 रिपोर्टचे विश्लेषण करा",
+
+        reset:
+        "↻ रीसेट",
+
+        loading:
+        "NeuroGuardian AI तुमचा रिपोर्ट वाचून विश्लेषण करत आहे...",
+
+        summary:
+        "🧠 AI रिपोर्ट सारांश",
+
+        severity:
+        "एकूण रिपोर्टची तीव्रता",
+
+        tests:
+        "🧪 सविस्तर ब्लड टेस्ट विश्लेषण",
+
+        headache:
+        "🤕 डोकेदुखी आणि ब्लड रिपोर्टचा संबंध",
+
+        recommendation:
+        "🏠 आता काय करावे?",
+
+        home:
+        "घरी करता येणारी मदत",
+
+        doctor:
+        "डॉक्टरांचा सल्ला",
+
+        emergency:
+        "आपत्कालीन सूचना",
+
+        extracted:
+        "📄 रिपोर्टमधून मिळालेला मजकूर",
+
+        normalStatus:
+        "🟢 मोठी असामान्यता आढळली नाही",
+
+        attentionStatus:
+        "🟡 काही परिणामांकडे लक्ष देणे आवश्यक आहे",
+
+        significantStatus:
+        "🔴 महत्त्वाचा असामान्य परिणाम आढळला",
+
+        normalSeverity:
+        "या स्क्रीनिंगमध्ये उपलब्ध मूल्यांमध्ये मोठी असामान्यता दिसून आली नाही.",
+
+        moderateSeverity:
+        "काही मूल्ये सामान्य मर्यादेपेक्षा बाहेर किंवा तिच्या जवळ आहेत. ही माहिती लक्षणे आणि वैद्यकीय इतिहासासोबत पाहणे आवश्यक आहे.",
+
+        highSeverity:
+        "एक किंवा अधिक परिणाम लक्षणीयरीत्या असामान्य आहेत. विशेषतः लक्षणे असल्यास डॉक्टरांनी रिपोर्ट तपासणे योग्य आहे.",
+
+        normal:
+        "सामान्य",
+
+        low:
+        "कमी",
+
+        high:
+        "जास्त",
+
+        significant:
+        "महत्त्वपूर्ण",
+
+        possibleSymptoms:
+        "संभाव्य लक्षणे / संबंध",
+
+        explanation:
+        "स्पष्टीकरण",
+
+        homeAdvice:
+        "पुरेसे पाणी प्या, संतुलित आहार घ्या, पुरेशी झोप घ्या आणि डोकेदुखीचे ज्ञात ट्रिगर टाळा. फक्त या रिपोर्टच्या आधारावर जास्त डोसचे सप्लिमेंट सुरू करू नका.",
+
+        doctorAdvice:
+        "असामान्य किंवा सतत राहणाऱ्या परिणामांसाठी डॉक्टरांचा सल्ला घ्या, विशेषतः डोकेदुखी, चक्कर, अशक्तपणा, असामान्य थकवा किंवा दृष्टीची समस्या कायम राहिल्यास.",
+
+        emergencyAdvice:
+        "अचानक अत्यंत तीव्र डोकेदुखी, नवीन अशक्तपणा किंवा बधिरपणा, चेहरा वाकणे, बोलण्यास त्रास, झटका, बेशुद्ध होणे, मोठी दृष्टी कमी होणे, तीव्र गोंधळ किंवा लक्षणे वेगाने वाढत असल्यास तातडीने वैद्यकीय मदत घ्या.",
+
+        headacheConnection:
+        "ब्लड टेस्टमधून मायग्रेन, ब्रेन ट्यूमर किंवा स्ट्रोकचे निदान करता येत नाही. काही ब्लड टेस्ट सामान्य आरोग्याशी संबंधित घटक दाखवू शकतात जे थकवा, अशक्तपणा, चक्कर किंवा डोकेदुखीशी संबंधित असू शकतात. डोकेदुखीचे मूल्यांकन लक्षणे आणि डॉक्टरांच्या तपासणीने केले जाते.",
+
+        noData:
+        "समर्थित लॅब मूल्ये आढळली नाहीत. PDF मध्ये वाचता येण्यासारखे ब्लड टेस्ट परिणाम आहेत याची खात्री करा.",
+
+        extracted:
+        "खाली अपलोड केलेल्या PDF मधून मिळालेला मजकूर दिला आहे."
+
+    },
+
+
+    ur: {
+
+        headerSubtitle:
+        "نیورولوجی اور آئی اسکریننگ پلیٹ فارم",
+
+        language:
+        "زبان",
+
+        back:
+        "← ڈیش بورڈ پر واپس جائیں",
+
+        pageTitle:
+        "بلڈ رپورٹ کا تجزیہ",
+
+        pageSubtitle:
+        "اپنی بلڈ ٹیسٹ رپورٹس اپ لوڈ کریں۔ NeuroGuardian AI دستیاب لیبارٹری نتائج کا جائزہ لے کر ممکنہ صحت سے متعلق معلومات آپ کی منتخب زبان میں سمجھائے گا۔",
+
+        uploadTitle:
+        "بلڈ رپورٹس اپ لوڈ کریں",
+
+        uploadDescription:
+        "آپ ایک یا کئی PDF بلڈ رپورٹس اپ لوڈ کر سکتے ہیں۔ یہ ماڈیول سر درد، نیورولوجیکل علامات، تھکن، چکر اور عمومی صحت سے متعلق لیبارٹری معلومات کا جائزہ لیتا ہے۔",
+
+        chooseFile:
+        "PDF بلڈ رپورٹس منتخب کریں",
+
+        uploadHint:
+        "ایک یا کئی PDF رپورٹس منتخب کرنے کے لیے کلک کریں",
+
+        analyze:
+        "🔍 رپورٹس کا تجزیہ کریں",
+
+        reset:
+        "↻ ری سیٹ",
+
+        loading:
+        "NeuroGuardian AI آپ کی رپورٹس پڑھ کر تجزیہ کر رہا ہے...",
+
+        summary:
+        "🧠 AI رپورٹ کا خلاصہ",
+
+        severity:
+        "رپورٹ کی مجموعی شدت",
+
+        tests:
+        "🧪 بلڈ ٹیسٹ کا تفصیلی تجزیہ",
+
+        headache:
+        "🤕 سر درد اور بلڈ رپورٹ کا تعلق",
+
+        recommendation:
+        "🏠 اب کیا کرنا چاہیے؟",
+
+        home:
+        "گھر پر مدد",
+
+        doctor:
+        "ڈاکٹر سے مشورہ",
+
+        emergency:
+        "ہنگامی انتباہ",
+
+        extracted:
+        "📄 رپورٹ سے حاصل شدہ متن",
+
+        normalStatus:
+        "🟢 کوئی بڑی غیر معمولی چیز نہیں ملی",
+
+        attentionStatus:
+        "🟡 کچھ نتائج پر توجہ ضروری ہے",
+
+        significantStatus:
+        "🔴 اہم غیر معمولی نتیجہ ملا",
+
+        normalSeverity:
+        "اس اسکریننگ میں دستیاب نتائج میں کوئی بڑی غیر معمولی چیز نظر نہیں آئی۔",
+
+        moderateSeverity:
+        "کچھ نتائج معمول کی حد سے باہر یا اس کے قریب ہیں۔ انہیں علامات اور طبی تاریخ کے ساتھ دیکھنا ضروری ہے۔",
+
+        highSeverity:
+        "ایک یا زیادہ نتائج نمایاں طور پر غیر معمولی ہیں۔ خاص طور پر علامات کی صورت میں ڈاکٹر سے رپورٹ کا جائزہ کروائیں۔",
+
+        normal:
+        "نارمل",
+
+        low:
+        "کم",
+
+        high:
+        "زیادہ",
+
+        significant:
+        "اہم",
+
+        possibleSymptoms:
+        "ممکنہ علامات / تعلق",
+
+        explanation:
+        "وضاحت",
+
+        homeAdvice:
+        "مناسب پانی پئیں، متوازن غذا لیں، مناسب نیند لیں اور سر درد کے معلوم محرکات سے بچیں۔ صرف اس رپورٹ کی بنیاد پر زیادہ مقدار میں سپلیمنٹس شروع نہ کریں۔",
+
+        doctorAdvice:
+        "غیر معمولی یا مسلسل نتائج کے لیے ڈاکٹر سے مشورہ کریں، خاص طور پر اگر سر درد، چکر، کمزوری، غیر معمولی تھکن یا نظر کی علامات جاری رہیں۔",
+
+        emergencyAdvice:
+        "اچانک انتہائی شدید سر درد، نئی کمزوری یا سن ہونا، چہرہ ٹیڑھا ہونا، بولنے میں مشکل، دورہ، بے ہوشی، نظر میں شدید کمی، شدید الجھن یا تیزی سے بگڑتی علامات کی صورت میں فوری طبی مدد حاصل کریں۔",
+
+        headacheConnection:
+        "بلڈ ٹیسٹ سے مائیگرین، برین ٹیومر یا اسٹروک کی تشخیص نہیں کی جا سکتی۔ بلڈ ٹیسٹ بعض اوقات ایسی عمومی صحت کی معلومات دے سکتے ہیں جو تھکن، کمزوری، چکر یا سر درد سے متعلق ہو سکتی ہیں۔ سر درد کی تشخیص علامات اور ڈاکٹر کے معائنے سے ہوتی ہے۔",
+
+        noData:
+        "کوئی معاون لیبارٹری نتیجہ نہیں ملا۔ یقینی بنائیں کہ PDF میں پڑھنے کے قابل بلڈ ٹیسٹ نتائج موجود ہیں۔",
+
+        extracted:
+        "ذیل میں اپ لوڈ کی گئی PDF سے حاصل شدہ متن موجود ہے۔"
+
+    }
+
+};
+
+
+/* =========================================================
+   BLOOD TEST DATABASE
+========================================================= */
+
+const testDatabase = {
+
+    hemoglobin:{
+        names:["hemoglobin","hb"],
+        unit:"g/dL",
+        explanation:{
+            en:"Hemoglobin carries oxygen through the body. Abnormal values can sometimes be associated with fatigue, weakness, dizziness or reduced exercise tolerance.",
+            hi:"हीमोग्लोबिन शरीर में ऑक्सीजन पहुँचाता है। असामान्य स्तर कभी-कभी थकान, कमजोरी, चक्कर या कम सहनशक्ति से जुड़ा हो सकता है।",
+            mr:"हिमोग्लोबिन शरीरात ऑक्सिजन पोहोचवते. असामान्य पातळी थकवा, अशक्तपणा, चक्कर किंवा कमी सहनशक्तीशी संबंधित असू शकते.",
+            ur:"ہیموگلوبن جسم میں آکسیجن پہنچاتا ہے۔ غیر معمولی سطح تھکن، کمزوری، چکر یا کم برداشت سے منسلک ہو سکتی ہے۔"
+        },
+        symptoms:{
+            en:"Possible associations: fatigue, weakness, dizziness and reduced energy.",
+            hi:"संभावित संबंध: थकान, कमजोरी, चक्कर और ऊर्जा की कमी।",
+            mr:"संभाव्य संबंध: थकवा, अशक्तपणा, चक्कर आणि ऊर्जा कमी होणे.",
+            ur:"ممکنہ تعلق: تھکن، کمزوری، چکر اور توانائی میں کمی۔"
+        }
+    },
+
+    wbc:{
+        names:["wbc","white blood cell","white blood cells","leukocyte"],
+        unit:"10^3/µL",
+        explanation:{
+            en:"White blood cells are involved in immune response. Abnormal values may occur with infections, inflammation, medications or other conditions.",
+            hi:"WBC शरीर की प्रतिरक्षा प्रणाली का हिस्सा हैं। असामान्य स्तर संक्रमण, सूजन, दवाओं या अन्य स्थितियों में देखा जा सकता है।",
+            mr:"WBC शरीराच्या रोगप्रतिकारक यंत्रणेचा भाग आहेत. असामान्य मूल्ये संसर्ग, सूज, औषधे किंवा इतर स्थितींमध्ये दिसू शकतात.",
+            ur:"WBC جسم کے مدافعتی نظام کا حصہ ہیں۔ غیر معمولی نتائج انفیکشن، سوزش، ادویات یا دیگر حالات میں ہو سکتے ہیں۔"
+        },
+        symptoms:{
+            en:"Possible associations depend on the cause and may include fever, fatigue or feeling unwell.",
+            hi:"संभावित लक्षण कारण पर निर्भर करते हैं और इनमें बुखार, थकान या अस्वस्थ महसूस होना शामिल हो सकता है।",
+            mr:"संभाव्य लक्षण कारणावर अवलंबून असतात आणि ताप, थकवा किंवा अस्वस्थ वाटणे यांचा समावेश होऊ शकतो.",
+            ur:"ممکنہ علامات وجہ پر منحصر ہوتی ہیں اور ان میں بخار، تھکن یا طبیعت خراب ہونا شامل ہو سکتا ہے۔"
+        }
+    },
+
+    platelets:{
+        names:["platelet","platelets","platelet count"],
+        unit:"10^3/µL",
+        explanation:{
+            en:"Platelets help blood clot. Abnormal platelet counts can increase bleeding or clotting concerns depending on the direction and severity.",
+            hi:"प्लेटलेट्स रक्त के थक्के बनने में मदद करते हैं। असामान्य प्लेटलेट स्तर के कारण स्थिति के अनुसार रक्तस्राव या clotting से संबंधित चिंता हो सकती है।",
+            mr:"प्लेटलेट्स रक्त गोठण्यास मदत करतात. असामान्य पातळीमुळे परिस्थितीनुसार रक्तस्राव किंवा clotting संबंधी चिंता होऊ शकते.",
+            ur:"پلیٹ لیٹس خون جمنے میں مدد کرتے ہیں۔ غیر معمولی مقدار کی صورت میں صورتحال کے مطابق خون بہنے یا clotting کا مسئلہ ہو سکتا ہے۔"
+        },
+        symptoms:{
+            en:"Possible associations include unusual bruising or bleeding when platelet levels are substantially abnormal.",
+            hi:"बहुत असामान्य स्तर होने पर आसानी से चोट लगना या असामान्य रक्तस्राव हो सकता है।",
+            mr:"खूप असामान्य पातळी असल्यास सहज जखम होणे किंवा असामान्य रक्तस्राव होऊ शकतो.",
+            ur:"بہت غیر معمولی سطح کی صورت میں آسانی سے نیل پڑنا یا غیر معمولی خون بہنا ممکن ہے۔"
+        }
+    },
+
+    ferritin:{
+        names:["ferritin"],
+        unit:"ng/mL",
+        explanation:{
+            en:"Ferritin reflects stored iron. Low ferritin can be associated with depleted iron stores and may occur with fatigue or weakness.",
+            hi:"फेरिटिन शरीर में जमा आयरन का संकेत देता है। कम फेरिटिन आयरन स्टोर कम होने और थकान या कमजोरी से जुड़ा हो सकता है।",
+            mr:"फेरिटिन शरीरातील साठवलेल्या आयर्नचे संकेत देते. कमी फेरिटिन आयर्न स्टोअर कमी होणे, थकवा किंवा अशक्तपणाशी संबंधित असू शकते.",
+            ur:"فیریٹین جسم میں ذخیرہ شدہ آئرن کی عکاسی کرتا ہے۔ کم فیریٹین آئرن کی کمی اور تھکن یا کمزوری سے متعلق ہو سکتا ہے۔"
+        },
+        symptoms:{
+            en:"Possible associations: fatigue, weakness, reduced concentration or reduced exercise tolerance.",
+            hi:"संभावित संबंध: थकान, कमजोरी, ध्यान लगाने में कमी या व्यायाम सहनशक्ति में कमी।",
+            mr:"संभाव्य संबंध: थकवा, अशक्तपणा, एकाग्रता कमी होणे किंवा व्यायामाची सहनशक्ती कमी होणे.",
+            ur:"ممکنہ تعلق: تھکن، کمزوری، توجہ میں کمی یا ورزش برداشت کرنے کی صلاحیت میں کمی۔"
+        }
+    },
+
+    b12:{
+        names:["vitamin b12","b12","cobalamin"],
+        unit:"pg/mL",
+        explanation:{
+            en:"Vitamin B12 supports blood formation and nervous-system function. Low levels may be associated with fatigue, weakness, numbness or tingling.",
+            hi:"विटामिन B12 रक्त निर्माण और नर्वस सिस्टम के लिए महत्वपूर्ण है। कम स्तर थकान, कमजोरी, सुन्नपन या झनझनाहट से जुड़ सकता है।",
+            mr:"व्हिटॅमिन B12 रक्तनिर्मिती आणि मज्जासंस्थेसाठी महत्त्वाचे आहे. कमी पातळी थकवा, अशक्तपणा, बधिरपणा किंवा मुंग्या येण्याशी संबंधित असू शकते.",
+            ur:"وٹامن B12 خون کی تشکیل اور اعصابی نظام کے لیے اہم ہے۔ کم سطح تھکن، کمزوری، سن ہونا یا جھنجھناہٹ سے متعلق ہو سکتی ہے۔"
+        },
+        symptoms:{
+            en:"Possible associations: fatigue, weakness, numbness or tingling.",
+            hi:"संभावित संबंध: थकान, कमजोरी, सुन्नपन या झनझनाहट।",
+            mr:"संभाव्य संबंध: थकवा, अशक्तपणा, बधिरपणा किंवा मुंग्या येणे.",
+            ur:"ممکنہ تعلق: تھکن، کمزوری، سن ہونا یا جھنجھناہٹ۔"
+        }
+    },
+
+    vitaminD:{
+        names:["vitamin d","25-oh vitamin d","25 hydroxy vitamin d"],
+        unit:"ng/mL",
+        explanation:{
+            en:"Vitamin D is important for bone and muscle health. Low levels may be associated with muscle weakness or general fatigue, although symptoms are not specific.",
+            hi:"विटामिन D हड्डियों और मांसपेशियों के लिए महत्वपूर्ण है। कम स्तर मांसपेशियों की कमजोरी या थकान से जुड़ा हो सकता है, लेकिन ये लक्षण विशेष नहीं हैं।",
+            mr:"व्हिटॅमिन D हाडे आणि स्नायूंसाठी महत्त्वाचे आहे. कमी पातळी स्नायूंचा अशक्तपणा किंवा थकव्याशी संबंधित असू शकते.",
+            ur:"وٹامن D ہڈیوں اور پٹھوں کے لیے اہم ہے۔ کم سطح پٹھوں کی کمزوری یا عمومی تھکن سے منسلک ہو سکتی ہے۔"
+        },
+        symptoms:{
+            en:"Possible associations: fatigue, muscle weakness or general aches.",
+            hi:"संभावित संबंध: थकान, मांसपेशियों की कमजोरी या सामान्य दर्द।",
+            mr:"संभाव्य संबंध: थकवा, स्नायूंचा अशक्तपणा किंवा शरीरदुखी.",
+            ur:"ممکنہ تعلق: تھکن، پٹھوں کی کمزوری یا جسم میں درد۔"
+        }
+    },
+
+    tsh:{
+        names:["tsh","thyroid stimulating hormone"],
+        unit:"mIU/L",
+        explanation:{
+            en:"TSH is used as part of thyroid assessment. Abnormal values can be associated with symptoms such as fatigue, changes in weight, heart-rate changes or temperature sensitivity.",
+            hi:"TSH थायरॉयड की जाँच का एक हिस्सा है। असामान्य स्तर थकान, वजन में बदलाव, हृदय गति में बदलाव या तापमान संवेदनशीलता से जुड़ सकता है।",
+            mr:"TSH हा थायरॉईड तपासणीचा एक भाग आहे. असामान्य मूल्ये थकवा, वजनातील बदल, हृदयगतीतील बदल किंवा तापमान संवेदनशीलतेशी संबंधित असू शकतात.",
+            ur:"TSH تھائیرائڈ کی جانچ کا حصہ ہے۔ غیر معمولی نتائج تھکن، وزن میں تبدیلی، دل کی دھڑکن میں تبدیلی یا درجہ حرارت کی حساسیت سے متعلق ہو سکتے ہیں۔"
+        },
+        symptoms:{
+            en:"Possible associations: fatigue, weight change, palpitations or temperature sensitivity.",
+            hi:"संभावित संबंध: थकान, वजन में बदलाव, धड़कन या तापमान के प्रति संवेदनशीलता।",
+            mr:"संभाव्य संबंध: थकवा, वजन बदलणे, धडधड किंवा तापमानाबाबत संवेदनशीलता.",
+            ur:"ممکنہ تعلق: تھکن، وزن میں تبدیلی، دل کی دھڑکن یا درجہ حرارت کی حساسیت۔"
+        }
+    },
+
+    glucose:{
+        names:["fasting glucose","fasting blood glucose","glucose"],
+        unit:"mg/dL",
+        explanation:{
+            en:"Glucose is the body's main blood sugar. Abnormal levels may require clinical interpretation, especially when persistent.",
+            hi:"ग्लूकोज़ शरीर की मुख्य रक्त शर्करा है। लगातार असामान्य स्तर होने पर डॉक्टर की जाँच आवश्यक हो सकती है।",
+            mr:"ग्लुकोज ही शरीरातील मुख्य रक्तातील साखर आहे. सतत असामान्य पातळी असल्यास डॉक्टरांचा सल्ला आवश्यक असू शकतो.",
+            ur:"گلوکوز جسم کی بنیادی خون کی شکر ہے۔ مسلسل غیر معمولی سطح کی صورت میں طبی جائزہ ضروری ہو سکتا ہے۔"
+        },
+        symptoms:{
+            en:"Possible associations vary and may include increased thirst, frequent urination, weakness or dizziness depending on the level and cause.",
+            hi:"संभावित लक्षण स्तर और कारण पर निर्भर करते हैं, जैसे अधिक प्यास, बार-बार पेशाब, कमजोरी या चक्कर।",
+            mr:"संभाव्य लक्षण पातळी आणि कारणावर अवलंबून असतात, जसे जास्त तहान, वारंवार लघवी, अशक्तपणा किंवा चक्कर.",
+            ur:"ممکنہ علامات سطح اور وجہ پر منحصر ہوتی ہیں، جیسے زیادہ پیاس، بار بار پیشاب، کمزوری یا چکر۔"
+        }
+    },
+
+    crp:{
+        names:["crp","c-reactive protein"],
+        unit:"mg/L",
+        explanation:{
+            en:"CRP is a marker of inflammation. An elevated value can occur with infection or inflammation but does not identify the cause by itself.",
+            hi:"CRP शरीर में सूजन का एक संकेतक है। बढ़ा हुआ CRP संक्रमण या सूजन में देखा जा सकता है, लेकिन अकेले इससे कारण का पता नहीं चलता।",
+            mr:"CRP हा शरीरातील दाहाचा निर्देशक आहे. वाढलेले CRP संसर्ग किंवा दाहामध्ये दिसू शकते, परंतु त्यावरून एकट्याने कारण समजत नाही.",
+            ur:"CRP جسم میں سوزش کا ایک نشان ہے۔ زیادہ CRP انفیکشن یا سوزش میں ہو سکتا ہے، لیکن اکیلے اس سے وجہ معلوم نہیں ہوتی۔"
+        },
+        symptoms:{
+            en:"Possible associations depend on the cause and may include fever, fatigue or other inflammatory symptoms.",
+            hi:"संभावित लक्षण कारण पर निर्भर करते हैं, जैसे बुखार, थकान या अन्य सूजन संबंधी लक्षण।",
+            mr:"संभाव्य लक्षण कारणावर अवलंबून असतात, जसे ताप, थकवा किंवा इतर दाहाची लक्षणे.",
+            ur:"ممکنہ علامات وجہ پر منحصر ہوتی ہیں، جیسے بخار، تھکن یا دیگر سوزش کی علامات۔"
+        }
+    }
+
+};
+
+
+/* =========================================================
+   APP STATE
+========================================================= */
+
+let selectedFiles = [];
+let currentLanguage = "en";
+
+
+/* =========================================================
+   LANGUAGE SYSTEM
+========================================================= */
+
+function setLanguage(lang){
+
+    currentLanguage = lang;
+
+    const t = translations[lang];
+
+    document.documentElement.lang = lang;
+
+    document.body.classList.toggle("urdu",lang === "ur");
+
+    document.getElementById("languageLabel").textContent = t.language;
+    document.getElementById("headerSubtitle").textContent = t.headerSubtitle;
+
+    document.getElementById("backDashboard").textContent = t.back;
+
+    document.getElementById("pageTitle").textContent = t.pageTitle;
+    document.getElementById("pageSubtitle").textContent = t.pageSubtitle;
+
+    document.getElementById("uploadTitle").textContent = t.uploadTitle;
+    document.getElementById("uploadDescription").textContent = t.uploadDescription;
+
+    document.getElementById("chooseFile").textContent = t.chooseFile;
+    document.getElementById("uploadHint").textContent = t.uploadHint;
+
+    document.getElementById("analyzeBtn").textContent = t.analyze;
+    document.getElementById("resetBtn").textContent = t.reset;
+
+    document.getElementById("loadingText").textContent = t.loading;
+
+    document.getElementById("summaryTitle").textContent = t.summary;
+    document.getElementById("severityTitle").textContent = t.severity;
+    document.getElementById("testsTitle").textContent = t.tests;
+    document.getElementById("headacheTitle").textContent = t.headache;
+    document.getElementById("recommendationTitle").textContent = t.recommendation;
+
+    document.getElementById("homeTitle").textContent = t.home;
+    document.getElementById("doctorTitle").textContent = t.doctor;
+    document.getElementById("emergencyTitle").textContent = t.emergency;
+
+    document.getElementById("extractedTitle").textContent = t.extracted;
+
+    renderFileList();
+
+    if(
+        document.getElementById("reportResult").style.display === "block"
+    ){
+        analyzeExtractedText(window.lastExtractedText || "");
+    }
+}
+
+
+document
+.getElementById("languageSelect")
+.addEventListener("change",function(){
+
+    setLanguage(this.value);
+
+});
+
+
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+
+document
+.getElementById("pdfInput")
+.addEventListener("change",function(event){
+
+    const files = Array.from(event.target.files);
+
+    files.forEach(file => {
+
+        if(
+            file.type === "application/pdf" ||
+            file.name.toLowerCase().endsWith(".pdf")
+        ){
+
+            const alreadyExists =
+                selectedFiles.some(
+                    f => f.name === file.name &&
+                         f.size === file.size
+                );
+
+            if(!alreadyExists){
+                selectedFiles.push(file);
+            }
+
+        }
+
+    });
+
+    renderFileList();
+
+    event.target.value = "";
+
+});
+
+
+/* =========================================================
+   FILE LIST
+========================================================= */
+
+function renderFileList(){
+
+    const list =
+        document.getElementById("fileList");
+
+    list.innerHTML = "";
+
+    selectedFiles.forEach((file,index)=>{
+
+        const item =
+            document.createElement("div");
+
+        item.className = "file-item";
+
+        item.innerHTML = `
+
+            <div class="file-name">
+                📄 ${escapeHtml(file.name)}
+            </div>
+
+            <button
+                class="remove-file"
+                onclick="removeFile(${index})">
+
+                ✕
+
+            </button>
+
+        `;
+
+        list.appendChild(item);
+
+    });
+
+
+    document.getElementById("analyzeBtn").disabled =
+        selectedFiles.length === 0;
+
+}
+
+
+function removeFile(index){
+
+    selectedFiles.splice(index,1);
+
+    renderFileList();
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetReports(){
+
+    selectedFiles = [];
+
+    window.lastExtractedText = "";
+
+    document.getElementById("fileList").innerHTML = "";
+
+    document.getElementById("pdfInput").value = "";
+
+    document.getElementById("reportResult").style.display = "none";
+
+    document.getElementById("loading").style.display = "none";
+
+    document.getElementById("testCards").innerHTML = "";
+
+    document.getElementById("extractedText").textContent = "";
+
+    document.getElementById("extractedSection").style.display = "none";
+
+    document.getElementById("analyzeBtn").disabled = true;
+
+}
+
+
+/* =========================================================
+   ANALYZE MULTIPLE PDF REPORTS
+========================================================= */
+
+async function analyzeReports(){
+
+    if(selectedFiles.length === 0){
+        return;
+    }
+
+    const loading =
+        document.getElementById("loading");
+
+    const result =
+        document.getElementById("reportResult");
+
+    loading.style.display = "block";
+
+    result.style.display = "none";
+
+    if(!(await ensurePdfJs())){
+        loading.style.display = "none";
+        showPageMessage(
+            "PDF reader could not load. Please check your internet connection and try again. / " +
+            "PDF reader लोड नहीं हुआ। इंटरनेट जाँचकर दोबारा कोशिश करें।"
+        );
+        return;
+    }
+
+    try{
+
+        let combinedText = "";
+
+        for(let i=0;i<selectedFiles.length;i++){
+
+            const file = selectedFiles[i];
+
+            const arrayBuffer =
+                await file.arrayBuffer();
+
+            const pdf =
+                await pdfjsLib.getDocument({
+                    data:arrayBuffer
+                }).promise;
+
+
+            let fileText =
+                `\n\n===== ${file.name} =====\n\n`;
+
+
+            for(
+                let pageNumber=1;
+                pageNumber<=pdf.numPages;
+                pageNumber++
+            ){
+
+                const page =
+                    await pdf.getPage(pageNumber);
+
+                const content =
+                    await page.getTextContent();
+
+                const pageText =
+                    content.items
+                    .map(item => item.str)
+                    .join(" ");
+
+                fileText +=
+                    `\nPage ${pageNumber}\n${pageText}\n`;
+
+            }
+
+            combinedText += fileText;
+
+        }
+
+
+        window.lastExtractedText =
+            combinedText;
+
+        /* a scanned/photo PDF has no readable text */
+        const readable = combinedText
+            .replace(/=====[^\n]*=====/g,"")
+            .replace(/Page\s+\d+/g,"")
+            .replace(/[^A-Za-z0-9\u0900-\u097F]/g,"");
+
+        if(readable.length < 30){
+            loading.style.display = "none";
+            showPageMessage(
+                "This PDF has no readable text (it looks like a scan or photo). " +
+                "Please upload the original digital PDF from the lab. / " +
+                "इस PDF में पढ़ने योग्य टेक्स्ट नहीं है (शायद स्कैन या फोटो है)। लैब की डिजिटल PDF अपलोड करें।"
+            );
+            return;
+        }
+
+
+        window.lastBloodSummary = null;
+        analyzeExtractedText(combinedText);
+        saveBloodReport();
+
+
+        document.getElementById("extractedText")
+            .textContent = combinedText;
+
+        document.getElementById("extractedSection")
+            .style.display = "block";
+
+
+        loading.style.display = "none";
+
+        result.style.display = "block";
+
+        result.scrollIntoView({
+            behavior:"smooth"
+        });
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        loading.style.display = "none";
+
+        showPageMessage("Could not read this PDF: " + (error && error.message ? error.message : "unknown error"));
+
+        alert(
+            currentLanguage === "hi"
+            ? "PDF पढ़ने में समस्या हुई। कृपया सही PDF अपलोड करें।"
+            :
+            currentLanguage === "mr"
+            ? "PDF वाचताना समस्या आली. कृपया योग्य PDF अपलोड करा."
+            :
+            currentLanguage === "ur"
+            ? "PDF پڑھنے میں مسئلہ ہوا۔ براہ کرم درست PDF اپ لوڈ کریں۔"
+            :
+            "There was a problem reading the PDF. Please upload a valid PDF report."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EXTRA TESTS (headache-relevant) + EXTRA TEXT
+========================================================= */
+
+Object.assign(testDatabase, {
+    hba1c:{
+        names:["hba1c","hb a1c","glycated hemoglobin","glycosylated hemoglobin","glycohemoglobin","a1c"],
+        unit:"%",
+        explanation:{
+            en:"HbA1c reflects your average blood sugar over the last 2-3 months. 5.7-6.4% is the pre-diabetes range and 6.5% or above is the diabetes range.",
+            hi:"HbA1c पिछले 2-3 महीनों का औसत ब्लड शुगर दर्शाता है। 5.7-6.4% प्री-डायबिटीज़ की सीमा है और 6.5% या अधिक डायबिटीज़ की सीमा है।"
+        },
+        symptoms:{
+            en:"Possible associations when high: thirst, frequent urination, tiredness and blurred vision.",
+            hi:"अधिक होने पर संभावित संबंध: प्यास, बार-बार पेशाब, थकान और धुंधला दिखना।"
+        }
+    },
+    esr:{
+        names:["esr","erythrocyte sedimentation rate"],
+        unit:"mm/hr",
+        explanation:{
+            en:"ESR is a general marker of inflammation. It rises with infections, autoimmune conditions and some other illnesses, but it does not show the cause.",
+            hi:"ESR शरीर में सूजन का सामान्य संकेतक है। यह संक्रमण, ऑटोइम्यून स्थितियों और अन्य बीमारियों में बढ़ सकता है, लेकिन कारण नहीं बताता।"
+        },
+        symptoms:{
+            en:"Possible associations depend on the cause: fever, joint pain or tiredness.",
+            hi:"संभावित संबंध कारण पर निर्भर करते हैं: बुखार, जोड़ों में दर्द या थकान।"
+        }
+    },
+    sodium:{
+        names:["sodium","serum sodium"],
+        unit:"mmol/L",
+        explanation:{
+            en:"Sodium balances body fluids and nerve function. Low or high levels can cause headache, nausea, confusion or weakness.",
+            hi:"सोडियम शरीर के तरल पदार्थ और नसों के कार्य को संतुलित रखता है। कम या अधिक स्तर से सिरदर्द, मतली, भ्रम या कमजोरी हो सकती है।"
+        },
+        symptoms:{
+            en:"Possible associations: headache, nausea, confusion, weakness or muscle cramps.",
+            hi:"संभावित संबंध: सिरदर्द, मतली, भ्रम, कमजोरी या मांसपेशियों में ऐंठन।"
+        }
+    },
+    calcium:{
+        names:["calcium","serum calcium","total calcium"],
+        unit:"mg/dL",
+        explanation:{
+            en:"Calcium is important for bones, nerves and muscles. Abnormal levels may cause tiredness, cramps or headache.",
+            hi:"कैल्शियम हड्डियों, नसों और मांसपेशियों के लिए ज़रूरी है। असामान्य स्तर से थकान, ऐंठन या सिरदर्द हो सकता है।"
+        },
+        symptoms:{
+            en:"Possible associations: tiredness, muscle cramps, tingling or headache.",
+            hi:"संभावित संबंध: थकान, मांसपेशियों में ऐंठन, झनझनाहट या सिरदर्द।"
+        }
+    },
+    magnesium:{
+        names:["magnesium","serum magnesium"],
+        unit:"mg/dL",
+        explanation:{
+            en:"Magnesium supports nerve and muscle function. Low levels have been linked with migraine, muscle cramps and tiredness.",
+            hi:"मैग्नीशियम नसों और मांसपेशियों के कार्य में मदद करता है। कम स्तर का संबंध माइग्रेन, मांसपेशियों की ऐंठन और थकान से देखा गया है।"
+        },
+        symptoms:{
+            en:"Possible associations: migraine, cramps, tiredness or tingling.",
+            hi:"संभावित संबंध: माइग्रेन, ऐंठन, थकान या झनझनाहट।"
+        }
+    },
+    creatinine:{
+        names:["creatinine","serum creatinine"],
+        unit:"mg/dL",
+        explanation:{
+            en:"Creatinine is a waste product filtered by the kidneys. A high value can indicate reduced kidney function.",
+            hi:"क्रिएटिनिन एक अपशिष्ट पदार्थ है जिसे किडनी छानती है। अधिक मान किडनी की कार्यक्षमता कम होने का संकेत हो सकता है।"
+        },
+        symptoms:{
+            en:"Possible associations when high: tiredness, swelling, reduced urine or headache.",
+            hi:"अधिक होने पर संभावित संबंध: थकान, सूजन, कम पेशाब या सिरदर्द।"
+        }
+    }
+});
+
+testDatabase.crp.names = (testDatabase.crp.names || []).concat(
+    ["c-reactive protein","c reactive protein","hs-crp","hscrp"]
+).filter(function(n,i,a){ return a.indexOf(n) === i; });
+
+testDatabase.wbc.names = testDatabase.wbc.names.concat(
+    ["total wbc count","wbc count","total leucocyte count","total leukocyte count","leucocyte count","leukocyte count","tlc"]
+).filter(function(n,i,a){ return a.indexOf(n) === i; });
+
+testDatabase.platelets.names = testDatabase.platelets.names.concat(["plt"])
+    .filter(function(n,i,a){ return a.indexOf(n) === i; });
+
+const HEADACHE_NOTES = {
+    en:{
+        hemoglobin:"Low hemoglobin (anaemia) can reduce oxygen supply and may contribute to headache, dizziness and tiredness.",
+        wbc:"A high count may point to infection or inflammation. Headache with fever and neck stiffness needs urgent medical care.",
+        platelets:"Very high or very low counts can affect bleeding or clotting. A sudden severe headache with bruising or bleeding needs urgent care.",
+        ferritin:"Low iron stores have been linked in studies with more frequent migraine, especially in women.",
+        b12:"Low B12 may cause tiredness, tingling and sometimes headache.",
+        vitaminD:"Low vitamin D has been linked with headache disorders in some studies, but the link is not proven.",
+        tsh:"Both an under-active and an over-active thyroid can be associated with headache.",
+        glucose:"Very high or very low blood sugar can cause headache. Skipping meals is also a common migraine trigger.",
+        crp:"A raised CRP suggests inflammation somewhere in the body. It does not show where.",
+        hba1c:"Persistently high sugar over 2-3 months can contribute to headaches and vision changes.",
+        esr:"A clearly raised ESR with a new headache, jaw pain or scalp tenderness after age 50 should be checked urgently (possible giant cell arteritis).",
+        sodium:"Low sodium can cause headache, nausea and confusion. Severe cases are an emergency.",
+        calcium:"Abnormal calcium can cause headache, tiredness and muscle cramps.",
+        magnesium:"Low magnesium has been associated with migraine. Take supplements only on a doctor's advice.",
+        creatinine:"A high creatinine may indicate reduced kidney function, which can contribute to headache and high blood pressure."
+    },
+    hi:{
+        hemoglobin:"कम हीमोग्लोबिन (एनीमिया) से ऑक्सीजन की आपूर्ति घट सकती है और सिरदर्द, चक्कर व थकान हो सकती है।",
+        wbc:"अधिक संख्या संक्रमण या सूजन का संकेत हो सकती है। बुखार और गर्दन में अकड़न के साथ सिरदर्द हो तो तुरंत डॉक्टर को दिखाएँ।",
+        platelets:"बहुत अधिक या बहुत कम संख्या से रक्तस्राव या थक्का बनने पर असर पड़ सकता है। अचानक तेज़ सिरदर्द के साथ चोट के निशान या रक्तस्राव हो तो तुरंत इलाज लें।",
+        ferritin:"अध्ययनों में कम आयरन स्टोर का संबंध खासकर महिलाओं में बार-बार माइग्रेन से देखा गया है।",
+        b12:"कम B12 से थकान, झनझनाहट और कभी-कभी सिरदर्द हो सकता है।",
+        vitaminD:"कुछ अध्ययनों में कम विटामिन D का संबंध सिरदर्द से देखा गया है, लेकिन यह सिद्ध नहीं है।",
+        tsh:"थायरॉयड कम या ज़्यादा सक्रिय होने, दोनों में सिरदर्द हो सकता है।",
+        glucose:"बहुत अधिक या बहुत कम ब्लड शुगर से सिरदर्द हो सकता है। भोजन छोड़ना भी माइग्रेन का आम कारण है।",
+        crp:"CRP बढ़ा होना शरीर में कहीं सूजन का संकेत है, लेकिन यह नहीं बताता कि कहाँ।",
+        hba1c:"2-3 महीने तक लगातार अधिक शुगर से सिरदर्द और दृष्टि में बदलाव हो सकता है।",
+        esr:"50 वर्ष के बाद नए सिरदर्द, जबड़े में दर्द या सिर की त्वचा में दर्द के साथ ESR काफी बढ़ा हो तो तुरंत जाँच करवाएँ।",
+        sodium:"कम सोडियम से सिरदर्द, मतली और भ्रम हो सकता है। गंभीर स्थिति आपातकाल है।",
+        calcium:"असामान्य कैल्शियम से सिरदर्द, थकान और मांसपेशियों में ऐंठन हो सकती है।",
+        magnesium:"कम मैग्नीशियम का संबंध माइग्रेन से देखा गया है। सप्लीमेंट केवल डॉक्टर की सलाह से लें।",
+        creatinine:"अधिक क्रिएटिनिन किडनी की कार्यक्षमता कम होने का संकेत हो सकता है, जिससे सिरदर्द और उच्च रक्तचाप हो सकता है।"
+    }
+};
+
+const EXTRA_TEXT = {
+    en:{
+        below:"below lower limit", above:"above upper limit",
+        rangeReport:"Range taken from your report",
+        rangeStd:"Standard adult range (no range found in your report)",
+        sexNote:"Gender not found in report, so a combined male/female range was used.",
+        converted:"Converted for comparison:",
+        headacheLabel:"Headache connection",
+        notFoundTitle:"Not found in your report",
+        notFoundText:"These tests were not detected in the uploaded PDF. This does not mean they are normal. They may simply not have been tested.",
+        asPrinted:"as printed in report",
+        summaryTitle:"Quick summary",
+        sexUsed:{male:"Male range used", female:"Female range used"}
+    },
+    hi:{
+        below:"निचली सीमा से कम", above:"ऊपरी सीमा से अधिक",
+        rangeReport:"रेंज आपकी रिपोर्ट से ली गई",
+        rangeStd:"सामान्य वयस्क रेंज (रिपोर्ट में रेंज नहीं मिली)",
+        sexNote:"रिपोर्ट में लिंग नहीं मिला, इसलिए पुरुष/महिला की संयुक्त रेंज उपयोग की गई।",
+        converted:"तुलना के लिए बदला गया:",
+        headacheLabel:"सिरदर्द से संबंध",
+        notFoundTitle:"आपकी रिपोर्ट में नहीं मिले",
+        notFoundText:"ये टेस्ट अपलोड की गई PDF में नहीं मिले। इसका मतलब यह नहीं कि वे सामान्य हैं। हो सकता है ये टेस्ट हुए ही न हों।",
+        asPrinted:"रिपोर्ट में छपे अनुसार",
+        summaryTitle:"त्वरित सारांश",
+        sexUsed:{male:"पुरुष की रेंज उपयोग हुई", female:"महिला की रेंज उपयोग हुई"}
+    },
+    mr:{
+        below:"खालच्या मर्यादेपेक्षा कमी", above:"वरच्या मर्यादेपेक्षा जास्त",
+        rangeReport:"रेंज तुमच्या रिपोर्टमधून घेतली",
+        rangeStd:"सामान्य प्रौढ रेंज (रिपोर्टमध्ये रेंज आढळली नाही)",
+        sexNote:"रिपोर्टमध्ये लिंग आढळले नाही, म्हणून पुरुष/महिला एकत्रित रेंज वापरली.",
+        converted:"तुलनेसाठी बदललेले:",
+        headacheLabel:"डोकेदुखीशी संबंध",
+        notFoundTitle:"तुमच्या रिपोर्टमध्ये आढळले नाहीत",
+        notFoundText:"या चाचण्या अपलोड केलेल्या PDF मध्ये आढळल्या नाहीत. याचा अर्थ त्या सामान्य आहेत असा नाही.",
+        asPrinted:"रिपोर्टमध्ये छापल्याप्रमाणे",
+        summaryTitle:"जलद सारांश",
+        sexUsed:{male:"पुरुषाची रेंज वापरली", female:"महिलेची रेंज वापरली"}
+    },
+    ur:{
+        below:"نچلی حد سے کم", above:"بالائی حد سے زیادہ",
+        rangeReport:"رینج آپ کی رپورٹ سے لی گئی",
+        rangeStd:"عام بالغ رینج (رپورٹ میں رینج نہیں ملی)",
+        sexNote:"رپورٹ میں جنس نہیں ملی، اس لیے مرد/عورت کی مشترکہ رینج استعمال ہوئی۔",
+        converted:"موازنے کے لیے تبدیل شدہ:",
+        headacheLabel:"سر درد سے تعلق",
+        notFoundTitle:"آپ کی رپورٹ میں نہیں ملے",
+        notFoundText:"یہ ٹیسٹ اپ لوڈ کی گئی PDF میں نہیں ملے۔ اس کا مطلب یہ نہیں کہ وہ نارمل ہیں۔",
+        asPrinted:"رپورٹ میں چھپے ہوئے مطابق",
+        summaryTitle:"فوری خلاصہ",
+        sexUsed:{male:"مرد کی رینج استعمال ہوئی", female:"عورت کی رینج استعمال ہوئی"}
+    }
+};
+
+function xt(){
+    return EXTRA_TEXT[currentLanguage] || EXTRA_TEXT.en;
+}
+
+function fmtNum(n){
+    if(n === null || n === undefined || isNaN(n)){ return "-"; }
+    return String(Number(Number(n).toFixed(2)));
+}
+
+/* =========================================================
+   REFERENCE RANGES (standard adult ranges, sex-specific
+   where it matters). A range printed in the report itself
+   always wins over these.
+========================================================= */
+
+const SEX_KEYS = ["hemoglobin","ferritin","esr","creatinine"];
+
+function getRange(key, sex){
+    const pick = function(m, f, u){
+        return sex === "male" ? m : sex === "female" ? f : u;
+    };
+    const R = {
+        hemoglobin:{ low:pick(13.5,12,12), high:pick(17.5,15.5,17.5), sigLow:8, sigHigh:18 },
+        wbc:{ low:4, high:11, sigLow:2, sigHigh:25 },
+        platelets:{ low:150, high:450, sigLow:50, sigHigh:800 },
+        ferritin:{ low:pick(24,11,11), high:pick(336,307,336), sigLow:8, sigHigh:1000 },
+        b12:{ low:200, high:900, sigLow:100, sigHigh:1500 },
+        vitaminD:{ low:20, high:50, sigLow:10, sigHigh:100 },
+        tsh:{ low:0.4, high:4, sigLow:0.1, sigHigh:10 },
+        glucose:{ low:70, high:99, sigLow:50, sigHigh:300 },
+        crp:{ low:0, high:5, sigLow:-1, sigHigh:50 },
+        hba1c:{ low:4, high:5.6, sigLow:3, sigHigh:10 },
+        esr:{ low:0, high:pick(15,20,20), sigLow:-1, sigHigh:100 },
+        sodium:{ low:135, high:145, sigLow:125, sigHigh:155 },
+        calcium:{ low:8.5, high:10.5, sigLow:7, sigHigh:13 },
+        magnesium:{ low:1.7, high:2.2, sigLow:1, sigHigh:3 },
+        creatinine:{ low:pick(0.7,0.6,0.6), high:pick(1.3,1.1,1.3), sigLow:0.2, sigHigh:3 }
+    };
+    return R[key];
+}
+
+const PLAUSIBLE = {
+    hemoglobin:[2,25], wbc:[0.1,200], platelets:[5,2000], ferritin:[1,5000],
+    b12:[20,5000], vitaminD:[1,300], tsh:[0.001,200], glucose:[20,1000],
+    crp:[0,500], hba1c:[2,20], esr:[0,150], sodium:[100,180],
+    calcium:[3,20], magnesium:[0.3,6], creatinine:[0.1,20]
+};
+
+const SKIP_BEFORE = {
+    hemoglobin:/(glycated|glycosylated|glyco|corpuscular|mean\s+cell)\s*$/i,
+    glucose:/(urine|random|post\s*prandial|postprandial|pp|post\s*meal)\s*(blood\s*)?$/i,
+    creatinine:/(urine|urinary)\s*$/i
+};
+
+const UNIT_RE = /^\s*(g\/dl|g\/l|mg\/dl|mg\/l|ng\/ml|ng\/dl|pg\/ml|pmol\/l|nmol\/l|µmol\/l|μmol\/l|umol\/l|mmol\/l|mmol\/mol|meq\/l|miu\/l|µiu\/ml|μiu\/ml|uiu\/ml|iu\/l|10\^3\/µl|10\^3\/μl|10\^3\/ul|10\*3\/µl|10\*3\/ul|x10\^3\/µl|thou\/µl|lakhs?\/cumm|lakhs?\/cu\.?mm|cells\/µl|cells\/μl|cells\/ul|\/µl|\/μl|\/ul|\/cumm|\/cu\.?mm|mm\/hr|mm\/h|fl|%)/i;
+
+/* returns a converter (value -> standard unit) or null */
+function unitConverter(key, rawUnit, rawValue){
+    const u = (rawUnit || "").toLowerCase().replace(/\s+/g,"");
+    switch(key){
+        case "hemoglobin":
+            if(u === "g/l"){ return function(x){ return x / 10; }; }
+            break;
+        case "wbc":
+        case "platelets":
+            if(/thou|10\^3|10\*3/.test(u)){ return null; }
+            if(/lakh/.test(u)){ return function(x){ return x * 100; }; }
+            if(/cells|cumm|cu\.?mm|^\/(µ|μ|u)l$/.test(u)){ return function(x){ return x / 1000; }; }
+            if(!u && key === "wbc" && rawValue > 500){ return function(x){ return x / 1000; }; }
+            if(!u && key === "platelets" && rawValue > 5000){ return function(x){ return x / 1000; }; }
+            break;
+        case "glucose":
+            if(u === "mmol/l"){ return function(x){ return x * 18; }; }
+            break;
+        case "vitaminD":
+            if(u === "nmol/l"){ return function(x){ return x / 2.5; }; }
+            break;
+        case "b12":
+            if(u === "pmol/l"){ return function(x){ return x * 1.355; }; }
+            break;
+        case "crp":
+            if(u === "mg/dl"){ return function(x){ return x * 10; }; }
+            break;
+        case "calcium":
+            if(u === "mmol/l"){ return function(x){ return x * 4.008; }; }
+            break;
+        case "magnesium":
+            if(u === "mmol/l"){ return function(x){ return x * 2.43; }; }
+            break;
+        case "creatinine":
+            if(/^(µ|μ|u)mol\/l$/.test(u)){ return function(x){ return x / 88.4; }; }
+            break;
+        case "hba1c":
+            if(u === "mmol/mol"){ return function(x){ return x / 10.929 + 2.15; }; }
+            break;
+    }
+    return null;
+}
+
+function detectSex(text){
+    let m = text.match(/(?:age\s*\/\s*(?:sex|gender)|sex\s*\/\s*age|gender\s*\/\s*age)\s*[:\-]?\s*(?:[0-9]+\s*(?:y|yrs?|years?)?\s*\/?\s*)?(male|female|m|f)\b/i);
+    if(!m){
+        m = text.match(/\b(?:sex|gender)\s*[:\-]?\s*(male|female|m|f)\b/i);
+    }
+    if(!m){ return null; }
+    return m[1].toLowerCase().charAt(0) === "f" ? "female" : "male";
+}
+
+/* =========================================================
+   EXTRACT VALUE + UNIT + PRINTED RANGE
+========================================================= */
+
+function extractTestData(text, key){
+
+    const db = testDatabase[key];
+    const names = db.names.slice().sort(function(a,b){ return b.length - a.length; });
+    const lowerAll = text.toLowerCase();
+
+    /* names of the OTHER tests, used to cut the search window */
+    const otherNames = [];
+    Object.keys(testDatabase).forEach(function(k){
+        if(k !== key){
+            testDatabase[k].names.forEach(function(n){
+                if(n.length >= 3){ otherNames.push(n); }
+            });
+        }
+    });
+
+    for(const name of names){
+
+        const pattern =
+            "(^|[^a-z0-9])" +
+            name.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/ /g,"\\s+") +
+            "(?![a-z0-9])\\s*(?:\\([^)]{0,30}\\))?\\s*[:\\-\u2013]?\\s*([0-9]+(?:\\.[0-9]+)?)";
+
+        const re = new RegExp(pattern,"gi");
+        let m;
+
+        while((m = re.exec(text)) !== null){
+
+            const start = m.index + m[1].length;
+            const before = text.slice(Math.max(0,start - 22), start);
+
+            if(SKIP_BEFORE[key] && SKIP_BEFORE[key].test(before)){
+                continue;
+            }
+
+            const rawValue = parseFloat(m[2]);
+            const endIdx = m.index + m[0].length;
+            let win = text.slice(endIdx, endIdx + 90);
+
+            /* stop the window where the next test begins */
+            const lowerWin = win.toLowerCase();
+            let cut = win.length;
+            otherNames.forEach(function(n){
+                const i = lowerWin.indexOf(n);
+                if(i > 0 && i < cut){ cut = i; }
+            });
+            win = win.slice(0, cut);
+
+            const um = win.match(UNIT_RE);
+            const rawUnit = um ? um[1] : "";
+
+            let refLow = null, refHigh = null;
+            const rm = win.match(/(?:^|[^0-9.])([0-9]+(?:\.[0-9]+)?)\s*(?:-|\u2013|\u2014|to)\s*([0-9]+(?:\.[0-9]+)?)/i);
+            if(rm){
+                refLow = parseFloat(rm[1]);
+                refHigh = parseFloat(rm[2]);
+            }
+
+            const conv = unitConverter(key, rawUnit, rawValue);
+            const value = conv ? conv(rawValue) : rawValue;
+
+            if(refLow !== null && conv){
+                refLow = conv(refLow);
+                refHigh = conv(refHigh);
+            }
+
+            const plaus = PLAUSIBLE[key];
+            if(plaus && (value < plaus[0] || value > plaus[1])){
+                continue;
+            }
+
+            /* ignore a printed range that makes no sense */
+            if(refLow !== null){
+                const std = getRange(key, null);
+                const ok =
+                    refLow < refHigh &&
+                    refLow <= std.high &&
+                    refHigh >= std.low;
+                if(!ok){ refLow = null; refHigh = null; }
+            }
+
+            return {
+                value: value,
+                rawValue: rawValue,
+                rawUnit: rawUnit,
+                unit: db.unit,
+                refLow: refLow,
+                refHigh: refHigh,
+                converted: !!conv
+            };
+        }
+    }
+
+    return null;
+}
+
+/* =========================================================
+   SAVE TO REPORT HISTORY (runs once per "Analyze" click)
+========================================================= */
+
+function saveBloodReport(){
+
+    const s = window.lastBloodSummary;
+
+    if(!s || !window.NG){
+        return;
+    }
+
+    let tier = "green";
+    let summary = "All detected blood values look within the normal range.";
+
+    if(s.significantCount > 0){
+        tier = "red";
+        summary = s.significantCount +
+            " value(s) are significantly outside the normal range. Please consult a doctor.";
+    }
+    else if(s.abnormalCount > 0){
+        tier = "yellow";
+        summary = s.abnormalCount +
+            " value(s) are slightly outside the normal range. Doctor review is advised.";
+    }
+
+    const words = {
+        normal:"Normal", low:"Low", high:"High", significant:"Significantly abnormal"
+    };
+
+    const details = {};
+
+    s.items.slice(0, 15).forEach(function(it){
+        details[it.name] =
+            it.printed + " - " + words[it.level] +
+            " (range " + it.range + ")";
+    });
+
+    details["Severity score"] = s.score + "/100";
+    details["Files analysed"] = String(selectedFiles.length);
+
+    NG.saveReport({
+        module: "blood",
+        tier: tier,
+        title: "Blood Report Analysis",
+        summary: summary,
+        details: details
+    });
+}
+
+/* =========================================================
+   MAIN ANALYSIS
+========================================================= */
+
+function analyzeExtractedText(text){
+
+    const sex = detectSex(text);
+    window.lastSex = sex;
+
+    const detected = [];
+
+    Object.keys(testDatabase).forEach(function(key){
+
+        const found = extractTestData(text, key);
+
+        if(found){
+            found.key = key;
+            detected.push(found);
+        }
+    });
+
+    /*
+       If nothing is detected, show a useful message.
+    */
+    if(detected.length === 0){
+        showNoData();
+        return;
+    }
+
+    let totalSeverity = 0;
+    let abnormalCount = 0;
+    let significantCount = 0;
+
+    detected.forEach(function(item){
+
+        const evaluation = evaluateTest(item.key, item.value, {
+            sex: sex,
+            refLow: item.refLow,
+            refHigh: item.refHigh
+        });
+
+        item.evaluation = evaluation;
+        totalSeverity += evaluation.score;
+
+        if(evaluation.level !== "normal"){ abnormalCount++; }
+        if(evaluation.level === "significant"){ significantCount++; }
+    });
+
+    let overallScore = Math.round(totalSeverity / detected.length);
+    overallScore = Math.max(0, Math.min(100, overallScore));
+
+    window.lastBloodSummary = {
+        score: overallScore,
+        abnormalCount: abnormalCount,
+        significantCount: significantCount,
+        total: detected.length,
+        items: detected.map(function(item){
+            return {
+                name: formatTestName(item.key),
+                printed: fmtNum(item.rawValue) + " " + (item.rawUnit || item.unit),
+                level: item.evaluation.level,
+                range: item.evaluation.range + " " + item.unit
+            };
+        })
+    };
+
+    renderOverall(overallScore, abnormalCount, significantCount, detected.length);
+    renderTests(detected);
+    renderHeadacheConnection(detected, overallScore);
+    renderRecommendations(overallScore, significantCount);
+}
+
+/* =========================================================
+   EVALUATE TEST
+========================================================= */
+
+function evaluateTest(key, value, ctx){
+
+    ctx = ctx || {};
+
+    const std = getRange(key, ctx.sex);
+    const t = translations[currentLanguage];
+
+    let low = std.low;
+    let high = std.high;
+    let source = "standard";
+
+    if(ctx.refLow !== null && ctx.refLow !== undefined &&
+       ctx.refHigh !== null && ctx.refHigh !== undefined){
+        low = ctx.refLow;
+        high = ctx.refHigh;
+        source = "report";
+    }
+
+    const base = {
+        low: low,
+        high: high,
+        source: source,
+        value: value,
+        direction: null,
+        deviation: 0,
+        range: fmtNum(low) + " \u2013 " + fmtNum(high)
+    };
+
+    if(value >= low && value <= high){
+        return Object.assign(base, { level:"normal", score:0, label:t.normal });
+    }
+
+    const dir = value < low ? "low" : "high";
+    const dev = dir === "low" ? low - value : value - high;
+
+    if(value < std.sigLow || value > std.sigHigh){
+        return Object.assign(base, {
+            level:"significant", score:90, label:t.significant,
+            direction:dir, deviation:dev
+        });
+    }
+
+    return Object.assign(base, {
+        level:dir, score:50,
+        label: dir === "low" ? t.low : t.high,
+        direction:dir, deviation:dev
+    });
+}
+
+
+/* =========================================================
+   RENDER OVERALL
+========================================================= */
+
+function renderOverall(
+    score,
+    abnormalCount,
+    significantCount,
+    total
+){
+
+    const t =
+        translations[currentLanguage];
+
+
+    const status =
+        document.getElementById("overallStatus");
+
+
+    const explanation =
+        document.getElementById("overallExplanation");
+
+
+    const number =
+        document.getElementById("severityNumber");
+
+
+    const fill =
+        document.getElementById("severityFill");
+
+
+    const label =
+        document.getElementById("severityLabel");
+
+
+    status.className =
+        "status";
+
+
+    if(significantCount > 0){
+
+        status.classList.add(
+            "status-red"
+        );
+
+        status.textContent =
+            t.significantStatus;
+
+        explanation.textContent =
+            t.highSeverity;
+
+        label.textContent =
+            t.highSeverity;
+
+    }
+
+    else if(abnormalCount > 0){
+
+        status.classList.add(
+            "status-yellow"
+        );
+
+        status.textContent =
+            t.attentionStatus;
+
+        explanation.textContent =
+            t.moderateSeverity;
+
+        label.textContent =
+            t.moderateSeverity;
+
+    }
+
+    else{
+
+        status.classList.add(
+            "status-green"
+        );
+
+        status.textContent =
+            t.normalStatus;
+
+        explanation.textContent =
+            t.normalSeverity;
+
+        label.textContent =
+            t.normalSeverity;
+
+    }
+
+
+    number.textContent =
+        `${score}/100`;
+
+    fill.style.width =
+        `${score}%`;
+
+}
+
+
+/* =========================================================
+   RENDER TEST CARDS
+========================================================= */
+
+function renderTests(detected){
+
+    const container = document.getElementById("testCards");
+    const t = translations[currentLanguage];
+    const x = xt();
+    const sex = window.lastSex || null;
+
+    container.innerHTML = "";
+
+    const order = { significant:0, high:1, low:1, normal:2 };
+
+    const sorted = detected.slice().sort(function(a,b){
+        return order[a.evaluation.level] - order[b.evaluation.level];
+    });
+
+    /* ---------- quick summary table ---------- */
+
+    let rows = "";
+
+    sorted.forEach(function(item){
+
+        const ev = item.evaluation;
+        let badge = "badge-normal";
+        if(ev.level === "low" || ev.level === "high"){ badge = "badge-low"; }
+        if(ev.level === "significant"){ badge = "badge-significant"; }
+
+        const arrow = ev.direction === "low" ? " \u25BC" : ev.direction === "high" ? " \u25B2" : "";
+
+        rows += `
+            <div class="sum-row">
+                <div class="sum-name">
+                    ${escapeHtml(formatTestName(item.key))}
+                    <div class="sum-range">${escapeHtml(ev.range)} ${escapeHtml(item.unit)}</div>
+                </div>
+                <div class="sum-val">
+                    ${escapeHtml(fmtNum(item.rawValue))}${escapeHtml(arrow)}
+                    <div class="sum-range">${escapeHtml(item.rawUnit || item.unit)}</div>
+                </div>
+                <div class="sum-status">
+                    <span class="result-badge ${badge}">${escapeHtml(ev.label)}</span>
+                </div>
+            </div>`;
+    });
+
+    const summary = document.createElement("div");
+    summary.className = "sum-table";
+    summary.innerHTML =
+        `<div class="box-title">${escapeHtml(x.summaryTitle)}</div>` + rows;
+    container.appendChild(summary);
+
+    if(!sex && detected.some(function(i){
+        return SEX_KEYS.indexOf(i.key) !== -1 && i.evaluation.source === "standard";
+    })){
+        const note = document.createElement("div");
+        note.className = "src-tag";
+        note.textContent = x.sexNote;
+        container.appendChild(note);
+    }
+
+    /* ---------- one detailed card per test ---------- */
+
+    sorted.forEach(function(item){
+
+        const db = testDatabase[item.key];
+        const ev = item.evaluation;
+
+        const card = document.createElement("div");
+        card.className = "test-card";
+
+        let badgeClass = "badge-normal";
+        if(ev.level === "low" || ev.level === "high"){ badgeClass = "badge-low"; }
+        if(ev.level === "significant"){ badgeClass = "badge-significant"; }
+
+        /* position of the marker on the range bar */
+        const span = (ev.high - ev.low) || 1;
+        const axisMin = ev.low - span * 0.6;
+        const axisMax = ev.high + span * 0.6;
+        const pct = function(v){
+            return Math.max(2, Math.min(98, ((v - axisMin) / (axisMax - axisMin)) * 100));
+        };
+        const zoneL = pct(ev.low);
+        const zoneR = pct(ev.high);
+        const markerPos = pct(item.value);
+
+        const devText =
+            ev.direction
+            ? `${ev.direction === "low" ? "\u25BC" : "\u25B2"} ${fmtNum(ev.deviation)} ${item.unit} ` +
+              `${ev.direction === "low" ? x.below : x.above}`
+            : "";
+
+        const sourceText =
+            ev.source === "report"
+            ? x.rangeReport
+            : (SEX_KEYS.indexOf(item.key) !== -1 && sex
+                ? x.rangeStd + " \u2022 " + x.sexUsed[sex]
+                : x.rangeStd);
+
+        const convertedText =
+            item.converted
+            ? `${x.converted} ${fmtNum(item.value)} ${item.unit}`
+            : "";
+
+        const hnotes = HEADACHE_NOTES[currentLanguage] || HEADACHE_NOTES.en;
+        const headacheNote =
+            ev.level !== "normal"
+            ? (hnotes[item.key] || HEADACHE_NOTES.en[item.key] || "")
+            : "";
+
+        card.innerHTML = `
+            <div class="test-top">
+                <div class="test-name">
+                    ${escapeHtml(formatTestName(item.key))}
+                </div>
+                <div class="test-value">
+                    ${escapeHtml(fmtNum(item.rawValue))}
+                    <span class="test-unit">${escapeHtml(item.rawUnit || item.unit)}</span>
+                </div>
+            </div>
+
+            <div class="test-range">
+                ${escapeHtml(t.normal)}: ${escapeHtml(ev.range)} ${escapeHtml(item.unit)}
+            </div>
+
+            <div class="range-bar">
+                <div class="range-zone" style="left:${zoneL}%;width:${zoneR - zoneL}%"></div>
+                <div class="range-marker m-${ev.level}" style="left:${markerPos}%"></div>
+            </div>
+            <div class="range-labels">
+                <span style="left:${zoneL}%">${escapeHtml(fmtNum(ev.low))}</span>
+                <span style="left:${zoneR}%">${escapeHtml(fmtNum(ev.high))}</span>
+            </div>
+
+            <span class="result-badge ${badgeClass}">
+                ${escapeHtml(ev.label)}
+            </span>
+
+            ${devText ? `<div class="dev-text dev-${ev.level}">${escapeHtml(devText)}</div>` : ""}
+
+            <div class="src-tag">
+                ${escapeHtml(sourceText)}
+                ${convertedText ? " \u2022 " + escapeHtml(convertedText) : ""}
+            </div>
+
+            <div class="explanation-box">
+                <div class="box-title">${escapeHtml(t.explanation)}</div>
+                ${escapeHtml(db.explanation[currentLanguage] || db.explanation.en)}
+            </div>
+
+            <div class="symptom-box">
+                <div class="box-title">${escapeHtml(t.possibleSymptoms)}</div>
+                ${escapeHtml(db.symptoms[currentLanguage] || db.symptoms.en)}
+            </div>
+
+            ${
+                headacheNote
+                ? `<div class="hnote-box">
+                       <div class="box-title">${escapeHtml(x.headacheLabel)}</div>
+                       ${escapeHtml(headacheNote)}
+                   </div>`
+                : ""
+            }
+
+            ${
+                ev.level !== "normal"
+                ? `<div class="doctor-box">
+                       <div class="box-title">${escapeHtml(t.doctor)}</div>
+                       ${escapeHtml(t.doctorAdvice)}
+                   </div>`
+                : ""
+            }
+        `;
+
+        container.appendChild(card);
+    });
+
+    /* ---------- tests that were not found ---------- */
+
+    const foundKeys = detected.map(function(i){ return i.key; });
+    const missing = Object.keys(testDatabase).filter(function(k){
+        return foundKeys.indexOf(k) === -1;
+    });
+
+    if(missing.length > 0){
+        const box = document.createElement("div");
+        box.className = "notfound-box";
+        box.innerHTML = `
+            <div class="box-title">${escapeHtml(x.notFoundTitle)}</div>
+            <div>${escapeHtml(missing.map(formatTestName).join(", "))}</div>
+            <div class="src-tag">${escapeHtml(x.notFoundText)}</div>
+        `;
+        container.appendChild(box);
+    }
+}
+
+
+/* =========================================================
+   TEST NAMES
+========================================================= */
+
+function formatTestName(key){
+    const names = {
+        hemoglobin:"Hemoglobin",
+        wbc:"WBC Count",
+        platelets:"Platelet Count",
+        ferritin:"Ferritin",
+        b12:"Vitamin B12",
+        vitaminD:"Vitamin D",
+        tsh:"TSH",
+        glucose:"Fasting Glucose",
+        crp:"CRP",
+        hba1c:"HbA1c",
+        esr:"ESR",
+        sodium:"Sodium",
+        calcium:"Calcium",
+        magnesium:"Magnesium",
+        creatinine:"Creatinine"
+    };
+    return names[key] || key;
+}
+
+
+/* =========================================================
+   HEADACHE CONNECTION
+========================================================= */
+
+function renderHeadacheConnection(
+    detected,
+    score
+){
+
+    const element =
+        document.getElementById(
+            "headacheExplanation"
+        );
+
+
+    element.textContent =
+        translations[
+            currentLanguage
+        ].headacheConnection;
+
+
+    const abnormal =
+        detected.filter(
+            item =>
+                item.evaluation.level !== "normal"
+        );
+
+
+    if(abnormal.length > 0){
+
+        const names =
+            abnormal
+            .map(
+                item =>
+                    formatTestName(item.key)
+            )
+            .join(", ");
+
+
+        element.textContent +=
+
+            " " +
+
+            (
+                currentLanguage === "hi"
+                ?
+                ` इस रिपोर्ट में ${names} में ध्यान देने योग्य परिणाम मिले हैं। इन परिणामों को आपके सिरदर्द, चक्कर, कमजोरी या अन्य लक्षणों के साथ डॉक्टर द्वारा देखा जाना चाहिए।`
+
+                :
+
+                currentLanguage === "mr"
+                ?
+                ` या रिपोर्टमध्ये ${names} मध्ये लक्ष देण्यासारखे परिणाम आढळले आहेत. हे परिणाम डोकेदुखी, चक्कर, अशक्तपणा किंवा इतर लक्षणांसोबत डॉक्टरांनी तपासणे योग्य आहे.`
+
+                :
+
+                currentLanguage === "ur"
+                ?
+                ` اس رپورٹ میں ${names} میں قابل توجہ نتائج ملے ہیں۔ ان نتائج کو سر درد، چکر، کمزوری یا دیگر علامات کے ساتھ ڈاکٹر سے چیک کروانا چاہیے۔`
+
+                :
+
+                ` The report contains findings requiring attention in ${names}. These should be considered together with your headache, dizziness, weakness or other symptoms by a healthcare professional.`
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   RECOMMENDATIONS
+========================================================= */
+
+function renderRecommendations(
+    score,
+    significantCount
+){
+
+    const t =
+        translations[currentLanguage];
+
+
+    document.getElementById(
+        "homeRecommendation"
+    ).textContent =
+        t.homeAdvice;
+
+
+    document.getElementById(
+        "doctorRecommendation"
+    ).textContent =
+        t.doctorAdvice;
+
+
+    document.getElementById(
+        "emergencyRecommendation"
+    ).textContent =
+        t.emergencyAdvice;
+
+}
+
+
+/* =========================================================
+   NO DATA
+========================================================= */
+
+function showNoData(){
+
+    const t =
+        translations[currentLanguage];
+
+
+    document.getElementById(
+        "overallStatus"
+    ).className =
+        "status status-yellow";
+
+
+    document.getElementById(
+        "overallStatus"
+    ).textContent =
+        t.attentionStatus;
+
+
+    document.getElementById(
+        "overallExplanation"
+    ).textContent =
+        t.noData;
+
+
+    document.getElementById(
+        "severityNumber"
+    ).textContent =
+        "N/A";
+
+
+    document.getElementById(
+        "severityFill"
+    ).style.width =
+        "0%";
+
+
+    document.getElementById(
+        "severityLabel"
+    ).textContent =
+        t.noData;
+
+
+    document.getElementById(
+        "testCards"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+        "headacheExplanation"
+    ).textContent =
+        t.headacheConnection;
+
+
+    renderRecommendations(0,0);
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   INITIAL LANGUAGE
+========================================================= */
+
+setLanguage("en");
+
+
+</script>
+
+</body>
+</html>

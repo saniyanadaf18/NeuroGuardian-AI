@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#101b2d">
+
+<title>NeuroGuardian AI — Vision Test</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f8;
+    color:#17202b;
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:16px 28px;
+    padding-top:calc(18px + env(safe-area-inset-top));
+    background:white;
+    border-bottom:1px solid #e2e8f0;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.back-btn{
+    width:46px;
+    height:46px;
+    border:1px solid #dbe5ec;
+    border-radius:12px;
+    background:#eaf3f6;
+    color:#101b2d;
+    font-size:22px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    flex-shrink:0;
+}
+
+.back-btn:hover{
+    background:#d7e8ee;
+    transform:translateX(-2px);
+}
+
+.back-btn:focus-visible{
+    outline:3px solid rgba(53,112,138,.25);
+    outline-offset:2px;
+}
+
+.topbar-title{
+    min-width:0;
+}
+
+.topbar h1{
+    font-size:22px;
+    color:#101b2d;
+}
+
+.topbar p{
+    color:#64748b;
+    font-size:12.5px;
+    margin-top:2px;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+    max-width:900px;
+    margin:0 auto;
+    padding:28px;
+}
+
+.card{
+    background:white;
+    border:1px solid #e2e8f0;
+    border-radius:18px;
+    padding:24px;
+    box-shadow:0 10px 30px rgba(16,27,45,.07);
+    margin-bottom:20px;
+}
+
+.card h3{
+    color:#101b2d;
+    margin-bottom:6px;
+}
+
+.card .sub{
+    color:#64748b;
+    font-size:13.5px;
+    margin-bottom:18px;
+    line-height:1.6;
+}
+
+.disclaimer{
+    background:#fbf0dc;
+    border:1px solid #f3d6a5;
+    color:#8a5c0f;
+    padding:12px 16px;
+    border-radius:12px;
+    font-size:13px;
+    line-height:1.6;
+    margin-bottom:20px;
+}
+
+/* ================= INSTRUCTIONS ================= */
+
+.steps{
+    list-style:none;
+    counter-reset:s;
+}
+
+.steps li{
+    counter-increment:s;
+    position:relative;
+    padding:9px 0 9px 36px;
+    font-size:14px;
+    color:#334155;
+    line-height:1.6;
+}
+
+.steps li::before{
+    content:counter(s);
+    position:absolute;
+    left:0;
+    top:8px;
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    background:#eaf3f6;
+    color:#101b2d;
+    font-size:12px;
+    font-weight:bold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* ================= EYE SELECT ================= */
+
+.eye-select{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:6px;
+}
+
+.eye-btn{
+    flex:1;
+    min-width:120px;
+    padding:12px;
+    min-height:48px;
+    border:1.5px solid #e2e8f0;
+    border-radius:12px;
+    background:white;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:bold;
+    color:#475569;
+}
+
+.eye-btn.active{
+    border-color:#35708a;
+    background:#eaf3f6;
+    color:#101b2d;
+}
+
+/* ================= CHART ================= */
+
+.chart{
+    text-align:center;
+    padding:26px 10px;
+    background:#fbfcfd;
+    border:1px solid #e2e8f0;
+    border-radius:14px;
+    margin-top:16px;
+}
+
+.chart-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    padding:9px 0;
+    border-bottom:1px dashed #e8edf2;
+}
+
+.chart-row:last-child{
+    border-bottom:none;
+}
+
+.row-label{
+    font-size:10.5px;
+    color:#94a3b8;
+    width:46px;
+    text-align:right;
+    flex-shrink:0;
+}
+
+.row-letters{
+    font-weight:bold;
+    letter-spacing:7px;
+    color:#101b2d;
+    font-family:'Courier New',monospace;
+}
+
+.row-pick{
+    border:1px solid #e2e8f0;
+    background:white;
+    border-radius:7px;
+    padding:6px 11px;
+    font-size:11.5px;
+    cursor:pointer;
+    font-family:inherit;
+    color:#35708a;
+    font-weight:bold;
+    flex-shrink:0;
+}
+
+.row-pick:hover{
+    border-color:#35708a;
+    background:#eaf3f6;
+}
+
+.row-pick.chosen{
+    background:#35708a;
+    color:white;
+    border-color:#35708a;
+}
+
+/* ================= PROFESSIONAL ACUITY CHART ================= */
+
+.chart{
+    background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
+    border:1px solid #d9e3ea;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+    padding:20px 18px 16px;
+}
+
+.chart-scale-note{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    margin:0 auto 14px;
+    max-width:760px;
+    color:#64748b;
+    font-size:11px;
+    line-height:1.5;
+}
+
+.chart-scale-note span:first-child{
+    color:#334155;
+    font-weight:700;
+}
+
+.chart-row{
+    min-height:78px;
+    padding:10px 0;
+    border-bottom:1px solid #edf1f5;
+}
+
+.row-label{
+    font-size:11px;
+    color:#64748b;
+    font-weight:700;
+}
+
+.row-letters{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:330px;
+    color:#0f172a;
+    font-family:Arial,Helvetica,sans-serif;
+    font-weight:700;
+    letter-spacing:.22em;
+    line-height:1;
+    white-space:nowrap;
+    text-rendering:geometricPrecision;
+}
+
+.acuity-200{font-size:64px; min-height:64px;}
+.acuity-100{font-size:52px; min-height:52px;}
+.acuity-70{font-size:44px; min-height:44px;}
+.acuity-50{font-size:38px; min-height:38px;}
+.acuity-40{font-size:33px; min-height:33px;}
+.acuity-30{font-size:29px; min-height:29px;}
+.acuity-20{font-size:25px; min-height:25px;}
+.acuity-15{font-size:20px; min-height:20px;}
+.acuity-13{font-size:16px; min-height:16px;}
+
+.row-pick{
+    min-width:112px;
+    padding:9px 12px;
+    font-size:11.5px;
+    white-space:nowrap;
+}
+
+.bottom-note{
+    margin-top:14px;
+    margin-bottom:0;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+@media(max-width:600px){
+    .chart{
+        padding:16px 8px 14px;
+    }
+
+    .chart-scale-note{
+        display:block;
+        text-align:center;
+    }
+
+    .chart-scale-note span{
+        display:block;
+    }
+
+    .chart-scale-note span + span{
+        margin-top:3px;
+    }
+
+    .chart-row{
+        gap:6px;
+        min-height:70px;
+    }
+
+    .row-label{
+        width:42px;
+        font-size:9px;
+    }
+
+    .row-letters{
+        min-width:0;
+        flex:1;
+        letter-spacing:.12em;
+    }
+
+    .acuity-200{font-size:52px;}
+    .acuity-100{font-size:43px;}
+    .acuity-70{font-size:37px;}
+    .acuity-50{font-size:32px;}
+    .acuity-40{font-size:28px;}
+    .acuity-30{font-size:24px;}
+    .acuity-20{font-size:21px;}
+    .acuity-15{font-size:17px;}
+    .acuity-13{font-size:14px;}
+
+    .row-pick{
+        min-width:92px;
+        padding:8px 6px;
+        font-size:10px;
+    }
+}
+
+/* ================= COLOUR TEST ================= */
+
+.color-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:14px;
+    margin-top:14px;
+}
+
+.color-plate{
+    border:1px solid #e2e8f0;
+    border-radius:14px;
+    padding:16px;
+    text-align:center;
+    background:#fbfcfd;
+}
+
+.plate-circle{
+    width:110px;
+    height:110px;
+    border-radius:50%;
+    margin:0 auto 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:44px;
+    font-weight:bold;
+    font-family:'Courier New',monospace;
+}
+
+.plate-1{
+    background:radial-gradient(circle at 30% 30%,#d9e87a,#a8c94a 60%,#8fb03c);
+    color:#c96a4a;
+}
+
+.plate-2{
+    background:radial-gradient(circle at 40% 30%,#f0b49a,#e08a6a 60%,#cf7352);
+    color:#7aa84a;
+}
+
+.plate-3{
+    background:radial-gradient(circle at 35% 35%,#c4d9ea,#9bbdd6 60%,#7fa8c6);
+    color:#b06a8a;
+}
+
+.plate-opts{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+.plate-opts button{
+    border:1px solid #e2e8f0;
+    background:white;
+    border-radius:7px;
+    padding:7px 12px;
+    min-height:38px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:bold;
+    color:#475569;
+}
+
+.plate-opts button:hover{
+    border-color:#35708a;
+}
+
+.plate-opts button.chosen{
+    background:#35708a;
+    color:white;
+    border-color:#35708a;
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+    background:#101b2d;
+    color:white;
+    border:none;
+    padding:14px 26px;
+    min-height:50px;
+    border-radius:11px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    font-family:inherit;
+    width:100%;
+}
+
+.btn:hover{
+    background:#16283f;
+}
+
+.btn.secondary{
+    background:transparent;
+    color:#35708a;
+    border:1.5px solid #35708a;
+    margin-top:10px;
+}
+
+.btn.secondary:hover{
+    background:#eaf3f6;
+}
+
+/* ================= RESULT ================= */
+
+.result-box{
+    border-radius:14px;
+    padding:20px;
+    border:1px solid;
+    display:none;
+    margin-top:20px;
+}
+
+.result-box.show{
+    display:block;
+}
+
+.result-box.green{
+    background:#eafaf0;
+    border-color:#bfe0cc;
+}
+
+.result-box.yellow{
+    background:#fbf0dc;
+    border-color:#f3d6a5;
+}
+
+.result-box.red{
+    background:#fdeceb;
+    border-color:#f3b8b0;
+}
+
+.result-title{
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.green .result-title{
+    color:#2f7d4f;
+}
+
+.yellow .result-title{
+    color:#c98a1d;
+}
+
+.red .result-title{
+    color:#c0392b;
+}
+
+.result-row{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    padding:9px 0;
+    border-bottom:1px solid rgba(0,0,0,.06);
+    font-size:14px;
+}
+
+.result-row:last-of-type{
+    border-bottom:none;
+}
+
+.result-row b{
+    color:#101b2d;
+    text-align:right;
+}
+
+.note{
+    font-size:12px;
+    color:#64748b;
+    margin-top:14px;
+    line-height:1.6;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:600px){
+
+    .topbar{
+        padding:14px 16px;
+        padding-top:calc(14px + env(safe-area-inset-top));
+    }
+
+    .topbar h1{
+        font-size:18px;
+    }
+
+    .topbar p{
+        font-size:11.5px;
+    }
+
+    .main{
+        padding:16px;
+        padding-bottom:calc(20px + env(safe-area-inset-bottom));
+    }
+
+    .card{
+        padding:18px;
+        border-radius:16px;
+    }
+
+    .chart{
+        padding:18px 4px;
+    }
+
+    .chart-row{
+        gap:8px;
+    }
+
+    .row-label{
+        width:38px;
+        font-size:9.5px;
+    }
+
+    .row-letters{
+        letter-spacing:4px;
+    }
+
+    .row-pick{
+        padding:5px 8px;
+        font-size:10.5px;
+    }
+
+    .eye-btn{
+        min-width:100%;
+    }
+
+    .plate-circle{
+        width:96px;
+        height:96px;
+        font-size:38px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     TOPBAR WITH BACK ARROW
+===================================================== -->
+
+<header class="topbar">
+    <a href="Dashboard.html"
+       class="back-btn"
+       title="Back to Dashboard"
+       aria-label="Back to Dashboard">
+        <span aria-hidden="true">←</span>
+    </a>
+
+    <div class="topbar-title">
+        <h1>Vision Test</h1>
+        <p>Screening estimate only — not a prescription</p>
+    </div>
+</header>
+
+</div>
+
+
+
+<div class="main">
+
+
+<div class="disclaimer">
+    ⚠️ This is a screening estimate, not a clinical eye examination. Because screen size, display settings and viewing distance can affect results, this test cannot determine your exact spectacle power or replace an examination by an optometrist or ophthalmologist.
+</div>
+
+
+<!-- =====================================================
+     INSTRUCTIONS
+===================================================== -->
+
+<div class="card">
+
+    <h3>Before you start</h3>
+
+    <p class="sub">Follow these steps so the screening is as reliable as possible.</p>
+
+    <ol class="steps">
+        <li>Sit about 40 cm (arm's length) away from your screen.</li>
+        <li>Set your screen brightness to a comfortable, normal level.</li>
+        <li>Make sure the room is well lit with no glare on the screen.</li>
+        <li>If you normally wear glasses or lenses, keep them on.</li>
+        <li>Cover one eye with your palm when testing that eye separately.</li>
+    </ol>
+
+</div>
+
+
+
+<!-- =====================================================
+     VISUAL ACUITY
+===================================================== -->
+
+<div class="card">
+
+    <h3>1. Visual Acuity Test</h3>
+
+    <p class="sub">Select the eye being tested. Read the chart from the largest letters downward and select the smallest complete line you can read clearly.</p>
+
+    <div class="eye-select">
+        <button class="eye-btn active" data-eye="left" onclick="selectEye('left')">Left Eye</button>
+        <button class="eye-btn" data-eye="right" onclick="selectEye('right')">Right Eye</button>
+        <button class="eye-btn" data-eye="both" onclick="selectEye('both')">Both Eyes</button>
+    </div>
+
+    <div class="chart" aria-label="Snellen-style visual acuity chart">
+
+        <div class="chart-scale-note">
+            <span>Snellen-style screening chart</span>
+            <span>Keep the screen at the recommended viewing distance</span>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/200</span>
+            <span class="row-letters acuity-200" aria-label="E">E</span>
+            <button class="row-pick" data-line="1" onclick="pickLine(1)">I can read this</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/100</span>
+            <span class="row-letters acuity-100">FP</span>
+            <button class="row-pick" data-line="2" onclick="pickLine(2)">I can read this</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/70</span>
+            <span class="row-letters acuity-70">TOZ</span>
+            <button class="row-pick" data-line="3" onclick="pickLine(3)">I can read this</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/50</span>
+            <span class="row-letters acuity-50">LPED</span>
+            <button class="row-pick" data-line="4" onclick="pickLine(4)">I can read this</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/40</span>
+            <span class="row-letters acuity-40">PECFD</span>
+            <button class="row-pick" data-line="5" onclick="pickLine(5)">I can read this</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/30</span>
+            <span class="row-letters acuity-30">EDFCZP</span>
+            <button class="row-pick" data-line="6" onclick="pickLine(6)">I can read this</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/20</span>
+            <span class="row-letters acuity-20">FELOPZD</span>
+            <button class="row-pick" data-line="7" onclick="pickLine(7)">I can read this</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/15</span>
+            <span class="row-letters acuity-15">DEFPOTC</span>
+            <button class="row-pick" data-line="8" onclick="pickLine(8)">I can read this</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/13</span>
+            <span class="row-letters acuity-13">LEFODPCT</span>
+            <button class="row-pick" data-line="9" onclick="pickLine(9)">I can read this</button>
+        </div>
+
+        <div class="chart-scale-note bottom-note">
+            <span>Read from the top down.</span>
+            <span>Select the smallest complete line you can read comfortably.</span>
+        </div>
+
+    </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/100</span>
+            <span class="row-letters" style="font-size:40px;">F P</span>
+            <button class="row-pick" data-line="2" onclick="pickLine(2)">This row</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/70</span>
+            <span class="row-letters" style="font-size:30px;">T O Z</span>
+            <button class="row-pick" data-line="3" onclick="pickLine(3)">This row</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/50</span>
+            <span class="row-letters" style="font-size:23px;">L P E D</span>
+            <button class="row-pick" data-line="4" onclick="pickLine(4)">This row</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/40</span>
+            <span class="row-letters" style="font-size:18px;">P E C F D</span>
+            <button class="row-pick" data-line="5" onclick="pickLine(5)">This row</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/30</span>
+            <span class="row-letters" style="font-size:14px;">E D F C Z P</span>
+            <button class="row-pick" data-line="6" onclick="pickLine(6)">This row</button>
+        </div>
+
+        <div class="chart-row">
+            <span class="row-label">20/20</span>
+            <span class="row-letters" style="font-size:11px;">F E L O P Z D</span>
+            <button class="row-pick" data-line="7" onclick="pickLine(7)">This row</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     COLOUR VISION
+===================================================== -->
+
+<div class="card">
+
+    <h3>2. Colour Vision Screening</h3>
+
+    <p class="sub">Tap the number you can see inside each circle. If you cannot see a number, choose "None".</p>
+
+    <div class="color-grid">
+
+        <div class="color-plate">
+            <div class="plate-circle plate-1">12</div>
+            <div class="plate-opts">
+                <button data-plate="1" data-val="12" onclick="pickPlate(1,'12')">12</button>
+                <button data-plate="1" data-val="17" onclick="pickPlate(1,'17')">17</button>
+                <button data-plate="1" data-val="none" onclick="pickPlate(1,'none')">None</button>
+            </div>
+        </div>
+
+        <div class="color-plate">
+            <div class="plate-circle plate-2">8</div>
+            <div class="plate-opts">
+                <button data-plate="2" data-val="8" onclick="pickPlate(2,'8')">8</button>
+                <button data-plate="2" data-val="3" onclick="pickPlate(2,'3')">3</button>
+                <button data-plate="2" data-val="none" onclick="pickPlate(2,'none')">None</button>
+            </div>
+        </div>
+
+        <div class="color-plate">
+            <div class="plate-circle plate-3">6</div>
+            <div class="plate-opts">
+                <button data-plate="3" data-val="6" onclick="pickPlate(3,'6')">6</button>
+                <button data-plate="3" data-val="5" onclick="pickPlate(3,'5')">5</button>
+                <button data-plate="3" data-val="none" onclick="pickPlate(3,'none')">None</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     SUBMIT + RESULT
+===================================================== -->
+
+<div class="card">
+
+    <button class="btn" id="submitBtn" onclick="showResult()">
+        View Screening Result
+    </button>
+
+    <button class="btn secondary" onclick="resetTest()">
+        Reset Test
+    </button>
+
+    <div class="result-box" id="resultBox">
+        <div class="result-title" id="resultTitle"></div>
+        <div id="resultRows"></div>
+        <div id="resultAdvice" style="margin-top:12px;line-height:1.6;font-size:14px;"></div>
+        <p class="note">
+            This screening does not produce a spectacle power or diagnose any eye condition.
+            For an accurate assessment, please visit a qualified optometrist or ophthalmologist.
+        </p>
+    </div>
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+<script>
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let selectedEye  = "left";
+let selectedLine = null;
+
+const plateAnswers = {
+    1:null,
+    2:null,
+    3:null
+};
+
+const correctPlates = {
+    1:"12",
+    2:"8",
+    3:"6"
+};
+
+const acuityMap = {
+    1:"20/200",
+    2:"20/100",
+    3:"20/70",
+    4:"20/50",
+    5:"20/40",
+    6:"20/30",
+    7:"20/20",
+    8:"20/15",
+    9:"20/13"
+};
+
+
+/* =====================================================
+   EYE SELECTION
+===================================================== */
+
+function selectEye(eye){
+
+    selectedEye = eye;
+
+    document
+    .querySelectorAll(".eye-btn")
+    .forEach(function(b){
+
+        b.classList.toggle(
+            "active",
+            b.dataset.eye === eye
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   ACUITY ROW SELECTION
+===================================================== */
+
+function pickLine(line){
+
+    selectedLine = line;
+
+    document
+    .querySelectorAll(".row-pick")
+    .forEach(function(b){
+
+        b.classList.toggle(
+            "chosen",
+            Number(b.dataset.line) === line
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   COLOUR PLATE SELECTION
+===================================================== */
+
+function pickPlate(plate,value){
+
+    plateAnswers[plate] = value;
+
+    document
+    .querySelectorAll('.plate-opts button[data-plate="' + plate + '"]')
+    .forEach(function(b){
+
+        b.classList.toggle(
+            "chosen",
+            b.dataset.val === value
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   RESULT
+===================================================== */
+
+function showResult(){
+
+    if(selectedLine === null){
+
+        alert("Please select the smallest row you can read in the Visual Acuity Test.");
+        return;
+
+    }
+
+    /* Colour score */
+
+    let colourCorrect = 0;
+    let colourAnswered = 0;
+
+    for(let i = 1; i <= 3; i++){
+
+        if(plateAnswers[i] !== null){
+
+            colourAnswered++;
+
+            if(plateAnswers[i] === correctPlates[i]){
+                colourCorrect++;
+            }
+
+        }
+
+    }
+
+    /* Tier from acuity */
+
+    let tier;
+    let title;
+    let advice;
+
+    if(selectedLine >= 6){
+
+        tier  = "green";
+        title = "🟢 Vision screening appears within a normal range";
+        advice = "Your result suggests your vision is within a typical range for this screening. Continue routine eye care and follow the 20-20-20 rule during long screen sessions.";
+
+    }
+    else if(selectedLine >= 4){
+
+        tier  = "yellow";
+        title = "🟡 Mild difficulty observed";
+        advice = "You had some difficulty with the smaller rows. A professional refraction test may be beneficial to check whether corrective lenses would help.";
+
+    }
+    else{
+
+        tier  = "red";
+        title = "🔴 Noticeable difficulty observed";
+        advice = "You were only able to read the larger rows. Please arrange a professional eye examination soon, especially if this is a recent change.";
+
+    }
+
+    /* Colour note */
+
+    let colourNote;
+
+    if(colourAnswered === 0){
+        colourNote = "Not attempted";
+    }
+    else if(colourCorrect === colourAnswered){
+        colourNote = colourCorrect + " of " + colourAnswered + " correct — no colour-vision concern indicated";
+    }
+    else{
+        colourNote = colourCorrect + " of " + colourAnswered + " correct — a professional colour-vision test is advisable";
+
+        if(tier === "green"){
+            tier  = "yellow";
+            title = "🟡 Colour-vision screening needs follow-up";
+            advice = "Your visual acuity result appears within a normal range, but some colour plates were read differently than expected. A professional colour-vision assessment (such as a full Ishihara test) is advisable.";
+        }
+
+    }
+
+    const eyeLabel =
+        selectedEye === "both"
+            ? "Both eyes"
+            : selectedEye === "left"
+                ? "Left eye"
+                : "Right eye";
+
+    /* Render */
+
+    const box = document.getElementById("resultBox");
+
+    box.className = "result-box show " + tier;
+
+    document
+    .getElementById("resultTitle")
+    .textContent = title;
+
+    document
+    .getElementById("resultRows")
+    .innerHTML =
+        '<div class="result-row"><span>Eye tested</span><b>' + eyeLabel + '</b></div>' +
+        '<div class="result-row"><span>Smallest row read</span><b>Row ' + selectedLine + '</b></div>' +
+        '<div class="result-row"><span>Approximate acuity</span><b>' + acuityMap[selectedLine] + '</b></div>' +
+        '<div class="result-row"><span>Colour screening</span><b>' + colourNote + '</b></div>';
+
+    document
+    .getElementById("resultAdvice")
+    .textContent = advice;
+
+    box.scrollIntoView({
+        behavior:"smooth",
+        block:"nearest"
+    });
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+function resetTest(){
+
+    selectedLine = null;
+
+    plateAnswers[1] = null;
+    plateAnswers[2] = null;
+    plateAnswers[3] = null;
+
+    document
+    .querySelectorAll(".row-pick, .plate-opts button")
+    .forEach(function(b){
+        b.classList.remove("chosen");
+    });
+
+    selectEye("left");
+
+    document
+    .getElementById("resultBox")
+    .className = "result-box";
+
+}
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NeuroGuardian AI - Database</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            background: #eeeeee;
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .empty {
+            padding: 25px;
+            text-align: center;
+            color: #777;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-width: 500px;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+        }
+
+        .refresh {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #222;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            margin-bottom: 25px;
+        }
+
+        .refresh:hover {
+            opacity: 0.85;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>🗄️ NeuroGuardian AI Database</h1>
+
+    <div class="subtitle">
+        Live data from your Flask + SQLite database
+    </div>
+
+    <a href="/database" class="refresh">
+        🔄 Refresh Database
+    </a>
+
+
+    <!-- ================================================= -->
+    <!-- USERS -->
+    <!-- ================================================= -->
+
+    <div class="section">
+
+        <h2>👤 Registered Users</h2>
+
+        {% if users %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        {% for key in users[0].keys() %}
+
+                        <th>
+                            {{ key }}
+                        </th>
+
+                        {% endfor %}
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for user in users %}
+
+                    <tr>
+
+                        {% for key in user.keys() %}
+
+                        <td>
+                            {{ user[key] }}
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            No registered users found.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- REPORTS -->
+    <!-- ================================================= -->
+
+    <div class="section">
+
+        <h2>📋 Saved Reports</h2>
+
+        {% if reports %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        {% for key in reports[0].keys() %}
+
+                        <th>
+                            {{ key }}
+                        </th>
+
+                        {% endfor %}
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for report in reports %}
+
+                    <tr>
+
+                        {% for key in report.keys() %}
+
+                        <td>
+
+                            {% if key == "details" %}
+
+                                <pre>{{ report[key] }}</pre>
+
+                            {% else %}
+
+                                {{ report[key] }}
+
+                            {% endif %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            No reports have been saved yet.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

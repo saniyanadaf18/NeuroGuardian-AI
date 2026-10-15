@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroGuardian AI | Symptom Screening</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --ink:#101B2D;
+      --paper:#F4F6F8;
+      --panel:#FFFFFF;
+      --line:#E2E8F0;
+      --teal:#35708A;
+      --teal-dark:#24506A;
+      --green:#3F9142;
+      --amber:#C98A1D;
+      --red:#C0392B;
+      --text:#17202B;
+      --text-muted:#64748B;
+      --radius:18px;
+      --shadow:0 12px 30px rgba(16,27,45,.08);
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      font-family:'Inter',sans-serif;
+      background:var(--paper);
+      color:var(--text);
+      padding:40px;
+    }
+
+    .container{
+      max-width:950px;
+      margin:auto;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:28px;
+      gap:16px;
+    }
+
+    .header h1{
+      font-family:'Fraunces',serif;
+      color:var(--ink);
+      font-size:2rem;
+    }
+
+    .back-btn{
+      background:var(--teal);
+      color:#fff;
+      text-decoration:none;
+      padding:10px 18px;
+      border-radius:12px;
+      font-weight:600;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:28px;
+      box-shadow:var(--shadow);
+    }
+
+    .card h2{
+      font-family:'Fraunces',serif;
+      color:var(--ink);
+      margin-bottom:10px;
+    }
+
+    .card p{
+      color:var(--text-muted);
+      line-height:1.6;
+      margin-bottom:22px;
+    }
+
+    .section-title{
+      font-weight:700;
+      color:var(--ink);
+      margin:20px 0 14px;
+    }
+
+    .checkbox-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    .checkbox-item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+    }
+
+    .checkbox-item input{
+      width:18px;
+      height:18px;
+    }
+
+    .form-group{
+      margin-top:22px;
+    }
+
+    label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:600;
+      color:var(--ink);
+    }
+
+    select,
+    textarea{
+      width:100%;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      font-size:15px;
+      font-family:'Inter',sans-serif;
+      background:#fff;
+    }
+
+    textarea{
+      resize:vertical;
+      min-height:120px;
+    }
+
+    .buttons{
+      display:flex;
+      gap:14px;
+      margin-top:28px;
+    }
+
+    .submit-btn{
+      background:var(--teal);
+      color:#fff;
+      border:none;
+      padding:14px 22px;
+      border-radius:12px;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .submit-btn:hover{
+      background:var(--teal-dark);
+    }
+
+    .cancel-btn{
+      background:#E5E7EB;
+      color:#111827;
+      text-decoration:none;
+      padding:14px 22px;
+      border-radius:12px;
+      font-weight:600;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    @media(max-width:768px){
+      body{
+        padding:20px;
+      }
+
+      .header{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .checkbox-grid{
+        grid-template-columns:1fr;
+      }
+
+      .buttons{
+        flex-direction:column;
+      }
+
+      .submit-btn,
+      .cancel-btn{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>🩺 Symptom Screening</h1>
+    <a href="dashboard.html" class="back-btn">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2>Neurological & Eye Symptom Assessment</h2>
+    <p>
+      Select the symptoms you are experiencing. NeuroGuardian AI will generate
+      an initial neurological assessment and save the result to your dashboard.
+    </p>
+
+    <div class="section-title">Select your symptoms</div>
+
+    <div class="checkbox-grid">
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Headache">
+        Headache
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Migraine">
+        Migraine
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Dizziness">
+        Dizziness
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Blurred Vision">
+        Blurred Vision
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Eye Pain">
+        Eye Pain
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Watery Eyes">
+        Watery Eyes
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Light Sensitivity">
+        Light Sensitivity
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Sound Sensitivity">
+        Sound Sensitivity
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Nausea">
+        Nausea / Vomiting
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Numbness">
+        Numbness
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Weakness">
+        Weakness
+      </label>
+
+      <label class="checkbox-item">
+        <input type="checkbox" value="Difficulty Speaking">
+        Difficulty Speaking
+      </label>
+
+    </div>
+
+    <div class="form-group">
+      <label>Headache severity</label>
+      <select id="severity">
+        <option value="">Select severity</option>
+        <option value="Mild">Mild</option>
+        <option value="Moderate">Moderate</option>
+        <option value="Severe">Severe</option>
+        <option value="Very Severe">Very Severe</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Duration of symptoms</label>
+      <select id="duration">
+        <option value="">Select duration</option>
+        <option>Less than 1 hour</option>
+        <option>1–6 hours</option>
+        <option>6–24 hours</option>
+        <option>1–3 days</option>
+        <option>More than 3 days</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Additional notes</label>
+      <textarea id="notes" placeholder="Describe your symptoms in detail..."></textarea>
+    </div>
+
+    <div class="buttons">
+      <button class="submit-btn" onclick="submitSymptoms()">
+        Analyze Symptoms
+      </button>
+
+      <a href="dashboard.html" class="cancel-btn">Cancel</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function submitSymptoms(){
+
+  const checked = [...document.querySelectorAll('input[type="checkbox"]:checked')]
+    .map(cb => cb.value);
+
+  const severity = document.getElementById('severity').value;
+  const duration = document.getElementById('duration').value;
+  const notes = document.getElementById('notes').value;
+
+  let assessment = "General neurological screening recommended.";
+  let risk = "Green (Low)";
+  let recommendation = "Monitor symptoms and maintain hydration and rest.";
+
+  if(
+    checked.includes('Migraine') ||
+    checked.includes('Light Sensitivity') ||
+    checked.includes('Sound Sensitivity')
+  ){
+    assessment = "Possible migraine-associated headache pattern detected.";
+    risk = "Yellow (Moderate)";
+    recommendation = "Neurologist consultation within 2–5 days is recommended.";
+  }
+
+  if(
+    checked.includes('Difficulty Speaking') ||
+    checked.includes('Weakness') ||
+    checked.includes('Numbness')
+  ){
+    assessment = "Possible neurological emergency indicators detected.";
+    risk = "Red (High)";
+    recommendation = "Seek emergency medical care immediately.";
+  }
+
+  const result = {
+    symptoms: checked,
+    severity,
+    duration,
+    notes,
+    assessment,
+    risk,
+    recommendation,
+    date: new Date().toLocaleString()
+  };
+
+  localStorage.setItem('symptomAnalysis', JSON.stringify(result));
+
+  alert('Symptoms analyzed successfully. Redirecting to Dashboard.');
+  window.location.href = 'dashboard.html';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,4856 @@
+</script><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NeuroGuardian AI - Brain Disease Detection</title>
+<script src="ng-core.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#f4f8fc;
+    color:#172033;
+}
+
+header{
+    min-height:70px;
+    background:linear-gradient(135deg,#102a43,#176b87);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 30px;
+    box-shadow:0 4px 15px rgba(0,0,0,.12);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-icon{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:white;
+    color:#176b87;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:23px;
+}
+
+.brand h1{
+    font-size:20px;
+}
+
+.brand span{
+    display:block;
+    font-size:11px;
+    opacity:.8;
+    margin-top:2px;
+}
+
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+select{
+    border:none;
+    outline:none;
+    border-radius:8px;
+    padding:9px 12px;
+    cursor:pointer;
+}
+
+.dashboard-btn{
+    background:white;
+    color:#176b87;
+    border:none;
+    padding:10px 15px;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+main{
+    max-width:1150px;
+    margin:30px auto;
+    padding:0 20px 50px;
+}
+
+.hero{
+    background:white;
+    border-radius:18px;
+    padding:28px;
+    box-shadow:0 8px 25px rgba(0,0,0,.07);
+    margin-bottom:22px;
+}
+
+.hero h2{
+    color:#123b56;
+    margin-bottom:8px;
+}
+
+.hero p{
+    color:#607080;
+    line-height:1.6;
+}
+
+.warning{
+    margin-top:18px;
+    padding:14px 16px;
+    border-radius:10px;
+    background:#fff6df;
+    border-left:5px solid #f2a900;
+    color:#704d00;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.progress-box{
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    margin-bottom:22px;
+    box-shadow:0 5px 18px rgba(0,0,0,.05);
+}
+
+.progress-top{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:8px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.progress{
+    height:9px;
+    background:#e4ebf1;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,#20a4c7,#176b87);
+    transition:.3s;
+}
+
+.section{
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    margin-bottom:20px;
+    box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+
+.section h3{
+    color:#143d59;
+    margin-bottom:8px;
+}
+
+.section-description{
+    color:#71808e;
+    font-size:14px;
+    margin-bottom:20px;
+    line-height:1.5;
+}
+
+.question{
+    border:1px solid #e0e7ed;
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:13px;
+}
+
+.question-title{
+    font-weight:bold;
+    margin-bottom:12px;
+    line-height:1.5;
+}
+
+.options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+}
+
+.option input{
+    display:none;
+}
+
+.option label{
+    display:block;
+    padding:9px 13px;
+    border:1px solid #d4dee6;
+    border-radius:8px;
+    cursor:pointer;
+    color:#4e5d69;
+    background:#fff;
+    font-size:13px;
+}
+
+.option input:checked+label{
+    background:#176b87;
+    color:white;
+    border-color:#176b87;
+}
+
+.symptom-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:13px;
+}
+
+.symptom-card{
+    border:1px solid #dfe7ed;
+    border-radius:12px;
+    padding:17px;
+    cursor:pointer;
+    transition:.2s;
+    background:white;
+}
+
+.symptom-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 5px 15px rgba(0,0,0,.07);
+}
+
+.symptom-card.selected{
+    border-color:#176b87;
+    background:#edf9fc;
+    box-shadow:0 0 0 2px rgba(23,107,135,.08);
+}
+
+.symptom-card .icon{
+    font-size:25px;
+    margin-bottom:7px;
+}
+
+.symptom-card strong{
+    display:block;
+    margin-bottom:5px;
+}
+
+.symptom-card small{
+    color:#74818c;
+    line-height:1.4;
+}
+
+.blood-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.check-row{
+    border:1px solid #dde6ed;
+    padding:13px;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    cursor:pointer;
+}
+
+.check-row input{
+    width:17px;
+    height:17px;
+}
+
+.actions{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:25px;
+    flex-wrap:wrap;
+}
+
+.primary-btn,
+.secondary-btn{
+    border:none;
+    padding:13px 24px;
+    border-radius:9px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.primary-btn{
+    background:linear-gradient(135deg,#176b87,#0f5269);
+    color:white;
+}
+
+.secondary-btn{
+    background:#e9f0f4;
+    color:#234050;
+}
+
+.primary-btn:hover{
+    transform:translateY(-1px);
+}
+
+#resultSection{
+    display:none;
+}
+
+.result-header{
+    text-align:center;
+    padding:10px 0 20px;
+}
+
+.risk-circle{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    margin:10px auto 15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    border:8px solid #20a4c7;
+    background:#f4fcfe;
+}
+
+.risk-circle strong{
+    font-size:30px;
+}
+
+.risk-circle span{
+    font-size:12px;
+    color:#687985;
+}
+
+.risk-title{
+    font-size:24px;
+    margin-bottom:5px;
+}
+
+.risk-description{
+    color:#687985;
+    max-width:700px;
+    margin:auto;
+    line-height:1.5;
+}
+
+.emergency-box{
+    display:none;
+    margin:20px 0;
+    padding:18px;
+    background:#fff0f0;
+    border:2px solid #df4141;
+    border-radius:12px;
+    color:#8b1717;
+}
+
+.emergency-box h3{
+    color:#a71919;
+    margin-bottom:8px;
+}
+
+.result-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+    margin-top:20px;
+}
+
+.result-card{
+    background:#f8fbfd;
+    border:1px solid #e1e9ef;
+    border-radius:12px;
+    padding:18px;
+}
+
+.result-card h4{
+    color:#174d65;
+    margin-bottom:10px;
+}
+
+.result-card ul{
+    padding-left:20px;
+}
+
+.result-card li{
+    margin-bottom:7px;
+    line-height:1.45;
+    color:#4d5c67;
+}
+
+.concern{
+    margin-top:9px;
+    padding:9px;
+    background:#fff9e8;
+    border-radius:7px;
+    font-size:13px;
+}
+
+.doctor-box{
+    margin-top:20px;
+    padding:18px;
+    background:#edf7ff;
+    border-left:5px solid #2980b9;
+    border-radius:9px;
+    line-height:1.6;
+}
+
+.home-box{
+    margin-top:20px;
+    padding:18px;
+    background:#effbf4;
+    border-left:5px solid #28a264;
+    border-radius:9px;
+    line-height:1.6;
+}
+
+.disclaimer{
+    margin-top:20px;
+    padding:15px;
+    background:#f2f4f6;
+    border-radius:9px;
+    color:#596671;
+    font-size:12px;
+    line-height:1.6;
+}
+
+
+/* ================= VOICE ================= */
+
+.voice-section{
+    border:1px solid #d7e8ee;
+}
+
+.voice-input-box{
+    background:#f7fbfd;
+    border:1px solid #dce8ed;
+    border-radius:12px;
+    padding:16px;
+}
+
+#voiceSymptoms{
+    width:100%;
+    resize:vertical;
+    min-height:105px;
+    border:1px solid #ccdbe2;
+    border-radius:10px;
+    padding:13px;
+    font-size:14px;
+    line-height:1.5;
+    outline:none;
+    background:white;
+    color:#172033;
+}
+
+#voiceSymptoms:focus{
+    border-color:#176b87;
+    box-shadow:0 0 0 3px rgba(23,107,135,.10);
+}
+
+.voice-actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:12px;
+}
+
+#brainVoiceBtn.listening{
+    background:linear-gradient(135deg,#c0392b,#96281b);
+}
+
+#brainVoiceStatus{
+    color:#61727d;
+    font-size:13px;
+}
+
+.voice-extracted{
+    margin-top:12px;
+    padding:12px 14px;
+    border-radius:9px;
+    background:#edf8fb;
+    color:#174d65;
+    font-size:13px;
+    line-height:1.5;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:800px){
+
+    .symptom-grid,
+    .result-grid,
+    .blood-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:560px){
+
+    header{
+        padding:12px 13px;
+    }
+
+    .brand h1{
+        font-size:16px;
+    }
+
+    .header-actions select{
+        max-width:90px;
+    }
+
+    .dashboard-btn{
+        padding:8px;
+        font-size:12px;
+    }
+
+    .symptom-grid,
+    .result-grid,
+    .blood-grid{
+        grid-template-columns:1fr;
+    }
+
+    .options{
+        flex-direction:column;
+    }
+
+    .option label{
+        text-align:center;
+    }
+
+    .voice-actions{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    #brainVoiceBtn{
+        width:100%;
+    }
+
+}
+
+@media print{
+
+    header,
+    .hero,
+    .progress-box,
+    #screeningSection,
+    .actions{
+        display:none!important;
+    }
+
+    body{
+        background:white;
+    }
+
+    main{
+        margin:0;
+        max-width:none;
+    }
+
+    #resultSection{
+        display:block!important;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🧠
+        </div>
+
+        <div>
+            <h1>NeuroGuardian AI</h1>
+            <span id="headerSubtitle">
+                Brain Disease Risk Screening
+            </span>
+        </div>
+
+    </div>
+
+
+    <div class="header-actions">
+
+        <select id="languageSelect" onchange="changeLanguage()">
+
+            <option value="en">English</option>
+            <option value="hi">हिन्दी</option>
+            <option value="mr">मराठी</option>
+            <option value="ur">اردو</option>
+
+        </select>
+
+
+        <button
+            class="dashboard-btn"
+            onclick="goDashboard()"
+        >
+            ← <span id="dashboardText">Dashboard</span>
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<main>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <h2 id="pageTitle">
+        Advanced Neurological Health Screening
+    </h2>
+
+    <p id="pageDescription">
+        Answer the questions below about your neurological symptoms.
+        NeuroGuardian AI will analyze the pattern, identify warning signs,
+        estimate the screening severity and provide appropriate next steps.
+    </p>
+
+    <div class="warning" id="warningText">
+
+        ⚠️ This module provides preliminary screening only.
+        It cannot diagnose brain tumour, stroke, migraine, epilepsy
+        or any other disease. Emergency symptoms require immediate
+        medical evaluation.
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= PROGRESS ================= -->
+
+<div class="progress-box">
+
+    <div class="progress-top">
+
+        <span id="progressLabel">
+            Screening Progress
+        </span>
+
+        <span id="progressPercent">
+            0%
+        </span>
+
+    </div>
+
+    <div class="progress">
+
+        <div
+            class="progress-bar"
+            id="progressBar"
+        ></div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= SCREENING ================= -->
+
+<section id="screeningSection">
+
+
+<!-- ================= BASIC INFORMATION ================= -->
+
+<div class="section">
+
+    <h3>
+        1. Basic Information
+    </h3>
+
+    <p class="section-description">
+        This information helps the screening engine interpret symptoms.
+    </p>
+
+
+    <div class="question">
+
+        <div class="question-title">
+            What is your age group?
+        </div>
+
+        <div class="options">
+
+            <div class="option">
+                <input type="radio"
+                       name="age"
+                       value="young"
+                       id="age1">
+                <label for="age1">
+                    Below 18
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio"
+                       name="age"
+                       value="adult"
+                       id="age2">
+                <label for="age2">
+                    18–40
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio"
+                       name="age"
+                       value="middle"
+                       id="age3">
+                <label for="age3">
+                    41–60
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio"
+                       name="age"
+                       value="older"
+                       id="age4">
+                <label for="age4">
+                    Above 60
+                </label>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="question">
+
+        <div class="question-title">
+            How long have your symptoms been occurring?
+        </div>
+
+        <div class="options">
+
+            <div class="option">
+                <input type="radio"
+                       name="duration"
+                       value="hours"
+                       id="dur1">
+                <label for="dur1">
+                    Hours
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio"
+                       name="duration"
+                       value="days"
+                       id="dur2">
+                <label for="dur2">
+                    Several days
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio"
+                       name="duration"
+                       value="weeks"
+                       id="dur3">
+                <label for="dur3">
+                    Several weeks
+                </label>
+            </div>
+
+            <div class="option">
+                <input type="radio"
+                       name="duration"
+                       value="months"
+                       id="dur4">
+                <label for="dur4">
+                    Months
+                </label>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= EMERGENCY ================= -->
+
+<div class="section">
+
+    <h3>
+        2. Emergency Warning Signs
+    </h3>
+
+    <p class="section-description">
+        Select any symptom that appeared suddenly or is currently present.
+    </p>
+
+
+    <div class="symptom-grid">
+
+
+        <div class="symptom-card"
+             data-key="suddenWeakness">
+
+            <div class="icon">💪</div>
+
+            <strong>
+                Sudden weakness
+            </strong>
+
+            <small>
+                Weakness or numbness, especially on one side.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="speech">
+
+            <div class="icon">🗣️</div>
+
+            <strong>
+                Speech difficulty
+            </strong>
+
+            <small>
+                Difficulty speaking or understanding speech.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="vision">
+
+            <div class="icon">👁️</div>
+
+            <strong>
+                Sudden vision problem
+            </strong>
+
+            <small>
+                Sudden loss, blurring or double vision.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="balance">
+
+            <div class="icon">⚖️</div>
+
+            <strong>
+                Sudden balance problem
+            </strong>
+
+            <small>
+                Sudden severe dizziness or difficulty walking.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="worstHeadache">
+
+            <div class="icon">⚡</div>
+
+            <strong>
+                Sudden severe headache
+            </strong>
+
+            <small>
+                Extremely sudden or unusually severe headache.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="confusion">
+
+            <div class="icon">🧠</div>
+
+            <strong>
+                Confusion / consciousness
+            </strong>
+
+            <small>
+                New severe confusion, fainting or reduced alertness.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="seizure">
+
+            <div class="icon">⚡</div>
+
+            <strong>
+                Seizure
+            </strong>
+
+            <small>
+                A new or unexplained seizure.
+            </small>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= NORMAL SYMPTOMS ================= -->
+
+<div class="section">
+
+    <h3>
+        3. Neurological Symptoms
+    </h3>
+
+    <p class="section-description">
+        Select all symptoms that you have experienced.
+    </p>
+
+
+    <div class="symptom-grid">
+
+
+        <div class="symptom-card"
+             data-key="headache">
+
+            <div class="icon">🤕</div>
+
+            <strong>
+                Headache
+            </strong>
+
+            <small>
+                Recurring, persistent or unusual headache.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="nausea">
+
+            <div class="icon">🤢</div>
+
+            <strong>
+                Nausea / vomiting
+            </strong>
+
+            <small>
+                Nausea or vomiting associated with symptoms.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="light">
+
+            <div class="icon">💡</div>
+
+            <strong>
+                Light sensitivity
+            </strong>
+
+            <small>
+                Light makes the headache or symptoms worse.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="sound">
+
+            <div class="icon">🔊</div>
+
+            <strong>
+                Sound sensitivity
+            </strong>
+
+            <small>
+                Normal sounds feel unusually uncomfortable.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="aura">
+
+            <div class="icon">✨</div>
+
+            <strong>
+                Visual aura
+            </strong>
+
+            <small>
+                Flashing lights, zig-zag patterns or temporary
+                visual changes.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="memory">
+
+            <div class="icon">🧩</div>
+
+            <strong>
+                Memory changes
+            </strong>
+
+            <small>
+                New or worsening memory difficulties.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="personality">
+
+            <div class="icon">🧠</div>
+
+            <strong>
+                Personality / behaviour change
+            </strong>
+
+            <small>
+                Unusual changes noticed by you or others.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="weakness">
+
+            <div class="icon">🦵</div>
+
+            <strong>
+                Persistent weakness
+            </strong>
+
+            <small>
+                Weakness that continues or gradually worsens.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="numbness">
+
+            <div class="icon">🖐️</div>
+
+            <strong>
+                Numbness / tingling
+            </strong>
+
+            <small>
+                Persistent or recurrent abnormal sensation.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="balanceNormal">
+
+            <div class="icon">🚶</div>
+
+            <strong>
+                Balance difficulty
+            </strong>
+
+            <small>
+                Unsteadiness or difficulty coordinating movements.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="speechNormal">
+
+            <div class="icon">💬</div>
+
+            <strong>
+                Speech changes
+            </strong>
+
+            <small>
+                Difficulty finding words or communicating normally.
+            </small>
+
+        </div>
+
+
+        <div class="symptom-card"
+             data-key="hearing">
+
+            <div class="icon">👂</div>
+
+            <strong>
+                Hearing changes
+            </strong>
+
+            <small>
+                New unexplained hearing changes or ringing.
+            </small>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= BLOOD REPORT ================= -->
+
+<div class="section">
+
+    <h3>
+        4. Blood Report Findings
+    </h3>
+
+    <p class="section-description">
+        If you have already used the Blood Report Analyzer,
+        select relevant abnormal findings here.
+        Do not select anything if you do not have a report.
+    </p>
+
+
+    <div class="blood-grid">
+
+        <label class="check-row">
+            <input type="checkbox"
+                   value="anemia"
+                   class="blood">
+            Low hemoglobin / anemia
+        </label>
+
+
+        <label class="check-row">
+            <input type="checkbox"
+                   value="iron"
+                   class="blood">
+            Low ferritin / iron deficiency
+        </label>
+
+
+        <label class="check-row">
+            <input type="checkbox"
+                   value="inflammation"
+                   class="blood">
+            Elevated ESR / CRP
+        </label>
+
+
+        <label class="check-row">
+            <input type="checkbox"
+                   value="wbc"
+                   class="blood">
+            Abnormal WBC
+        </label>
+
+
+        <label class="check-row">
+            <input type="checkbox"
+                   value="platelets"
+                   class="blood">
+            Abnormal platelet count
+        </label>
+
+
+        <label class="check-row">
+            <input type="checkbox"
+                   value="glucose"
+                   class="blood">
+            High glucose
+        </label>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     VOICE SYMPTOM INPUT
+========================================================= -->
+
+<div class="section voice-section">
+
+    <h3>
+        🎤 Voice Symptom Input
+    </h3>
+
+    <p class="section-description">
+
+        Describe your symptoms naturally using your voice.
+        NeuroGuardian AI will convert your speech to text,
+        identify relevant symptoms and automatically run the
+        neurological screening.
+
+        You do not need to select the symptom cards manually.
+
+    </p>
+
+
+    <div class="voice-input-box">
+
+        <textarea
+            id="voiceSymptoms"
+            placeholder="Example: I suddenly have a very severe headache, difficulty speaking and weakness on my left side."
+        ></textarea>
+
+
+        <div class="voice-actions">
+
+            <button
+                type="button"
+                class="primary-btn"
+                id="brainVoiceBtn"
+            >
+                🎤 Speak Symptoms
+            </button>
+
+
+            <span id="brainVoiceStatus">
+                Click and describe all your symptoms.
+            </span>
+
+        </div>
+
+
+        <div
+            id="voiceExtracted"
+            class="voice-extracted"
+            hidden
+        ></div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= FINAL QUESTIONS ================= -->
+
+<div class="section">
+
+    <h3>
+        6. Final Questions
+    </h3>
+
+
+    <div class="question">
+
+        <div class="question-title">
+            Is the headache becoming progressively more frequent or severe?
+        </div>
+
+        <div class="options">
+
+            <div class="option">
+
+                <input type="radio"
+                       name="progressive"
+                       value="yes"
+                       id="pr1">
+
+                <label for="pr1">
+                    Yes
+                </label>
+
+            </div>
+
+
+            <div class="option">
+
+                <input type="radio"
+                       name="progressive"
+                       value="no"
+                       id="pr2">
+
+                <label for="pr2">
+                    No
+                </label>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="question">
+
+        <div class="question-title">
+            Are symptoms interfering significantly with your daily activities?
+        </div>
+
+        <div class="options">
+
+            <div class="option">
+
+                <input type="radio"
+                       name="daily"
+                       value="yes"
+                       id="da1">
+
+                <label for="da1">
+                    Yes
+                </label>
+
+            </div>
+
+
+            <div class="option">
+
+                <input type="radio"
+                       name="daily"
+                       value="no"
+                       id="da2">
+
+                <label for="da2">
+                    No
+                </label>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="secondary-btn"
+            onclick="resetForm()"
+        >
+            Reset
+        </button>
+
+
+        <button
+            class="primary-btn"
+            onclick="analyzeBrainHealth()"
+        >
+            🧠 Analyze My Symptoms
+        </button>
+
+    </div>
+
+</div>
+
+</section>
+
+
+
+<!-- =========================================================
+     RESULTS
+========================================================= -->
+
+<section class="section" id="resultSection">
+
+    <div class="result-header">
+
+        <div class="risk-circle" id="riskCircle">
+
+            <strong id="riskScore">
+                0
+            </strong>
+
+            <span>
+                Risk Score
+            </span>
+
+        </div>
+
+
+        <div class="risk-title" id="riskTitle">
+            Screening Result
+        </div>
+
+
+        <p class="risk-description"
+           id="riskDescription">
+
+            Your preliminary screening result will appear here.
+
+        </p>
+
+    </div>
+
+
+
+    <div class="emergency-box"
+         id="emergencyBox">
+
+        <h3>
+            🚨 Emergency Warning
+        </h3>
+
+        <p id="emergencyMessage">
+
+            Your selected symptoms include warning signs
+            that should not be evaluated only through an
+            online screening tool. Seek urgent medical attention.
+
+        </p>
+
+    </div>
+
+
+
+    <div class="result-grid">
+
+
+        <div class="result-card">
+
+            <h4>
+                🔎 Pattern Identified
+            </h4>
+
+            <div id="patternResult"></div>
+
+        </div>
+
+
+        <div class="result-card">
+
+            <h4>
+                🧠 Symptoms Detected
+            </h4>
+
+            <ul id="symptomResult"></ul>
+
+        </div>
+
+
+        <div class="result-card">
+
+            <h4>
+                📊 Why This Result?
+            </h4>
+
+            <ul id="reasonResult"></ul>
+
+        </div>
+
+
+        <div class="result-card">
+
+            <h4>
+                ⚠️ Conditions That May Need Evaluation
+            </h4>
+
+            <ul id="conditionResult"></ul>
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="home-box">
+
+        <h4>
+            🏠 General Supportive Measures
+        </h4>
+
+        <p id="homeResult"></p>
+
+    </div>
+
+
+
+    <div class="doctor-box">
+
+        <h4>
+            👨‍⚕️ Recommended Next Step
+        </h4>
+
+        <p id="doctorResult"></p>
+
+    </div>
+
+
+
+    <div class="disclaimer">
+
+        <strong>
+            Medical Safety Notice:
+        </strong>
+
+        NeuroGuardian AI is a preliminary screening
+        and educational system.
+
+        It cannot confirm or exclude a brain tumour,
+        stroke, epilepsy, migraine or any other
+        neurological disease.
+
+        Blood tests and symptoms alone are not sufficient
+        to diagnose structural brain diseases.
+
+        A qualified healthcare professional should interpret
+        symptoms and determine whether examination,
+        imaging or other investigations are required.
+
+    </div>
+
+
+
+    <div class="actions">
+
+        <button
+            class="secondary-btn"
+            onclick="printResult()"
+        >
+            🖨️ Print Report
+        </button>
+
+
+        <button
+            class="secondary-btn"
+            onclick="newAssessment()"
+        >
+            🔄 New Assessment
+        </button>
+
+
+        <button
+            class="primary-btn"
+            onclick="goDashboard()"
+        >
+            ← Back to Dashboard
+        </button>
+
+    </div>
+
+</section>
+
+</main>
+
+
+
+<script>
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+const translations = {
+
+    en:{
+        subtitle:"Brain Disease Risk Screening",
+        dashboard:"Dashboard",
+        title:"Advanced Neurological Health Screening",
+        description:
+        "Answer the questions below about your neurological symptoms. NeuroGuardian AI will analyze the pattern, identify warning signs, estimate the screening severity and provide appropriate next steps.",
+        warning:
+        "⚠️ This module provides preliminary screening only. It cannot diagnose brain tumour, stroke, migraine, epilepsy or any other disease. Emergency symptoms require immediate medical evaluation.",
+        progress:"Screening Progress"
+    },
+
+    hi:{
+        subtitle:"मस्तिष्क रोग जोखिम स्क्रीनिंग",
+        dashboard:"डैशबोर्ड",
+        title:"उन्नत न्यूरोलॉजिकल स्वास्थ्य स्क्रीनिंग",
+        description:
+        "अपने न्यूरोलॉजिकल लक्षणों के बारे में नीचे दिए गए प्रश्नों के उत्तर दें। NeuroGuardian AI लक्षणों के पैटर्न और चेतावनी संकेतों का विश्लेषण करेगा।",
+        warning:
+        "⚠️ यह केवल प्रारंभिक स्क्रीनिंग है। यह ब्रेन ट्यूमर, स्ट्रोक, माइग्रेन या किसी अन्य बीमारी का निदान नहीं करता। आपातकालीन लक्षणों में तुरंत चिकित्सा सहायता लें।",
+        progress:"स्क्रीनिंग प्रगति"
+    },
+
+    mr:{
+        subtitle:"मेंदूच्या आजारांचा धोका तपासणी",
+        dashboard:"डॅशबोर्ड",
+        title:"प्रगत न्यूरोलॉजिकल आरोग्य तपासणी",
+        description:
+        "तुमच्या न्यूरोलॉजिकल लक्षणांबद्दल खालील प्रश्नांची उत्तरे द्या. NeuroGuardian AI लक्षणांचा पॅटर्न आणि धोक्याची चिन्हे तपासेल.",
+        warning:
+        "⚠️ ही फक्त प्राथमिक तपासणी आहे. यामुळे ब्रेन ट्यूमर, स्ट्रोक, मायग्रेन किंवा इतर कोणत्याही आजाराचे निदान होत नाही. आपत्कालीन लक्षणे असल्यास त्वरित वैद्यकीय मदत घ्या.",
+        progress:"तपासणी प्रगती"
+    },
+
+    ur:{
+        subtitle:"دماغی بیماری کے خطرے کی اسکریننگ",
+        dashboard:"ڈیش بورڈ",
+        title:"اعلیٰ نیورولوجیکل صحت کی اسکریننگ",
+        description:
+        "اپنی نیورولوجیکل علامات کے بارے میں سوالات کے جوابات دیں۔ NeuroGuardian AI علامات کے پیٹرن اور خطرے کی علامات کا تجزیہ کرے گا۔",
+        warning:
+        "⚠️ یہ صرف ابتدائی اسکریننگ ہے۔ یہ برین ٹیومر، فالج، مائیگرین یا کسی دوسری بیماری کی تشخیص نہیں کرتی۔ ہنگامی علامات کی صورت میں فوری طبی مدد حاصل کریں۔",
+        progress:"اسکریننگ کی پیش رفت"
+    }
+
+};
+
+
+function changeLanguage(){
+
+    const lang =
+        document.getElementById("languageSelect").value;
+
+    const t =
+        translations[lang];
+
+    document.getElementById("headerSubtitle")
+        .innerText=t.subtitle;
+
+    document.getElementById("dashboardText")
+        .innerText=t.dashboard;
+
+    document.getElementById("pageTitle")
+        .innerText=t.title;
+
+    document.getElementById("pageDescription")
+        .innerText=t.description;
+
+    document.getElementById("warningText")
+        .innerText=t.warning;
+
+    document.getElementById("progressLabel")
+        .innerText=t.progress;
+
+    localStorage.setItem("ngLanguage",lang);
+}
+
+
+
+/* =========================================================
+   SELECTED SYMPTOMS
+========================================================= */
+
+const selectedSymptoms =
+    new Set();
+
+
+document.querySelectorAll(".symptom-card")
+.forEach(card=>{
+
+    card.addEventListener("click",function(){
+
+        const key=this.dataset.key;
+
+        if(selectedSymptoms.has(key)){
+
+            selectedSymptoms.delete(key);
+
+            this.classList.remove("selected");
+
+        }else{
+
+            selectedSymptoms.add(key);
+
+            this.classList.add("selected");
+
+        }
+
+        updateProgress();
+
+    });
+
+});
+
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function updateProgress(){
+
+    const questions =
+        document.querySelectorAll(
+            "input[type='radio']:checked, input[type='checkbox']:checked"
+        ).length;
+
+    const symptomCount =
+        selectedSymptoms.size;
+
+    const total=20;
+
+    let progress=
+        Math.round(
+            ((questions+symptomCount)/total)*100
+        );
+
+    if(progress>100)
+        progress=100;
+
+    document.getElementById("progressBar")
+        .style.width=progress+"%";
+
+    document.getElementById("progressPercent")
+        .innerText=progress+"%";
+
+}
+
+
+document.querySelectorAll("input")
+.forEach(input=>{
+
+    input.addEventListener(
+        "change",
+        updateProgress
+    );
+
+});
+
+
+
+/* =========================================================
+   RADIO HELPER
+========================================================= */
+
+function getRadio(name){
+
+    const element =
+        document.querySelector(
+            `input[name="${name}"]:checked`
+        );
+
+    return element
+        ? element.value
+        : "";
+
+}
+
+
+
+/* =========================================================
+   BRAIN ANALYSIS
+========================================================= */
+
+function analyzeBrainHealth(){
+
+    let score=0;
+
+    let emergency=false;
+
+    let reasons=[];
+
+    let conditions=[];
+
+    let patterns=[];
+
+
+    const emergencyKeys=[
+
+        "suddenWeakness",
+        "speech",
+        "vision",
+        "balance",
+        "worstHeadache",
+        "confusion",
+        "seizure"
+
+    ];
+
+
+    emergencyKeys.forEach(key=>{
+
+        if(selectedSymptoms.has(key)){
+
+            emergency=true;
+
+            score+=20;
+
+        }
+
+    });
+
+
+
+    if(selectedSymptoms.has("headache")){
+
+        score+=5;
+
+        reasons.push(
+            "Headache was selected as a current symptom."
+        );
+
+    }
+
+
+    if(selectedSymptoms.has("nausea")){
+
+        score+=4;
+
+        reasons.push(
+            "Nausea or vomiting can accompany several headache and neurological conditions."
+        );
+
+    }
+
+
+    if(selectedSymptoms.has("light") && selectedSymptoms.has("headache")){
+        score+=3;
+        reasons.push("Light sensitivity occurring with headache should be considered with the other neurological symptoms.");
+    }
+
+    if(selectedSymptoms.has("sound") && selectedSymptoms.has("headache")){
+        score+=2;
+        reasons.push("Sound sensitivity occurring with headache should be considered with the other neurological symptoms.");
+    }
+
+    if(selectedSymptoms.has("aura")){
+        score+=4;
+        patterns.push("Visual or sensory disturbance");
+        reasons.push("New visual or sensory disturbances should be assessed, especially if they are unusual or persistent.");
+    }
+
+
+    if(selectedSymptoms.has("memory")){
+
+        score+=10;
+
+        reasons.push(
+            "New or worsening memory problems should be assessed if persistent."
+        );
+
+        conditions.push(
+            "Cognitive or neurological causes may require clinical evaluation."
+        );
+
+    }
+
+
+    if(selectedSymptoms.has("personality")){
+
+        score+=12;
+
+        reasons.push(
+            "New personality or behavioural changes warrant medical assessment when persistent or progressive."
+        );
+
+        conditions.push(
+            "Neurological or cognitive causes should be evaluated."
+        );
+
+    }
+
+
+    if(selectedSymptoms.has("weakness")){
+
+        score+=12;
+
+        reasons.push(
+            "Persistent weakness can have neurological or other medical causes."
+        );
+
+    }
+
+
+    if(selectedSymptoms.has("numbness")){
+
+        score+=10;
+
+        reasons.push(
+            "Persistent numbness or tingling should be assessed if unexplained."
+        );
+
+    }
+
+
+    if(selectedSymptoms.has("balanceNormal")){
+
+        score+=10;
+
+        reasons.push(
+            "Persistent balance or coordination problems may require neurological examination."
+        );
+
+    }
+
+
+    if(selectedSymptoms.has("speechNormal")){
+
+        score+=10;
+
+        reasons.push(
+            "New speech changes should be clinically assessed."
+        );
+
+    }
+
+
+
+    const progressive =
+        getRadio("progressive");
+
+
+    if(progressive==="yes"){
+
+        score+=12;
+
+        reasons.push(
+            "Progressively worsening symptoms deserve medical assessment."
+        );
+
+        conditions.push(
+            "A secondary headache or neurological cause should be ruled out by a clinician."
+        );
+
+    }
+
+
+
+    const daily =
+        getRadio("daily");
+
+
+    if(daily==="yes")
+        score+=5;
+
+
+
+    const duration =
+        getRadio("duration");
+
+
+    if(
+        duration==="months" &&
+        progressive==="yes"
+    ){
+
+        score+=10;
+
+        reasons.push(
+            "Long-standing progressively worsening symptoms should not be ignored."
+        );
+
+    }
+
+
+
+    document.querySelectorAll(".blood:checked")
+    .forEach(input=>{
+
+        const value=input.value;
+
+
+        if(value==="anemia"){
+
+            score+=4;
+
+            reasons.push(
+                "Low hemoglobin/anemia can be associated with fatigue, weakness and sometimes headache."
+            );
+
+        }
+
+
+        if(value==="iron"){
+
+            score+=3;
+
+            reasons.push(
+                "Iron deficiency can contribute to fatigue and headache in some people."
+            );
+
+        }
+
+
+        if(value==="inflammation"){
+
+            score+=6;
+
+            reasons.push(
+                "Elevated inflammatory markers may indicate an inflammatory or infectious process and need clinical context."
+            );
+
+        }
+
+
+        if(value==="wbc"){
+
+            score+=5;
+
+            reasons.push(
+                "An abnormal white blood cell count may require evaluation."
+            );
+
+        }
+
+
+        if(value==="platelets"){
+
+            score+=3;
+
+            reasons.push(
+                "An abnormal platelet count should be interpreted alongside the complete blood report."
+            );
+
+        }
+
+
+        if(value==="glucose"){
+
+            score+=2;
+
+            reasons.push(
+                "Abnormal glucose levels can contribute to general symptoms and should be interpreted clinically."
+            );
+
+        }
+
+    });
+
+
+
+    if(score>100)
+        score=100;
+
+
+    if(patterns.length===0){
+
+        patterns.push(
+            "Non-specific neurological symptom pattern"
+        );
+
+    }
+
+
+
+    let level;
+    let description;
+
+
+    if(emergency){
+
+        level="EMERGENCY";
+
+        description=
+            "Your responses include one or more neurological warning signs that should not be assessed through this online tool alone.";
+
+    }
+
+    else if(score>=60){
+
+        level="HIGH";
+
+        description=
+            "Several symptoms or progressive features were identified. Prompt medical evaluation is recommended.";
+
+    }
+
+    else if(score>=30){
+
+        level="MODERATE";
+
+        description=
+            "Some symptoms may require clinical assessment, particularly if they persist, worsen or interfere with daily life.";
+
+    }
+
+    else{
+
+        level="LOW";
+
+        description=
+            "The selected pattern does not currently show strong emergency warning signs. Continue monitoring and seek medical advice if symptoms persist or worsen.";
+
+    }
+
+
+
+    displayResults(
+        score,
+        level,
+        description,
+        emergency,
+        patterns,
+        reasons,
+        conditions
+    );
+
+}
+
+
+
+/* =========================================================
+   DISPLAY RESULTS
+========================================================= */
+
+function displayResults(
+    score,
+    level,
+    description,
+    emergency,
+    patterns,
+    reasons,
+    conditions
+){
+
+    document.getElementById("screeningSection")
+        .style.display="none";
+
+    document.getElementById("resultSection")
+        .style.display="block";
+
+
+    document.getElementById("riskScore")
+        .innerText=score;
+
+
+    document.getElementById("riskTitle")
+        .innerText=
+        level+" SCREENING RISK";
+
+
+    document.getElementById("riskDescription")
+        .innerText=description;
+
+
+
+    const circle =
+        document.getElementById("riskCircle");
+
+
+    if(level==="EMERGENCY"){
+
+        circle.style.borderColor="#d63031";
+        circle.style.background="#fff1f1";
+
+    }
+
+    else if(level==="HIGH"){
+
+        circle.style.borderColor="#e67e22";
+        circle.style.background="#fff6ed";
+
+    }
+
+    else if(level==="MODERATE"){
+
+        circle.style.borderColor="#e0a400";
+        circle.style.background="#fffbed";
+
+    }
+
+    else{
+
+        circle.style.borderColor="#27ae60";
+        circle.style.background="#effbf4";
+
+    }
+
+
+
+    const emergencyBox =
+        document.getElementById("emergencyBox");
+
+
+    if(emergency){
+
+        emergencyBox.style.display="block";
+
+        document.getElementById("emergencyMessage")
+        .innerText=
+        "One or more selected symptoms can be neurological emergency warning signs. Do not rely on this screening result. Seek urgent medical attention, especially if symptoms are sudden or currently happening.";
+
+    }
+
+    else{
+
+        emergencyBox.style.display="none";
+
+    }
+
+
+
+    const patternContainer =
+        document.getElementById("patternResult");
+
+    patternContainer.innerHTML="";
+
+
+    patterns.forEach(pattern=>{
+
+        const div =
+            document.createElement("div");
+
+        div.className="concern";
+
+        div.innerText=
+            "🧠 "+pattern;
+
+        patternContainer.appendChild(div);
+
+    });
+
+
+
+    const symptomResult =
+        document.getElementById("symptomResult");
+
+    symptomResult.innerHTML="";
+
+
+    selectedSymptoms.forEach(symptom=>{
+
+        const li =
+            document.createElement("li");
+
+        li.innerText=
+            formatSymptomName(symptom);
+
+        symptomResult.appendChild(li);
+
+    });
+
+
+    if(selectedSymptoms.size===0){
+
+        const li =
+            document.createElement("li");
+
+        li.innerText=
+            "No specific symptom card was selected.";
+
+        symptomResult.appendChild(li);
+
+    }
+
+
+
+    const reasonResult =
+        document.getElementById("reasonResult");
+
+    reasonResult.innerHTML="";
+
+
+    if(reasons.length===0){
+
+        reasons.push(
+            "The screening did not identify a strong abnormal pattern from the information provided."
+        );
+
+    }
+
+
+    reasons.forEach(reason=>{
+
+        const li =
+            document.createElement("li");
+
+        li.innerText=reason;
+
+        reasonResult.appendChild(li);
+
+    });
+
+
+
+    const conditionResult =
+        document.getElementById("conditionResult");
+
+    conditionResult.innerHTML="";
+
+
+    if(conditions.length===0){
+
+        conditions.push(
+            "No specific disease can be identified from this screening alone."
+        );
+
+        conditions.push(
+            "Common headache and neurological causes should be considered based on clinical evaluation."
+        );
+
+    }
+
+
+    conditions.forEach(condition=>{
+
+        const li =
+            document.createElement("li");
+
+        li.innerText=condition;
+
+        conditionResult.appendChild(li);
+
+    });
+
+
+
+    let doctorText;
+    let homeText;
+
+
+    if(emergency){
+
+        doctorText=
+            "Seek urgent medical care now. If symptoms such as sudden weakness, speech difficulty, sudden vision loss, severe sudden headache, seizure, confusion or loss of consciousness are happening, emergency evaluation is important.";
+
+        homeText=
+            "Do not attempt to manage a possible neurological emergency at home. Avoid driving yourself if you are experiencing severe neurological symptoms.";
+
+    }
+
+    else if(level==="HIGH"){
+
+        doctorText=
+            "Arrange a prompt medical assessment. A clinician may decide whether a neurological examination, blood tests, eye assessment or brain imaging is appropriate.";
+
+        homeText=
+            "Until evaluated, maintain hydration, regular sleep, avoid known headache triggers and keep a record of symptom timing, duration and severity.";
+
+    }
+
+    else if(level==="MODERATE"){
+
+        doctorText=
+            "Consider consulting a doctor if symptoms continue, become more frequent, worsen or interfere with normal activities.";
+
+        homeText=
+            "Maintain regular sleep and meals, stay hydrated, and record recurring neurological symptoms.";
+
+    }
+
+    else{
+
+        doctorText=
+            "Continue monitoring your symptoms. Consult a healthcare professional if they persist, worsen or become unusual for you.";
+
+        homeText=
+            "Maintain hydration, regular sleep and balanced meals. Reduce activities that clearly worsen your symptoms and seek medical advice if they persist.";
+
+    }
+
+
+    document.getElementById("doctorResult")
+        .innerText=doctorText;
+
+    document.getElementById("homeResult")
+        .innerText=homeText;
+
+
+
+    const resultData={
+
+        date:new Date().toISOString(),
+
+        score:score,
+
+        level:level,
+
+        emergency:emergency,
+
+        symptoms:Array.from(selectedSymptoms),
+
+        patterns:patterns,
+
+        reasons:reasons,
+
+        conditions:conditions
+
+    };
+
+
+    localStorage.setItem(
+        "neuroguardian_brain_result",
+        JSON.stringify(resultData)
+    );
+
+
+    localStorage.setItem(
+        "neuroguardian_brain_result_date",
+        new Date().toLocaleString()
+    );
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+
+/* =========================================================
+   FORMAT SYMPTOM
+========================================================= */
+
+function formatSymptomName(key){
+
+    const names={
+
+        suddenWeakness:
+        "Sudden weakness or one-sided numbness",
+
+        speech:
+        "Sudden speech or language difficulty",
+
+        vision:
+        "Sudden vision problem",
+
+        balance:
+        "Sudden balance or walking difficulty",
+
+        worstHeadache:
+        "Sudden severe headache",
+
+        confusion:
+        "Confusion or reduced consciousness",
+
+        seizure:
+        "Seizure",
+
+        headache:
+        "Headache",
+
+        nausea:
+        "Nausea or vomiting",
+
+        light:
+        "Light sensitivity",
+
+        sound:
+        "Sound sensitivity",
+
+        aura:
+        "Visual aura",
+
+        memory:
+        "Memory changes",
+
+        personality:
+        "Personality or behaviour changes",
+
+        weakness:
+        "Persistent weakness",
+
+        numbness:
+        "Numbness or tingling",
+
+        balanceNormal:
+        "Balance difficulty",
+
+        speechNormal:
+        "Speech changes",
+
+        hearing:
+        "Hearing changes"
+
+    };
+
+    return names[key]||key;
+
+}
+
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetForm(){
+
+    document.querySelectorAll("input")
+    .forEach(input=>{
+
+        if(
+            input.type==="radio" ||
+            input.type==="checkbox"
+        ){
+
+            input.checked=false;
+
+        }
+
+    });
+
+
+    selectedSymptoms.clear();
+
+
+    document.querySelectorAll(".symptom-card")
+    .forEach(card=>{
+
+        card.classList.remove("selected");
+
+    });
+
+
+    document.getElementById("voiceSymptoms")
+        .value="";
+
+    document.getElementById("voiceExtracted")
+        .hidden=true;
+
+    document.getElementById("brainVoiceStatus")
+        .innerText=
+        "Click and describe all your symptoms.";
+
+
+    updateProgress();
+
+}
+
+
+
+/* =========================================================
+   NEW ASSESSMENT
+========================================================= */
+
+function newAssessment(){
+
+    document.getElementById("resultSection")
+        .style.display="none";
+
+    document.getElementById("screeningSection")
+        .style.display="block";
+
+    resetForm();
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+function printResult(){
+
+    window.print();
+
+}
+
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function goDashboard(){
+
+    window.location.href="Dashboard.html";
+
+}
+
+
+
+/* =========================================================
+   VOICE ASSISTANT
+========================================================= */
+
+(function(){
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    const btn =
+        document.getElementById("brainVoiceBtn");
+
+    const input =
+        document.getElementById("voiceSymptoms");
+
+    const status =
+        document.getElementById("brainVoiceStatus");
+
+    const extracted =
+        document.getElementById("voiceExtracted");
+
+
+    if(!btn || !input || !status){
+
+        console.error(
+            "Voice assistant elements not found."
+        );
+
+        return;
+
+    }
+
+
+
+    /* ---------------------------------------------------------
+       LANGUAGE
+    --------------------------------------------------------- */
+
+    const voiceLanguages={
+
+        en:"en-IN",
+        hi:"hi-IN",
+        mr:"mr-IN",
+        ur:"ur-IN"
+
+    };
+
+
+
+    /* ---------------------------------------------------------
+       SYMPTOM KEYWORDS
+    --------------------------------------------------------- */
+
+    const symptomRules={
+
+
+        suddenWeakness:[
+
+            "sudden weakness",
+            "one sided weakness",
+            "one-sided weakness",
+            "left side weakness",
+            "right side weakness",
+            "left sided weakness",
+            "right sided weakness",
+
+            "अचानक कमजोरी",
+            "एक तरफ कमजोरी",
+
+            "अचानक अशक्तपणा",
+            "एका बाजूला कमजोरी",
+
+            "اچانک کمزوری",
+            "ایک طرف کمزوری"
+
+        ],
+
+
+        speech:[
+
+            "difficulty speaking",
+            "difficulty in speaking",
+            "speech difficulty",
+            "cannot speak",
+            "can not speak",
+            "trouble speaking",
+            "speech problem",
+            "speaking problem",
+
+            "बोलने में दिक्कत",
+            "बोलने में परेशानी",
+            "बोलता नहीं आ रहा",
+
+            "बोलताना त्रास",
+            "बोलता येत नाही",
+
+            "بولنے میں دقت",
+            "بولنے میں مشکل"
+
+        ],
+
+
+        vision:[
+
+            "sudden vision loss",
+            "sudden vision problem",
+            "sudden blurred vision",
+            "double vision",
+            "vision loss",
+            "lost my vision",
+
+            "अचानक नजर कम",
+            "अचानक दृष्टि",
+            "दृष्टि धुंधली",
+            "डबल दिख",
+
+            "अचानक दृष्टी",
+            "दृष्टी धूसर",
+
+            "اچانک نظر کم",
+            "دوہرا نظر"
+
+        ],
+
+
+        balance:[
+
+            "sudden balance problem",
+            "difficulty walking",
+            "trouble walking",
+            "cannot walk properly",
+            "loss of balance",
+            "balance problem",
+
+            "चलने में दिक्कत",
+            "संतुलन की समस्या",
+
+            "चालण्यात अडचण",
+            "तोल जातो",
+
+            "چلنے میں دقت",
+            "توازن کا مسئلہ"
+
+        ],
+
+
+        worstHeadache:[
+
+            "sudden severe headache",
+            "worst headache",
+            "worst headache of my life",
+            "extremely severe headache",
+            "very severe headache",
+
+            "अचानक तेज सिरदर्द",
+            "बहुत तेज सिरदर्द",
+            "सबसे तेज सिरदर्द",
+
+            "अचानक तीव्र डोकेदुखी",
+            "खूप तीव्र डोकेदुखी",
+
+            "اچانک شدید سر درد",
+            "بہت شدید سر درد"
+
+        ],
+
+
+        confusion:[
+
+            "confusion",
+            "confused",
+            "fainted",
+            "fainting",
+            "unconscious",
+            "loss of consciousness",
+
+            "बेहोशी",
+            "भ्रम",
+
+            "गोंधळ",
+            "बेशुद्ध",
+
+            "بے ہوشی",
+            "الجھن",
+            "بے ہوش"
+
+        ],
+
+
+        seizure:[
+
+            "seizure",
+            "convulsion",
+            "fits",
+            "fit",
+            "दौरा",
+            "दौरा पड़ा",
+            "झटका",
+            "झटके",
+            "आकडी",
+
+            "دورہ",
+            "دورہ پڑا",
+            "جھٹکے"
+
+        ],
+
+
+        headache:[
+
+            "headache",
+            "head pain",
+            "head hurts",
+            "pain in my head",
+
+            "सर दर्द",
+            "सिर में दर्द",
+
+            "डोकेदुखी",
+            "डोक्यात दुखत",
+
+            "سر درد",
+            "سر میں درد"
+
+        ],
+
+
+        nausea:[
+
+            "nausea",
+            "nauseous",
+            "vomiting",
+            "vomit",
+            "throwing up",
+
+            "उल्टी",
+            "मितली",
+            "मतली",
+
+            "ओकारी",
+            "उलटी",
+
+            "متلی",
+            "قے",
+            "الٹی"
+
+        ],
+
+
+        light:[
+
+            "sensitivity to light",
+            "light sensitivity",
+            "lights hurt",
+            "light bothers me",
+            "bright light hurts",
+            "photophobia",
+
+            "रोशनी से परेशानी",
+            "रोशनी चुभती",
+
+            "प्रकाशाची संवेदनशीलता",
+            "प्रकाश त्रास देतो",
+
+            "روشنی سے تکلیف",
+            "روشنی چبھتی ہے"
+
+        ],
+
+
+        sound:[
+
+            "sensitivity to sound",
+            "sound sensitivity",
+            "sounds hurt",
+            "noise bothers me",
+            "noise sensitivity",
+
+            "आवाज से परेशानी",
+            "आवाज चुभता",
+
+            "आवाजाची संवेदनशीलता",
+            "आवाज त्रास देतो",
+
+            "آواز سے تکلیف",
+            "شور سے تکلیف"
+
+        ],
+
+
+        aura:[
+
+            "visual aura",
+            "flashing lights",
+            "zig zag",
+            "zig-zag",
+            "flashes in vision",
+
+            "चमकती रोशनी",
+            "फ्लैशिंग लाइट",
+            "दृष्टि में चमक",
+
+            "चमकणारे दिवे",
+            "झिगझॅग",
+
+            "چمکتی روشنی",
+            "آنکھوں کے سامنے چمک"
+
+        ],
+
+
+        memory:[
+
+            "memory loss",
+            "memory changes",
+            "forgetful",
+            "forgetting things",
+            "memory problem",
+
+            "याददाश्त कम",
+            "याददाश्त की समस्या",
+            "भूलने की समस्या",
+
+            "विसरभोळेपणा",
+            "स्मरणशक्ती कमी",
+
+            "یادداشت کم",
+            "بھولنے کی شکایت"
+
+        ],
+
+
+        personality:[
+
+            "personality change",
+            "behaviour change",
+            "behavior change",
+            "mood or behaviour change",
+            "acting differently",
+
+            "व्यवहार में बदलाव",
+            "व्यक्तित्व में बदलाव",
+
+            "वागण्यात बदल",
+            "वर्तनात बदल",
+
+            "رویے میں تبدیلی",
+            "شخصیت میں تبدیلی"
+
+        ],
+
+
+        weakness:[
+
+            "persistent weakness",
+            "ongoing weakness",
+            "weakness in my body",
+            "body weakness",
+            "weakness",
+
+            "लगातार कमजोरी",
+            "शरीर में कमजोरी",
+
+            "सतत कमजोरी",
+            "अशक्तपणा",
+
+            "کمزوری",
+            "جسم میں کمزوری"
+
+        ],
+
+
+        numbness:[
+
+            "numbness",
+            "tingling",
+            "pins and needles",
+
+            "सुन्नपन",
+            "झनझनाहट",
+            "सुन्न होना",
+
+            "बधिरपणा",
+            "मुंग्या",
+
+            "سن ہونا",
+            "جھنجھناہٹ"
+
+        ],
+
+
+        balanceNormal:[
+
+            "balance difficulty",
+            "unsteady",
+            "unsteadiness",
+            "coordination problem",
+
+            "बैलेंस की समस्या",
+            "संतुलन में दिक्कत",
+            "अस्थिर चाल",
+
+            "संतुलनाचा त्रास",
+            "तोल जातो",
+
+            "توازن میں دقت",
+            "چال میں عدم توازن"
+
+        ],
+
+
+        speechNormal:[
+
+            "speech changes",
+            "speech has changed",
+            "words are difficult",
+            "finding words",
+            "word finding difficulty",
+
+            "बोलने में बदलाव",
+            "शब्द बोलने में दिक्कत",
+
+            "बोलण्यात बदल",
+            "शब्द आठवत नाहीत",
+
+            "بولنے میں تبدیلی",
+            "الفاظ نہیں ملتے"
+
+        ],
+
+
+        hearing:[
+
+            "hearing change",
+            "hearing loss",
+            "ringing in ears",
+            "tinnitus",
+
+            "कान में आवाज",
+            "सुनने में बदलाव",
+            "सुनाई कम देना",
+
+            "कानात आवाज",
+            "ऐकू कमी येणे",
+
+            "کان میں آواز",
+            "سننے میں تبدیلی"
+
+        ]
+
+    };
+
+
+
+    /* ---------------------------------------------------------
+       RADIO KEYWORDS
+    --------------------------------------------------------- */
+
+    const radioRules=[
+
+        {
+            name:"headType",
+            value:"sudden",
+            words:[
+                "sudden severe headache",
+                "sudden severe pain",
+                "अचानक तेज सिरदर्द",
+                "अचानक तीव्र डोकेदुखी",
+                "اچانک شدید سر درد"
+            ]
+        },
+
+        {
+            name:"headType",
+            value:"throbbing",
+            words:[
+                "throbbing headache",
+                "pulsating headache",
+                "धड़कता हुआ सिरदर्द",
+                "धडधडणारी डोकेदुखी",
+                "دھڑکتا ہوا سر درد"
+            ]
+        },
+
+        {
+            name:"headType",
+            value:"pressure",
+            words:[
+                "pressure headache",
+                "tightness in head",
+                "pressure in my head",
+                "दबाव जैसा सिरदर्द",
+                "सिर में दबाव",
+                "डोक्यात दाब",
+                "سر میں دباؤ"
+            ]
+        },
+
+        {
+            name:"headType",
+            value:"sharp",
+            words:[
+                "sharp headache",
+                "sharp pain in head",
+                "तेज चुभने वाला सिरदर्द",
+                "तीक्ष्ण डोकेदुखी",
+                "تیز چبھتا ہوا درد"
+            ]
+        },
+
+        {
+            name:"headLocation",
+            value:"oneSide",
+            words:[
+                "one sided headache",
+                "one-sided headache",
+                "left side headache",
+                "right side headache",
+                "one side of my head",
+                "एक तरफ सिरदर्द",
+                "एक तरफ सिर में दर्द",
+                "एका बाजूला डोकेदुखी",
+                "ایک طرف سر درد"
+            ]
+        },
+
+        {
+            name:"headLocation",
+            value:"both",
+            words:[
+                "both sides of head",
+                "both side headache",
+                "दोनों तरफ सिरदर्द",
+                "दोन्ही बाजूंना डोकेदुखी",
+                "دونوں طرف سر درد"
+            ]
+        },
+
+        {
+            name:"headLocation",
+            value:"front",
+            words:[
+                "forehead headache",
+                "front of head",
+                "forehead pain",
+                "माथे में दर्द",
+                "कपाळ दुखत",
+                "پیشانی میں درد"
+            ]
+        },
+
+        {
+            name:"headLocation",
+            value:"back",
+            words:[
+                "back of head pain",
+                "back of my head",
+                "पीछे सिर में दर्द",
+                "डोक्याच्या मागे दुखत",
+                "سر کے پچھلے حصے میں درد"
+            ]
+        },
+
+        {
+            name:"headLocation",
+            value:"everywhere",
+            words:[
+                "whole head hurts",
+                "whole head headache",
+                "पूरे सिर में दर्द",
+                "संपूर्ण डोकं दुखत",
+                "پورے سر میں درد"
+            ]
+        },
+
+        {
+            name:"activity",
+            value:"yes",
+            words:[
+                "worse with activity",
+                "worse when walking",
+                "worse when moving",
+                "activity makes it worse",
+                "चलने से बढ़ता",
+                "चलने पर बढ़ता",
+                "हालचालीने वाढते",
+                "چلنے سے بڑھتا ہے"
+            ]
+        },
+
+        {
+            name:"progressive",
+            value:"yes",
+            words:[
+                "getting worse",
+                "progressively worse",
+                "worsening",
+                "becoming more frequent",
+                "more severe over time",
+                "दिन ब दिन बढ़ रहा",
+                "लगातार बढ़ रहा",
+                "वाढत आहे",
+                "بڑھتا جا رہا"
+            ]
+        },
+
+        {
+            name:"daily",
+            value:"yes",
+            words:[
+                "affecting daily activities",
+                "cannot do my daily work",
+                "interfering with daily life",
+                "daily activities affected",
+                "रोज के काम प्रभावित",
+                "दैनिक काम में दिक्कत",
+                "दैनंदिन कामात अडचण",
+                "روزمرہ کے کام متاثر"
+            ]
+        },
+
+        {
+            name:"duration",
+            value:"hours",
+            words:[
+                "for hours",
+                "since a few hours",
+                "कई घंटे से",
+                "काही तासांपासून",
+                "کئی گھنٹوں سے"
+            ]
+        },
+
+        {
+            name:"duration",
+            value:"days",
+            words:[
+                "for days",
+                "since yesterday",
+                "for a few days",
+                "कई दिनों से",
+                "काही दिवसांपासून",
+                "کئی دنوں سے"
+            ]
+        },
+
+        {
+            name:"duration",
+            value:"weeks",
+            words:[
+                "for weeks",
+                "for a few weeks",
+                "कई हफ्तों से",
+                "काही आठवड्यांपासून",
+                "کئی ہفتوں سے"
+            ]
+        },
+
+        {
+            name:"duration",
+            value:"months",
+            words:[
+                "for months",
+                "for a few months",
+                "कई महीनों से",
+                "काही महिन्यांपासून",
+                "کئی مہینوں سے"
+            ]
+        }
+
+    ];
+
+
+
+    /* ---------------------------------------------------------
+       NORMALIZE
+    --------------------------------------------------------- */
+
+    function normalize(text){
+
+        return text
+            .toLowerCase()
+            .replace(/[.,!?;:()\-]/g," ")
+            .replace(/\s+/g," ")
+            .trim();
+
+    }
+
+
+
+    function includesAny(text,words){
+
+        const clean=normalize(text);
+
+        return words.some(word=>{
+
+            return clean.includes(
+                normalize(word)
+            );
+
+        });
+
+    }
+
+
+
+    /* ---------------------------------------------------------
+       SELECT SYMPTOM CARD
+    --------------------------------------------------------- */
+
+    function selectCard(key){
+
+        const card =
+            document.querySelector(
+                `.symptom-card[data-key="${key}"]`
+            );
+
+
+        if(!card)
+            return false;
+
+
+        if(!selectedSymptoms.has(key))
+            selectedSymptoms.add(key);
+
+
+        card.classList.add("selected");
+
+
+        return true;
+
+    }
+
+
+
+    /* ---------------------------------------------------------
+       SELECT RADIO
+    --------------------------------------------------------- */
+
+    function selectRadio(name,value){
+
+        const radio =
+            document.querySelector(
+                `input[name="${name}"][value="${value}"]`
+            );
+
+
+        if(!radio)
+            return false;
+
+
+        radio.checked=true;
+
+        radio.dispatchEvent(
+            new Event(
+                "change",
+                {bubbles:true}
+            )
+        );
+
+
+        return true;
+
+    }
+
+
+
+    /* ---------------------------------------------------------
+       EXTRACT SYMPTOMS
+    --------------------------------------------------------- */
+
+    function extractAndAnalyze(text){
+
+        const clean=normalize(text);
+
+
+        if(!clean){
+
+            status.innerText=
+                "Please speak or type your symptoms.";
+
+            return;
+
+        }
+
+
+        const found=[];
+
+
+        Object.assign(symptomRules, EXTRA_RULES);
+        Object.keys(symptomRules)
+        .forEach(key=>{
+
+            if(
+                includesAny(
+                    clean,
+                    symptomRules[key]
+                )
+            ){
+
+                if(selectCard(key)){
+
+                    found.push(
+                        formatSymptomName(key)
+                    );
+
+                }
+
+            }
+
+        });
+
+
+
+        /* RADIO QUESTIONS */
+
+        radioRules.forEach(rule=>{
+
+            if(
+                includesAny(
+                    clean,
+                    rule.words
+                )
+            ){
+
+                selectRadio(
+                    rule.name,
+                    rule.value
+                );
+
+            }
+
+        });
+
+
+
+        /* -----------------------------------------------------
+           EXTRA EMERGENCY DETECTION
+        ----------------------------------------------------- */
+
+        const severeHeadache =
+            includesAny(
+                clean,
+                [
+                    "sudden severe headache",
+                    "worst headache",
+                    "very severe headache",
+                    "अचानक तेज सिरदर्द",
+                    "बहुत तेज सिरदर्द",
+                    "اچانک شدید سر درد"
+                ]
+            );
+
+
+        const speechEmergency =
+            includesAny(
+                clean,
+                [
+                    "difficulty speaking",
+                    "speech difficulty",
+                    "trouble speaking",
+                    "cannot speak",
+                    "बोलने में दिक्कत",
+                    "बोलने में परेशानी",
+                    "بولنے میں دقت"
+                ]
+            );
+
+
+        const weaknessEmergency =
+            includesAny(
+                clean,
+                [
+                    "left side weakness",
+                    "right side weakness",
+                    "one sided weakness",
+                    "one-sided weakness",
+                    "एक तरफ कमजोरी",
+                    "एका बाजूला कमजोरी",
+                    "ایک طرف کمزوری"
+                ]
+            );
+
+
+        const visionEmergency =
+            includesAny(
+                clean,
+                [
+                    "sudden vision loss",
+                    "sudden vision problem",
+                    "अचानक नजर कम",
+                    "अचानक दृष्टि",
+                    "اچانک نظر کم"
+                ]
+            );
+
+
+
+        if(severeHeadache){
+
+            selectCard(
+                "worstHeadache"
+            );
+
+        }
+
+
+        if(speechEmergency){
+
+            selectCard(
+                "speech"
+            );
+
+        }
+
+
+        if(weaknessEmergency){
+
+            selectCard(
+                "suddenWeakness"
+            );
+
+        }
+
+
+        if(visionEmergency){
+
+            selectCard(
+                "vision"
+            );
+
+        }
+
+
+
+        updateProgress();
+
+
+
+        /* -----------------------------------------------------
+           SHOW EXTRACTED
+        ----------------------------------------------------- */
+
+        const uniqueSymptoms =
+            [...new Set(found)];
+
+
+        if(
+            uniqueSymptoms.length===0 &&
+            !severeHeadache &&
+            !speechEmergency &&
+            !weaknessEmergency &&
+            !visionEmergency
+        ){
+
+            extracted.hidden=false;
+
+            extracted.innerHTML=`
+
+                <strong>
+                    No clear symptom detected.
+                </strong>
+
+                <br>
+
+                <small>
+                    Please try again using simple symptom words.
+                    Example: "I have severe headache and
+                    difficulty speaking."
+                </small>
+
+            `;
+
+
+            status.innerText=
+                "No clear symptom detected. Please try again.";
+
+            return;
+
+        }
+
+
+
+        extracted.hidden=false;
+
+
+        extracted.innerHTML=`
+
+            <strong>
+                Symptoms detected from your voice:
+            </strong>
+
+            <br>
+
+            ${
+                uniqueSymptoms
+                .map(
+                    symptom=>"✓ "+symptom
+                )
+                .join("<br>")
+            }
+
+            <br>
+
+            <small>
+                Running neurological screening automatically...
+            </small>
+
+        `;
+
+
+        status.innerText=
+            "Symptoms detected. Analyzing automatically...";
+
+
+
+        /* -----------------------------------------------------
+           AUTOMATIC ANALYSIS
+        ----------------------------------------------------- */
+
+        setTimeout(()=>{
+
+            analyzeBrainHealth();
+
+
+            status.innerText=
+                "Voice symptoms analyzed. Screening result is shown below.";
+
+        },600);
+
+    }
+
+
+
+    /* =========================================================
+       BROWSER SUPPORT
+    ========================================================= */
+
+    if(!SpeechRecognition){
+
+        btn.disabled=true;
+
+        status.innerText=
+            "Voice input is not supported in this browser. Please use Google Chrome.";
+
+        return;
+
+    }
+
+
+
+    /* =========================================================
+       CREATE RECOGNITION
+    ========================================================= */
+
+    const recognition =
+        new SpeechRecognition();
+
+
+    recognition.continuous=false;
+
+    recognition.interimResults=false;
+
+    recognition.maxAlternatives=1;
+
+
+
+    /* =========================================================
+       BUTTON CLICK
+    ========================================================= */
+
+    btn.addEventListener(
+        "click",
+        function(){
+
+            try{
+
+                const selectedLanguage =
+                    document.getElementById(
+                        "languageSelect"
+                    ).value;
+
+
+                recognition.lang =
+                    voiceLanguages[
+                        selectedLanguage
+                    ] || "en-IN";
+
+
+                recognition.start();
+
+            }
+
+            catch(error){
+
+                console.log(
+                    "Recognition start error:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+
+    /* =========================================================
+       LISTENING START
+    ========================================================= */
+
+    recognition.onstart=function(){
+
+        btn.classList.add(
+            "listening"
+        );
+
+
+        btn.innerHTML=
+            "🛑 Listening...";
+
+
+        status.innerText=
+            "🎤 Listening... Speak naturally and describe all your symptoms.";
+
+    };
+
+
+
+    /* =========================================================
+       RESULT
+    ========================================================= */
+
+    recognition.onresult=function(event){
+
+        const transcript =
+            event.results[0][0]
+            .transcript;
+
+
+        input.value=
+            transcript;
+
+
+        extractAndAnalyze(
+            transcript
+        );
+
+    };
+
+
+
+    /* =========================================================
+       ERROR
+    ========================================================= */
+
+    recognition.onerror=function(event){
+
+        console.log(
+            "Speech recognition error:",
+            event.error
+        );
+
+
+        if(
+            event.error==="not-allowed"
+        ){
+
+            status.innerText=
+                "❌ Microphone permission denied. Allow microphone access in Chrome and try again.";
+
+        }
+
+        else if(
+            event.error==="no-speech"
+        ){
+
+            status.innerText=
+                "⚠️ No speech detected. Please speak clearly and try again.";
+
+        }
+
+        else if(
+            event.error==="audio-capture"
+        ){
+
+            status.innerText=
+                "❌ Microphone could not be accessed. Check your microphone.";
+
+        }
+
+        else if(
+            event.error==="network"
+        ){
+
+            status.innerText=
+                "❌ Speech recognition network error. Check your internet connection.";
+
+        }
+
+        else{
+
+            status.innerText=
+                "❌ Could not capture voice. Please try again.";
+
+        }
+
+    };
+
+
+
+    /* =========================================================
+       END
+    ========================================================= */
+
+    recognition.onend=function(){
+
+        btn.classList.remove(
+            "listening"
+        );
+
+
+        btn.innerHTML=
+            "🎤 Speak Symptoms";
+
+    };
+
+
+
+    /* =========================================================
+       ALSO ALLOW TYPING
+    ========================================================= */
+
+    input.addEventListener(
+        "input",
+        function(){
+
+            status.innerText=
+                "Symptoms entered. Click outside the box to analyze.";
+
+        }
+    );
+
+
+    input.addEventListener(
+        "blur",
+        function(){
+
+            if(
+                input.value.trim()
+            ){
+
+                extractAndAnalyze(
+                    input.value
+                );
+
+            }
+
+        }
+    );
+
+})();
+
+
+
+/* =========================================================
+   LOAD SAVED LANGUAGE
+========================================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const savedLanguage =
+            localStorage.getItem(
+                "ngLanguage"
+            );
+
+
+        if(
+            savedLanguage &&
+            translations[savedLanguage]
+        ){
+
+            document.getElementById(
+                "languageSelect"
+            ).value=savedLanguage;
+
+
+            changeLanguage();
+
+        }
+
+
+        updateProgress();
+
+    }
+);
+
+</script>
+
+
+<script>
+/* =========================================================
+   NEUROGUARDIAN – CLINICAL TRIAGE ADD-ON
+   (red-flag logic, risk factors, 3 mini brain tests,
+    blood-report auto-fill, action plan, doctor summary)
+   NOTE: this is a screening / triage tool. It cannot diagnose.
+========================================================= */
+
+const EXTRA_NAMES = {
+    faceDroop:"Face drooping on one side",
+    feverNeck:"Fever with stiff neck",
+    headInjury:"Recent head injury"
+};
+
+const EXTRA_RULES = {
+    faceDroop:["face droop","face drooping","drooping face","crooked smile","uneven smile","मुंह टेढ़ा","चेहरा टेढ़ा"],
+    feverNeck:["stiff neck","neck stiffness","fever with neck","गर्दन में अकड़न","गर्दन अकड़"],
+    headInjury:["head injury","hit my head","hit on the head","fell and hit","सिर में चोट","सिर पर चोट"]
+};
+
+const ONSET_TEXT = {
+    now:"within the last 4 hours / still happening",
+    today:"4 to 24 hours ago",
+    earlier:"more than 1 day ago",
+    resolved:"came and went on its own (now gone)"
+};
+
+/* ---------------------------------------------------------
+   MINI BRAIN CHECK  (orientation + serial 7s + 3-word recall)
+--------------------------------------------------------- */
+
+const MINI = { words:null, orient:null, serial:null, recall:null, done:false, timer:null };
+
+const WORD_SETS = [
+    ["River","Candle","Garden"],
+    ["Orange","Chair","Bridge"],
+    ["Mirror","Banana","Window"],
+    ["Pencil","Forest","Coin"]
+];
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+function miniBand(total){
+    if(total >= 8){ return "within the expected range"; }
+    if(total >= 6){ return "slightly below the expected range"; }
+    return "clearly below the expected range";
+}
+
+function scoreOrientation(year, month, weekday, now){
+    let s = 0;
+    if(Number(year) === now.getFullYear()){ s++; }
+    if(Number(month) === now.getMonth()){ s++; }
+    if(Number(weekday) === now.getDay()){ s++; }
+    return s;
+}
+
+function scoreSerial7(a1, a2, a3){
+    const n1 = Number(a1), n2 = Number(a2), n3 = Number(a3);
+    let s = 0;
+    if(a1 !== "" && n1 === 93){ s++; }
+    if(a2 !== "" && n2 === n1 - 7 && !isNaN(n1)){ s++; }
+    if(a3 !== "" && n3 === n2 - 7 && !isNaN(n2)){ s++; }
+    return s;
+}
+
+function scoreRecall(words, answers){
+    const want = words.map(w => w.toLowerCase());
+    const got = [];
+    answers.forEach(function(a){
+        const x = String(a || "").trim().toLowerCase();
+        if(x && want.indexOf(x) !== -1 && got.indexOf(x) === -1){ got.push(x); }
+    });
+    return got.length;
+}
+
+function miniTotal(){
+    return MINI.orient + MINI.serial + MINI.recall;
+}
+
+function miniBox(){ return document.getElementById("miniTests"); }
+
+function miniRender(html){ miniBox().innerHTML = html; }
+
+function miniIntro(){
+    clearInterval(MINI.timer);
+    MINI.orient = MINI.serial = MINI.recall = null;
+    MINI.done = false;
+    miniRender(`
+        <p class="mini-note">Three short tasks (about 2 minutes). Do them without writing anything down.
+        This is an optional quick check, not a medical test.</p>
+        <button type="button" class="primary-btn" onclick="miniStart()">Start quick brain check</button>
+    `);
+}
+
+function miniStart(){
+    MINI.words = WORD_SETS[Math.floor(Math.random() * WORD_SETS.length)];
+    let left = 8;
+    miniRender(`
+        <p class="mini-note"><strong>Task 1 of 3 – Remember these 3 words.</strong>
+        You will be asked for them at the end.</p>
+        <div class="mini-words">${MINI.words.join(" &nbsp;•&nbsp; ")}</div>
+        <p class="mini-note" id="miniCount">Words will disappear in ${left} seconds…</p>
+    `);
+    clearInterval(MINI.timer);
+    MINI.timer = setInterval(function(){
+        left--;
+        const c = document.getElementById("miniCount");
+        if(c){ c.textContent = "Words will disappear in " + left + " seconds…"; }
+        if(left <= 0){
+            clearInterval(MINI.timer);
+            miniOrientation();
+        }
+    }, 1000);
+}
+
+function miniOrientation(){
+    const monthOpts = MONTHS.map((m,i) => `<option value="${i}">${m}</option>`).join("");
+    const dayOpts = DAYS.map((d,i) => `<option value="${i}">${d}</option>`).join("");
+    miniRender(`
+        <p class="mini-note"><strong>Task 2 of 3 – Today's date.</strong> Without looking at your phone's calendar:</p>
+        <div class="mini-row"><label>Year</label>
+            <input type="number" id="miniYear" inputmode="numeric" placeholder="e.g. 2026"></div>
+        <div class="mini-row"><label>Month</label>
+            <select id="miniMonth"><option value="">Select</option>${monthOpts}</select></div>
+        <div class="mini-row"><label>Day of week</label>
+            <select id="miniDay"><option value="">Select</option>${dayOpts}</select></div>
+        <button type="button" class="primary-btn" onclick="miniOrientDone()">Next</button>
+    `);
+}
+
+function miniOrientDone(){
+    MINI.orient = scoreOrientation(
+        document.getElementById("miniYear").value,
+        document.getElementById("miniMonth").value,
+        document.getElementById("miniDay").value,
+        new Date()
+    );
+    miniSerial();
+}
+
+function miniSerial(){
+    miniRender(`
+        <p class="mini-note"><strong>Task 3 of 3 – Counting.</strong>
+        Start at 100 and subtract 7. Then keep subtracting 7 from each answer.</p>
+        <div class="mini-row"><label>100 − 7 =</label>
+            <input type="number" id="miniS1" inputmode="numeric"></div>
+        <div class="mini-row"><label>Next − 7 =</label>
+            <input type="number" id="miniS2" inputmode="numeric"></div>
+        <div class="mini-row"><label>Next − 7 =</label>
+            <input type="number" id="miniS3" inputmode="numeric"></div>
+        <button type="button" class="primary-btn" onclick="miniSerialDone()">Next</button>
+    `);
+}
+
+function miniSerialDone(){
+    MINI.serial = scoreSerial7(
+        document.getElementById("miniS1").value,
+        document.getElementById("miniS2").value,
+        document.getElementById("miniS3").value
+    );
+    miniRecall();
+}
+
+function miniRecall(){
+    miniRender(`
+        <p class="mini-note"><strong>Last step – Recall.</strong> Type the 3 words you were asked to remember (any order).</p>
+        <div class="mini-row"><label>Word 1</label>
+            <input type="text" id="miniR1" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+        <div class="mini-row"><label>Word 2</label>
+            <input type="text" id="miniR2" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+        <div class="mini-row"><label>Word 3</label>
+            <input type="text" id="miniR3" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+        <button type="button" class="primary-btn" onclick="miniRecallDone()">Finish</button>
+    `);
+}
+
+function miniRecallDone(){
+    MINI.recall = scoreRecall(MINI.words, [
+        document.getElementById("miniR1").value,
+        document.getElementById("miniR2").value,
+        document.getElementById("miniR3").value
+    ]);
+    MINI.done = true;
+    const total = miniTotal();
+    miniRender(`
+        <div class="mini-result">
+            <strong>Quick brain check: ${total} / 9</strong> – ${miniBand(total)}<br>
+            <span class="mini-note">Date ${MINI.orient}/3 • Counting ${MINI.serial}/3 • Recall ${MINI.recall}/3<br>
+            Tiredness, anxiety, poor sleep, language and education can all lower the score.
+            One result is never a diagnosis.</span>
+        </div>
+        <button type="button" class="secondary-btn" onclick="miniIntro()">Repeat check</button>
+    `);
+    if(typeof updateProgress === "function"){ updateProgress(); }
+}
+
+/* ---------------------------------------------------------
+   TRIAGE ENGINE  (pure function – easy to test)
+   state = { symptoms:Set, r:{radio values}, risk:Set, blood:Set, mini:{done,orient,serial,recall} }
+--------------------------------------------------------- */
+
+function triage(state){
+
+    const has = k => state.symptoms.has(k);
+    const r = state.r;
+    const risk = state.risk;
+    const blood = state.blood;
+    const mini = state.mini && state.mini.done ? state.mini : null;
+    const thinner = r.thinner === "yes";
+
+    let tier = 0;          /* 0 routine, 1 soon, 2 urgent, 3 emergency */
+    let pts = 0;
+    const reasons = [], conditions = [], patterns = [], flags = [];
+
+    function add(t, p, reason, condition, pattern, flag){
+        if(t > tier){ tier = t; }
+        pts += p;
+        if(reason && reasons.indexOf(reason) === -1){ reasons.push(reason); }
+        if(condition && conditions.indexOf(condition) === -1){ conditions.push(condition); }
+        if(pattern && patterns.indexOf(pattern) === -1){ patterns.push(pattern); }
+        if(flag && flags.indexOf(flag) === -1){ flags.push(flag); }
+    }
+
+    const headache = has("headache");
+    const newPattern = risk.has("newPattern");
+
+    /* ===== EMERGENCY RULES ===== */
+
+    const beFast = [];
+    if(has("balance")){ beFast.push("Balance"); }
+    if(has("vision")){ beFast.push("Eyes (sudden vision loss)"); }
+    if(has("faceDroop")){ beFast.push("Face drooping"); }
+    if(has("suddenWeakness")){ beFast.push("Arm/leg weakness"); }
+    if(has("speech")){ beFast.push("Speech difficulty"); }
+
+    if(beFast.length){
+        let msg;
+        if(r.onset === "resolved"){
+            msg = "A sudden neurological symptom that has now resolved still needs urgent assessment because a TIA or another serious cause must be ruled out.";
+        } else if(r.onset === "earlier"){
+            msg = "A sudden neurological symptom that began earlier still needs urgent medical assessment. Do not assume that improvement means the cause is harmless.";
+        } else {
+            msg = "A sudden neurological warning sign needs emergency assessment. Stroke/TIA is one important cause to rule out, but other urgent causes are also possible.";
+        }
+
+        const focal = beFast.length >= 2;
+        const strokeCondition = focal
+            ? "Possible stroke / TIA pattern — urgent hospital assessment is needed."
+            : "Sudden neurological warning — stroke/TIA is one cause that must be ruled out.";
+        const strokePattern = focal
+            ? "Possible stroke / TIA pattern"
+            : "Sudden focal neurological warning pattern";
+
+        add(3, 12, msg, strokeCondition, strokePattern,
+            "BE-FAST signs present: " + beFast.join(", "));
+    }
+
+    if(has("worstHeadache")){
+        add(3, 12,
+            "A sudden, 'worst headache of my life' type of headache needs emergency assessment. Doctors must rule out bleeding around the brain, which needs an urgent scan.",
+            "Sudden severe (thunderclap) headache – bleeding or another serious cause must be excluded.",
+            "Thunderclap headache pattern",
+            "Sudden severe headache");
+    }
+
+    if(has("seizure")){
+        add(3, 10,
+            "A seizure, especially a first one, needs emergency medical assessment.",
+            "First or new seizure – causes such as epilepsy, infection, bleeding or low sugar must be checked.",
+            "Seizure episode",
+            "Seizure");
+    }
+
+    if(has("confusion")){
+        add(3, 10,
+            "New confusion or unusual drowsiness is an emergency warning sign.",
+            "Sudden confusion can come from stroke, infection, low sugar, bleeding or other urgent causes.",
+            null,
+            "New confusion");
+    }
+
+    if(has("feverNeck")){
+        add(3, 12,
+            "Fever with a stiff neck (especially with headache, rash or light sensitivity) can be a sign of meningitis and needs emergency care.",
+            "Possible meningitis or other infection of the brain lining.",
+            "Fever + stiff neck pattern",
+            "Fever with stiff neck");
+    }
+
+    if(has("headInjury")){
+        if(headache || has("nausea") || has("confusion") || has("seizure") || thinner){
+            add(3, 10,
+                "A head injury followed by headache, vomiting, drowsiness, confusion or seizure needs emergency assessment" +
+                (thinner ? ", and blood thinners make bleeding inside the head more likely." : "."),
+                "Possible bleeding or concussion after head injury.",
+                "Head injury with symptoms",
+                "Recent head injury with symptoms");
+        } else {
+            add(2, 6,
+                "A recent head injury should be checked by a doctor if any symptoms appear or persist.",
+                null, null, "Recent head injury");
+        }
+    }
+
+    if(risk.has("pregnant") && headache){
+        if(has("vision") || has("confusion") || has("seizure") || has("faceDroop")){
+            add(3, 10,
+                "Headache with vision changes, confusion or seizure during pregnancy or in the weeks after delivery can signal pre-eclampsia and is an emergency.",
+                "Possible pre-eclampsia pattern.",
+                "Pregnancy-related headache warning",
+                "Headache in pregnancy with warning signs");
+        } else if(newPattern){
+            add(2, 6,
+                "A new or different headache during pregnancy or after delivery should be checked within a day (blood pressure check).",
+                null, null, "New headache in pregnancy");
+        }
+    }
+
+    /* ===== URGENT RULES (seen within about 24 hours) ===== */
+
+    if(headache && newPattern && (r.age === "older" || r.age === "middle")){
+        add(2, 8,
+            "A new or clearly different headache in the 41+ age groups should be examined promptly. Doctors check for causes such as inflammation of scalp arteries (giant cell arteritis), especially after 50.",
+            "Secondary headache causes need to be excluded by a clinician.", null,
+            "New headache at older age");
+    }
+
+    if(r.progressive === "yes" && headache){
+        add(2, 8,
+            "Headaches that are becoming steadily more frequent or severe need a doctor's review.",
+            "A secondary headache or neurological cause should be ruled out by a clinician.", null,
+            "Progressive headache");
+    }
+
+    if(risk.has("positional") || risk.has("wakes")){
+        add(2, 8,
+            "Headache that is worse lying down, on coughing or straining, or that wakes you from sleep can reflect raised pressure inside the head and should be examined.",
+            "Pressure-related headache pattern – a doctor decides whether imaging is needed.",
+            "Pressure-related headache features",
+            "Positional / cough-strain / night headache");
+    }
+
+    if((risk.has("cancer") || risk.has("immune")) && headache && newPattern){
+        add(2, 8,
+            "A new headache in someone with a past cancer or weak immunity needs prompt medical review.",
+            "Spread of cancer or infection to the brain is considered in this situation.", null,
+            "New headache with cancer/immune history");
+    }
+
+    if(blood.has("inflammation") && headache && (r.age === "older" || r.age === "middle")){
+        add(2, 6,
+            "A raised inflammation marker (CRP/ESR) together with headache at older age should be reviewed quickly.",
+            "Inflammatory causes such as giant cell arteritis may be considered.", null,
+            "High inflammation markers with headache");
+    }
+
+    const persistentDeficits = ["weakness","numbness","balanceNormal","speechNormal"].filter(has);
+    if(persistentDeficits.length){
+        if(r.progressive === "yes" || r.duration === "weeks" || r.duration === "months" || persistentDeficits.length >= 2){
+            add(2, 8,
+                "Ongoing weakness, numbness, balance or speech changes that persist or progress should be examined by a doctor within a day or two.",
+                "A neurological examination is needed to look for nerve, spinal or brain causes.", null,
+                "Persistent neurological changes");
+        } else {
+            add(1, 6,
+                "Weakness, numbness, balance or speech changes that are not sudden should still be checked by a doctor within 1–2 weeks.",
+                "A neurological examination is advised.", null, null);
+        }
+    }
+
+    if(has("personality")){
+        if(r.progressive === "yes" || r.duration === "months"){
+            add(2, 8,
+                "New personality or behaviour changes that are getting worse need medical assessment soon.",
+                "Neurological or cognitive causes need to be evaluated.", null,
+                "Progressive personality/behaviour change");
+        } else {
+            add(1, 6,
+                "New personality or behaviour changes should be discussed with a doctor.",
+                "Neurological or cognitive causes need to be evaluated.", null, null);
+        }
+    }
+
+    /* ===== SOON RULES (1–2 weeks) ===== */
+
+    if(has("memory")){
+        add(1, 6,
+            "New or worsening memory problems should be assessed by a doctor.",
+            "Cognitive or neurological causes (including thyroid, B12, sleep, mood or medicines) need checking.", null, null);
+    }
+
+    if(has("hearing")){
+        add(1, 4,
+            "Sudden or one-sided hearing change should be checked promptly by a doctor.", null, null, null);
+    }
+
+    if(mini){
+        const total = mini.orient + mini.serial + mini.recall;
+        if(total <= 5){
+            add(1, 8,
+                "Your quick brain check score was " + total + "/9, which is clearly below the expected range. This can be caused by tiredness or anxiety, but it should be repeated and discussed with a doctor.",
+                null, "Quick brain check below expected range", null);
+            if(has("memory") || has("personality")){
+                add(2, 4,
+                    "Low quick-check score together with memory or personality changes makes a medical memory assessment more important.",
+                    "Cognitive impairment needs to be assessed by a clinician.", null, null);
+            }
+        } else if(total <= 7){
+            add(0, 4,
+                "Your quick brain check score was " + total + "/9, slightly below the expected range. Repeat it when rested.",
+                null, null, null);
+        }
+    }
+
+
+    /* ===== OTHER CONTEXT (raises concern slightly) ===== */
+
+    const vascular = ["hypertension","diabetes","afib","prevStroke","smoking"].filter(k => risk.has(k));
+    if(vascular.length && beFast.length === 0 && (has("vision") || has("numbness") || has("weakness"))){
+        add(0, 4, "Blood pressure, diabetes, irregular heartbeat, smoking or a previous stroke raise the chance that neurological symptoms have a vascular cause.", null, null, null);
+    }
+    if(risk.has("prevStroke") && beFast.length){
+        add(3, 4, "You have had a stroke before, which makes new symptoms more serious.", null, null, null);
+    }
+
+    if(has("headache")){ pts += 2; }
+    if(has("nausea")){ pts += 1; }
+    if(has("light") || has("sound")){ pts += 1; }
+    if(r.daily === "yes"){ pts += 3; }
+
+    /* ===== SYMPTOM-PATTERN CLASSIFICATION =====
+       This is deliberately pattern-based, not disease prediction.
+       A single common symptom must never force a disease label.
+    */
+
+    const migraineLike = headache &&
+        (has("nausea") || has("light") || has("sound") || has("aura"));
+
+    const migraineFeatures = [
+        has("nausea") ? "nausea/vomiting" : null,
+        has("light") ? "light sensitivity" : null,
+        has("sound") ? "sound sensitivity" : null,
+        has("aura") ? "visual/sensory aura" : null
+    ].filter(Boolean);
+
+    if(migraineLike && tier < 3){
+        patterns.unshift("Migraine-like headache symptom pattern");
+        reasons.push("Headache is accompanied by " + migraineFeatures.join(", ") + ". This combination can occur with migraine, but the screening cannot diagnose the cause.");
+        conditions.push("Migraine and other causes of recurrent headache may need clinical evaluation.");
+    } else if(headache && tier < 3){
+        patterns.unshift("Headache symptom pattern");
+        reasons.push("Headache was selected without enough additional features to identify a specific pattern.");
+        conditions.push("Common headache causes and secondary causes may need evaluation if the symptom persists, changes or worsens.");
+    }
+
+    if((has("memory") || has("personality")) && tier < 3){
+        patterns.push("Cognitive / behavioural symptom pattern");
+        conditions.push("Cognitive, neurological, sleep, medication or other medical causes may need evaluation.");
+    }
+
+    if((has("numbness") || has("weakness") || has("balanceNormal") || has("speechNormal") || has("hearing")) && tier < 3){
+        patterns.push("Non-sudden neurological symptom pattern");
+        conditions.push("A neurological examination may be needed to identify the cause of persistent sensory, motor, balance, speech or hearing symptoms.");
+    }
+
+    if(has("aura") && !headache && tier < 3){
+        patterns.push("Visual / sensory disturbance pattern");
+        conditions.push("New visual or sensory disturbances have several possible causes and should be clinically assessed if unusual, persistent or recurrent.");
+    }
+
+    if(has("feverNeck")){
+        patterns.unshift("Fever + stiff neck emergency pattern");
+    }
+
+    if(has("headInjury")){
+        patterns.push("Recent head-injury pattern");
+    }
+
+    if(has("seizure")){
+        patterns.unshift("Seizure episode pattern");
+    }
+
+    if(has("confusion") && !has("seizure")){
+        patterns.push("Acute confusion / altered-awareness pattern");
+    }
+
+    if(patterns.length === 0){
+        patterns.push("Non-specific symptom pattern");
+        reasons.push("The selected answers do not form a specific high-risk pattern in this screening.");
+        conditions.push("No specific condition can be identified from these symptoms alone; monitor the symptoms and seek medical advice if they persist or worsen.");
+    }
+
+    const base = [5, 30, 60, 90][tier];
+    const cap = [29, 59, 89, 100][tier];
+    const score = Math.min(cap, base + pts);
+    const level = ["LOW","MODERATE","HIGH","EMERGENCY"][tier];
+
+    return {
+        tier: tier, level: level, score: score,
+        reasons: reasons, conditions: conditions, patterns: patterns, flags: flags,
+        beFast: beFast
+    };
+}
+
+/* ---------------------------------------------------------
+   ACTION PLAN TEXT
+--------------------------------------------------------- */
+
+function planFor(res, state){
+
+    const onsetNote =
+        state.r.onset && ONSET_TEXT[state.r.onset]
+        ? "Symptoms started: " + ONSET_TEXT[state.r.onset] + "."
+        : "";
+
+    const plans = [
+        {
+            title:"Self-care and monitoring",
+            when:"No urgent signs were found. See a doctor if symptoms continue or change.",
+            doctor:"Your answers do not show urgent warning signs. Book a routine appointment if symptoms last more than a couple of weeks, get worse, or start to affect work, sleep or daily life.",
+            home:"Keep a record of symptoms, their timing and changes. Maintain regular sleep, hydration and meals, and seek medical advice if symptoms persist or worsen."
+        },
+        {
+            title:"See a doctor within 1–2 weeks",
+            when:"Book a non-emergency appointment soon.",
+            doctor:"Arrange an appointment with a physician or neurologist within 1–2 weeks. Bring this summary, your medicine list and any blood reports.",
+            home:"Until then: note when symptoms happen and what helps, sleep and eat regularly, avoid alcohol, and do not drive if you feel dizzy or your vision is affected. Go to emergency care if any warning sign appears."
+        },
+        {
+            title:"Get medical care within 24 hours",
+            when:"Same-day assessment is best.",
+            doctor:"Be seen by a doctor today if possible, and no later than 24 hours. Go to a hospital emergency department if symptoms get worse in the meantime.",
+            home:"Do not wait for it to pass. Do not drive yourself if symptoms affect vision, balance or alertness. Take someone with you, and carry your medicine list and this summary."
+        },
+        {
+            title:"EMERGENCY: call for help now",
+            when:"Call your local emergency number now (112 in India).",
+            doctor:"Call emergency services immediately or go to the nearest hospital with a stroke / emergency department. " + onsetNote +
+                   " Tell the staff exactly when symptoms began and mention any blood thinners.",
+            home:"Do not wait to see if it improves. Do not drive yourself. Do not eat or drink anything. Lie down safely, keep the person calm, and note the time symptoms started. Take a list of all medicines."
+        }
+    ];
+
+    return plans[res.tier];
+}
+
+function buildSummary(res, state){
+
+    const ageLabels = { young:"Below 18", adult:"18–40", middle:"41–60", older:"Above 60" };
+    const riskNames = {
+        hypertension:"High blood pressure", diabetes:"Diabetes", afib:"Irregular heartbeat (AF)",
+        prevStroke:"Previous stroke/TIA", smoking:"Smoker", cancer:"History of cancer",
+        immune:"Weak immunity / steroids", pregnant:"Pregnant or recently delivered",
+        newPattern:"Headache is new or different from usual", positional:"Worse lying down / cough / strain",
+        wakes:"Wakes from sleep / morning vomiting"
+    };
+    const bloodNames = {
+        anemia:"Low hemoglobin", iron:"Low iron/ferritin", inflammation:"Raised CRP/ESR",
+        wbc:"Abnormal WBC", platelets:"Abnormal platelets", glucose:"Abnormal glucose/HbA1c"
+    };
+
+    const symptomText = Array.from(state.symptoms).map(function(k){
+        return (typeof formatSymptomName === "function" ? formatSymptomName(k) : k);
+    }).join(", ") || "None selected";
+
+    const lines = [];
+    lines.push("NEUROGUARDIAN AI – SYMPTOM SUMMARY FOR DOCTOR");
+    lines.push("Date: " + new Date().toLocaleString());
+    lines.push("Concern level: " + res.level + " (screening score " + res.score + "/100, not a probability)");
+    lines.push("Age group: " + (ageLabels[state.r.age] || "not given"));
+    lines.push("Symptoms: " + symptomText);
+    lines.push("Onset: " + (ONSET_TEXT[state.r.onset] || "not given"));
+    lines.push("Symptom duration: " + (state.r.duration || "not given") + (state.r.progressive === "yes" ? " | getting worse" : ""));
+    if(res.flags.length){ lines.push("Red flags: " + res.flags.join("; ")); }
+    lines.push("Patterns noted: " + res.patterns.join("; "));
+    lines.push("Blood thinner: " + (state.r.thinner === "yes" ? "YES" : state.r.thinner === "no" ? "No" : "not answered"));
+    const rk = Array.from(state.risk).map(k => riskNames[k] || k);
+    lines.push("Risk factors / context: " + (rk.length ? rk.join("; ") : "none selected"));
+    const bl = Array.from(state.blood).map(k => bloodNames[k] || k);
+    lines.push("Blood report findings: " + (bl.length ? bl.join("; ") : "none selected"));
+    if(state.mini && state.mini.done){
+        const t = state.mini.orient + state.mini.serial + state.mini.recall;
+        lines.push("Quick brain check: " + t + "/9 (date " + state.mini.orient + "/3, counting " + state.mini.serial + "/3, recall " + state.mini.recall + "/3)");
+    } else {
+        lines.push("Quick brain check: not done");
+    }
+    lines.push("");
+    lines.push("This is a self-reported screening summary, not a diagnosis.");
+    return lines.join("\n");
+}
+
+/* ---------------------------------------------------------
+   COLLECT STATE FROM THE PAGE + RUN
+--------------------------------------------------------- */
+
+function collectState(){
+    const radios = {};
+    ["age","duration","progressive","daily","onset","thinner"]
+    .forEach(function(n){ radios[n] = getRadio(n); });
+
+    return {
+        symptoms: new Set(Array.from(selectedSymptoms)),
+        r: radios,
+        risk: new Set(Array.from(document.querySelectorAll(".risk:checked")).map(i => i.value)),
+        blood: new Set(Array.from(document.querySelectorAll(".blood:checked")).map(i => i.value)),
+        mini: { done: MINI.done, orient: MINI.orient, serial: MINI.serial, recall: MINI.recall }
+    };
+}
+
+function analyzeBrainHealth(){
+
+    const state = collectState();
+
+    if(state.symptoms.size === 0 &&
+       state.risk.size === 0){
+        alert("Please select at least one symptom or answer a few questions first.");
+        return;
+    }
+
+    const res = triage(state);
+    const plan = planFor(res, state);
+
+    const description = [
+        "Your answers show no urgent warning signs. Continue monitoring and follow the steps below.",
+        "Some features may need a doctor's assessment, particularly if they persist or worsen.",
+        "Several warning features were found. Prompt medical evaluation (within about 24 hours) is recommended.",
+        "Your answers include warning signs that cannot be assessed online. Get emergency medical help now."
+    ][res.tier];
+
+    displayResults(
+        res.score, res.level, description, res.tier === 3,
+        res.patterns, res.reasons, res.conditions
+    );
+
+    /* replace default texts with the tailored plan */
+    document.getElementById("doctorResult").innerText = plan.doctor;
+    document.getElementById("homeResult").innerText = plan.home;
+    if(res.tier === 3){
+        document.getElementById("emergencyMessage").innerText = res.reasons[0] || plan.when;
+    }
+
+    renderPlanCard(res, plan);
+    renderSummaryCard(res, state);
+
+    /* save: extend stored result and add to Report History */
+    try{
+        const stored = JSON.parse(localStorage.getItem("neuroguardian_brain_result") || "{}");
+        stored.tier = res.tier;
+        stored.flags = res.flags;
+        stored.onset = state.r.onset || "";
+        stored.thinner = state.r.thinner || "";
+        stored.mini = state.mini.done ? { orient:state.mini.orient, serial:state.mini.serial, recall:state.mini.recall } : null;
+        localStorage.setItem("neuroguardian_brain_result", JSON.stringify(stored));
+    }catch(e){}
+
+    if(window.NG){
+        const details = {
+            "Concern level": res.level + " (" + res.score + "/100)",
+            "Patterns": res.patterns.join("; "),
+            "Onset": ONSET_TEXT[state.r.onset] || "not given",
+            "Red flags": res.flags.join("; ") || "none",
+            "Blood thinner": state.r.thinner === "yes" ? "Yes" : state.r.thinner === "no" ? "No" : "not answered",
+            "Quick brain check": state.mini.done
+                ? (state.mini.orient + state.mini.serial + state.mini.recall) + "/9"
+                : "not done",
+            "Advice": plan.title
+        };
+        NG.saveReport({
+            module: "brain",
+            tier: res.tier >= 2 ? "red" : res.tier === 1 ? "yellow" : "green",
+            title: "Brain Health Screening",
+            summary: plan.title + ". " + plan.when,
+            details: details
+        });
+    }
+
+    saveBrainReportToDatabase(res,state,plan,details);
+}
+
+/* ---------------------------------------------------------
+   RESULT CARDS
+--------------------------------------------------------- */
+
+function esc(s){
+    return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+
+function renderPlanCard(res, plan){
+    const colors = [
+        ["#effbf4","#27ae60"], ["#fffbed","#e0a400"], ["#fff6ed","#e67e22"], ["#fff1f1","#d63031"]
+    ][res.tier];
+    const box = document.getElementById("actionPlanCard");
+    box.style.cssText = "background:" + colors[0] + ";border:2px solid " + colors[1] +
+        ";border-radius:16px;padding:18px;margin:0 0 18px";
+    box.innerHTML =
+        `<div class="plan-title">${esc(plan.title)}</div>
+         <div class="plan-when">${esc(plan.when)}</div>` +
+        (res.tier === 3
+            ? `<a class="plan-call" href="tel:112">📞 Call 112 (India) – or your local emergency number</a>`
+            : "") +
+        (res.flags.length
+            ? `<div class="plan-flags"><strong>Why:</strong> ${esc(res.flags.join(" • "))}</div>`
+            : "") +
+        `<div class="plan-watch"><strong>Go to emergency care immediately if you notice:</strong>
+         sudden weakness or numbness, face drooping, trouble speaking or understanding, sudden vision loss,
+         the worst headache of your life, a seizure, new confusion, or fever with a stiff neck.</div>`;
+}
+
+function renderSummaryCard(res, state){
+    const text = buildSummary(res, state);
+    const box = document.getElementById("doctorSummaryCard");
+    box.innerHTML =
+        `<h4>📋 Summary to show your doctor</h4>
+         <div class="summary-text" id="summaryText">${esc(text)}</div>
+         <button type="button" class="secondary-btn" onclick="copySummary()">📋 Copy summary</button>`;
+}
+
+function copySummary(){
+    const text = document.getElementById("summaryText").innerText;
+    const done = function(){ alert("Summary copied. You can paste it into WhatsApp or a message."); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text, done); });
+    } else {
+        fallbackCopy(text, done);
+    }
+}
+
+function fallbackCopy(text, cb){
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand("copy"); cb(); }catch(e){ alert("Please select and copy the summary manually."); }
+    document.body.removeChild(ta);
+}
+
+/* ---------------------------------------------------------
+   BLOOD REPORT AUTO-FILL (from the Blood Report module)
+--------------------------------------------------------- */
+
+function autofillBlood(){
+    let list = [];
+    try{ list = JSON.parse(localStorage.getItem("ng_reports") || "[]"); }catch(e){ list = []; }
+    const sess = window.NG && NG.getSession ? (NG.getSession() || {}) : {};
+    const mine = list.filter(function(r){
+        return r.module === "blood" && (!r.user || r.user === "unknown" || r.user === sess.email);
+    }).sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); });
+
+    const grid = document.querySelector(".blood-grid");
+    if(!grid){ return; }
+
+    const note = document.createElement("div");
+    note.className = "mini-note";
+    note.style.margin = "10px 0 0";
+
+    if(!mine.length){
+        note.textContent = "No Blood Report analysis found yet. Use the Blood Report module first to fill this automatically.";
+        grid.insertAdjacentElement("afterend", note);
+        return;
+    }
+
+    const rep = mine[0];
+    const d = rep.details || {};
+    const abnormal = function(name){
+        const v = String(d[name] || "");
+        return / - (Low|High|Significantly abnormal)/.test(v);
+    };
+    const low = function(name){ return / - Low/.test(String(d[name] || "")) ; };
+    const high = function(name){ return / - High| - Significantly/.test(String(d[name] || "")); };
+
+    const tick = function(value, on){
+        const el = document.querySelector('.blood[value="' + value + '"]');
+        if(el && on){
+            el.checked = true;
+            el.dispatchEvent(new Event("change", {bubbles:true}));
+        }
+    };
+
+    tick("anemia", low("Hemoglobin"));
+    tick("iron", low("Ferritin"));
+    tick("inflammation", high("CRP") || high("ESR"));
+    tick("wbc", abnormal("WBC Count"));
+    tick("platelets", abnormal("Platelet Count"));
+    tick("glucose", abnormal("Fasting Glucose") || high("HbA1c"));
+
+    const when = new Date(rep.date).toLocaleDateString();
+    note.textContent = "✅ Filled automatically from your Blood Report analysis of " + when + ". You can change these boxes.";
+    grid.insertAdjacentElement("afterend", note);
+}
+
+/* ---------------------------------------------------------
+   PAGE SETUP (new questions, cards, sections, styles)
+--------------------------------------------------------- */
+
+const EXTRA_CSS = `
+.mini-note{font-size:14px;line-height:1.5;color:#5a6f80;margin:6px 0 12px}
+.mini-words{font-size:26px;font-weight:700;text-align:center;padding:22px 10px;border-radius:14px;background:#eef6fa;color:#18344C;letter-spacing:.5px}
+.mini-row{display:flex;align-items:center;gap:10px;margin:10px 0}
+.mini-row label{min-width:110px;font-weight:600;font-size:14px}
+.mini-row input,.mini-row select{flex:1;padding:11px;border:1px solid #cdd9e2;border-radius:10px;font-size:16px;min-width:0}
+.mini-result{padding:14px;border-radius:14px;background:#effbf4;border:1px solid #bfe3cc;margin-bottom:12px;line-height:1.6}
+.plan-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.plan-when{font-size:15px;line-height:1.5;margin-bottom:10px}
+.plan-call{display:block;text-align:center;background:#d63031;color:#fff;font-weight:800;text-decoration:none;padding:14px;border-radius:12px;margin:10px 0;font-size:16px}
+.plan-flags,.plan-watch{font-size:14px;line-height:1.5;margin-top:10px}
+#doctorSummaryCard{background:#fff;border:1px solid #dfe7ee;border-radius:16px;padding:18px;margin:18px 0}
+.summary-text{white-space:pre-wrap;font-size:13px;line-height:1.55;background:#f6f8fb;border-radius:10px;padding:12px;margin:10px 0;word-break:break-word}
+`;
+
+function setupExtras(){
+
+    /* styles */
+    const st = document.createElement("style");
+    st.textContent = EXTRA_CSS;
+    document.head.appendChild(st);
+
+    /* extra emergency cards */
+    const seizure = document.querySelector('.symptom-card[data-key="seizure"]');
+    if(seizure){
+        seizure.parentElement.insertAdjacentHTML("beforeend", `
+            <div class="symptom-card" data-key="faceDroop">
+                <div class="icon">🙂</div><strong>Face drooping</strong>
+                <small>One side of the face droops or the smile is uneven.</small></div>
+            <div class="symptom-card" data-key="feverNeck">
+                <div class="icon">🌡️</div><strong>Fever with stiff neck</strong>
+                <small>High fever with a painful, stiff neck, rash or light sensitivity.</small></div>
+            <div class="symptom-card" data-key="headInjury">
+                <div class="icon">🤕</div><strong>Recent head injury</strong>
+                <small>A blow to the head in the last few days.</small></div>
+        `);
+        ["faceDroop","feverNeck","headInjury"].forEach(function(k){
+            const card = document.querySelector('.symptom-card[data-key="' + k + '"]');
+            card.addEventListener("click", function(){
+                if(selectedSymptoms.has(k)){ selectedSymptoms.delete(k); card.classList.remove("selected"); }
+                else { selectedSymptoms.add(k); card.classList.add("selected"); }
+                updateProgress();
+            });
+        });
+    }
+
+    /* new sections before "Final Questions" */
+    const finalSection = document.getElementById("pr1").closest(".section");
+    const radio = function(name, items){
+        return items.map(function(it, i){
+            const id = name + "_" + i;
+            return `<div class="option"><input type="radio" name="${name}" value="${it[0]}" id="${id}">
+                    <label for="${id}">${it[1]}</label></div>`;
+        }).join("");
+    };
+    const check = function(value, text){
+        return `<label class="check-row"><input type="checkbox" class="risk" value="${value}"> ${text}</label>`;
+    };
+
+    finalSection.insertAdjacentHTML("beforebegin", `
+        <div class="section" id="contextSection">
+            <h3>5. Timing, Medicines and Risk Factors</h3>
+            <p class="section-description">These details change how urgent the advice is.</p>
+
+            <div class="question">
+                <div class="question-title">When did the main symptom start?</div>
+                <div class="options">${radio("onset", [
+                    ["now","Within the last 4 hours / still happening"],
+                    ["today","4 to 24 hours ago"],
+                    ["earlier","More than 1 day ago"],
+                    ["resolved","It came and went on its own (now gone)"]
+                ])}</div>
+            </div>
+
+            <div class="question">
+                <div class="question-title">Do you take a blood thinner (warfarin, apixaban, rivaroxaban, dabigatran, clopidogrel)?</div>
+                <div class="options">${radio("thinner", [["yes","Yes"],["no","No"]])}</div>
+            </div>
+
+            <div class="question">
+                <div class="question-title">Tick anything that applies</div>
+                <div class="blood-grid">
+                    ${check("newPattern","This headache is new or clearly different from my usual headaches")}
+                    ${check("positional","Worse when lying down, coughing, sneezing or straining")}
+                    ${check("wakes","Wakes me from sleep, or vomiting in the morning with headache")}
+                    ${check("hypertension","High blood pressure")}
+                    ${check("diabetes","Diabetes")}
+                    ${check("afib","Irregular heartbeat (atrial fibrillation)")}
+                    ${check("prevStroke","Previous stroke or mini-stroke (TIA)")}
+                    ${check("smoking","I smoke")}
+                    ${check("cancer","History of cancer")}
+                    ${check("immune","Weak immunity or long-term steroids")}
+                    ${check("pregnant","Pregnant or delivered in the last 6 weeks")}
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="miniSection">
+            <h3>6. Quick Brain Check (optional)</h3>
+            <p class="section-description">Three short tasks that test memory, attention and orientation.</p>
+            <div id="miniTests"></div>
+        </div>
+    `);
+
+    const finalTitle = finalSection.querySelector("h3");
+    if(finalTitle){ finalTitle.textContent = "8. Final Questions"; }
+
+    miniIntro();
+
+    /* keep the progress bar working for the new inputs */
+    document.querySelectorAll("#contextSection input").forEach(function(i){
+        i.addEventListener("change", updateProgress);
+    });
+
+    /* result page: plan card on top, doctor summary above disclaimer */
+    const grid = document.querySelector("#resultSection .result-grid");
+    if(grid){ grid.insertAdjacentHTML("beforebegin", '<div id="actionPlanCard"></div>'); }
+    const disc = document.querySelector("#resultSection .disclaimer");
+    if(disc){ disc.insertAdjacentHTML("beforebegin", '<div id="doctorSummaryCard"></div>'); }
+
+    autofillBlood();
+}
+
+/* make older helpers aware of the new cards */
+(function(){
+    const oldName = window.formatSymptomName;
+    window.formatSymptomName = function(k){
+        return EXTRA_NAMES[k] || (oldName ? oldName(k) : k);
+    };
+
+    const oldReset = window.resetForm;
+    window.resetForm = function(){
+        if(oldReset){ oldReset(); }
+        miniIntro();
+    };
+})();
+
+if(typeof document !== "undefined" && document.getElementById("pr1")){
+    setupExtras();
+}
+
+
+async function saveBrainReportToDatabase(res,state,plan,details){
+    try{
+        const session=window.NG&&typeof NG.getSession==="function"?NG.getSession():null;
+        if(!session||!session.email)return;
+        const API_BASE=window.location.protocol==="file:"?"http://127.0.0.1:5000":"";
+        const report={module:"brain",title:"Brain Health Screening",tier:res.tier>=2?"red":res.tier===1?"yellow":"green",summary:plan.title+". "+plan.when,details:details,user:session.email};
+        const response=await fetch(API_BASE+"/api/reports",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(report)});
+        const data=await response.json();
+        if(!response.ok||!data.success){console.error("Brain database save failed:",data);return;}
+        console.log("✓ Brain report saved to database.");
+    }catch(error){console.error("Brain database error:",error);}
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,5062 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NeuroGuardian AI - Health Assistant</title>
+
+    <script src="ng-core.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f3f6f8;
+            color: #172b46;
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: inherit;
+        }
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .top-header {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #dce5ec;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 28px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-btn {
+            width: 42px;
+            height: 42px;
+
+            border: 1px solid #d7e1e8;
+            background: white;
+
+            border-radius: 10px;
+
+            font-size: 22px;
+            cursor: pointer;
+
+            color: #17324f;
+        }
+
+        .back-btn:hover {
+            background: #f2f7f9;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+
+            background: #8fd4bb;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: bold;
+            color: #12344a;
+        }
+
+        .brand-text h1 {
+            font-family: Georgia, serif;
+            font-size: 21px;
+            color: #10233f;
+        }
+
+        .brand-text p {
+            font-size: 12px;
+            color: #71839a;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .language-label {
+            color: #657992;
+            font-size: 13px;
+        }
+
+        #languageSelect {
+            border: 1px solid #d4dfe7;
+            border-radius: 9px;
+            padding: 9px 12px;
+            background: white;
+            color: #17324f;
+            cursor: pointer;
+        }
+
+        .online-status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #238547;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .online-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #3da35d;
+        }
+
+        /* =========================================
+           MAIN LAYOUT
+        ========================================= */
+
+        .main-container {
+            max-width: 1450px;
+            margin: 0 auto;
+
+            padding: 25px;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(480px, 1.2fr)
+                minmax(400px, 0.8fr);
+
+            gap: 25px;
+        }
+
+        /* =========================================
+           CHAT PANEL
+        ========================================= */
+
+        .chat-panel {
+            background: white;
+
+            border: 1px solid #dce5ec;
+
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            min-height: 650px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 18px 22px;
+
+            border-bottom: 1px solid #e4ebf0;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ai-avatar {
+            width: 42px;
+            height: 42px;
+
+            background: #edf5f7;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+        }
+
+        .chat-header h2 {
+            font-family: Georgia, serif;
+            font-size: 19px;
+            color: #10233f;
+        }
+
+        .chat-header p {
+            color: #7890a6;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .chat-messages {
+            flex: 1;
+
+            padding: 22px;
+
+            overflow-y: auto;
+
+            min-height: 470px;
+            max-height: 570px;
+
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 34px;
+            height: 34px;
+
+            border-radius: 10px;
+
+            background: #edf5f7;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            order: 2;
+            background: #377b96;
+            color: white;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+
+            background: #f7fafc;
+
+            border: 1px solid #dce6ed;
+
+            border-radius: 13px;
+
+            padding: 13px 16px;
+
+            line-height: 1.65;
+
+            font-size: 14px;
+
+            color: #17324f;
+        }
+
+        .message.user .message-bubble {
+            background: #377b96;
+            color: white;
+            border-color: #377b96;
+        }
+
+        .message-bubble strong {
+            font-weight: 700;
+        }
+
+        .quick-options {
+            padding: 0 22px 12px;
+
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 8px;
+        }
+
+        .quick-btn {
+            border: 1px solid #cddfe7;
+
+            background: white;
+
+            color: #377b96;
+
+            border-radius: 20px;
+
+            padding: 8px 13px;
+
+            cursor: pointer;
+
+            font-size: 13px;
+        }
+
+        .quick-btn:hover {
+            background: #edf7f9;
+        }
+
+        .chat-input-area {
+            padding: 14px 18px;
+
+            border-top: 1px solid #e1e9ef;
+
+            display: flex;
+
+            gap: 10px;
+        }
+
+        #chatInput {
+            flex: 1;
+
+            min-height: 48px;
+
+            max-height: 120px;
+
+            resize: vertical;
+
+            border: 1px solid #d4e0e7;
+
+            border-radius: 12px;
+
+            padding: 13px 15px;
+
+            outline: none;
+
+            font-size: 14px;
+        }
+
+        #chatInput:focus {
+            border-color: #377b96;
+        }
+
+        #sendBtn {
+            width: 52px;
+            height: 48px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #377b96;
+
+            color: white;
+
+            font-size: 22px;
+
+            cursor: pointer;
+        }
+
+        #sendBtn:hover {
+            background: #28677f;
+        }
+
+        /* =========================================
+           RIGHT SIDE
+        ========================================= */
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+
+            border: 1px solid #dce5ec;
+
+            border-radius: 18px;
+
+            padding: 22px;
+        }
+
+        .card h2 {
+            font-family: Georgia, serif;
+
+            font-size: 23px;
+
+            color: #10233f;
+
+            margin-bottom: 7px;
+        }
+
+        .card-description {
+            color: #71849a;
+
+            font-size: 13px;
+
+            margin-bottom: 18px;
+        }
+
+        /* =========================================
+           PAIN MAP
+        ========================================= */
+
+        .pain-map-grid {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 12px;
+        }
+
+        .pain-card {
+            border: 2px solid #dce5ec;
+
+            background: #f8fbfc;
+
+            border-radius: 13px;
+
+            padding: 12px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+            color: #28425d;
+        }
+
+        .pain-card:hover {
+            border-color: #377b96;
+            transform: translateY(-2px);
+        }
+
+        .pain-card.selected {
+            border-color: #377b96;
+
+            background: #eaf5f8;
+
+            box-shadow:
+                0 0 0 3px rgba(55,123,150,0.10);
+        }
+
+        .pain-card span {
+            display: block;
+
+            margin-top: 8px;
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+        /* =========================================
+           HEAD ILLUSTRATION
+        ========================================= */
+
+        .head-image {
+            width: 100px;
+            height: 100px;
+
+            margin: auto;
+
+            position: relative;
+
+            background: #dff1f4;
+
+            border: 3px solid #8bb5c3;
+
+            border-radius:
+                48% 48% 45% 45%;
+
+            overflow: hidden;
+        }
+
+        .head-image::before,
+        .head-image::after {
+            content: "";
+
+            position: absolute;
+
+            top: 37px;
+
+            width: 13px;
+            height: 27px;
+
+            background: #dff1f4;
+
+            border: 2px solid #8bb5c3;
+
+            border-radius: 50%;
+        }
+
+        .head-image::before {
+            left: -9px;
+        }
+
+        .head-image::after {
+            right: -9px;
+        }
+
+        .pain-area {
+            position: absolute;
+
+            background: #f07862;
+
+            opacity: 0;
+
+            transition: 0.2s;
+        }
+
+        .pain-card.selected .pain-area {
+            opacity: 1;
+        }
+
+        .forehead .pain-area {
+            width: 56px;
+            height: 19px;
+
+            top: 14px;
+            left: 19px;
+
+            border-radius: 50%;
+        }
+
+        .left-side .pain-area {
+            width: 22px;
+            height: 58px;
+
+            top: 23px;
+            left: 9px;
+
+            border-radius: 50%;
+        }
+
+        .right-side .pain-area {
+            width: 22px;
+            height: 58px;
+
+            top: 23px;
+            right: 9px;
+
+            border-radius: 50%;
+        }
+
+        .temples .pain-area {
+            width: 25px;
+            height: 25px;
+
+            top: 37px;
+            left: 6px;
+
+            border-radius: 50%;
+        }
+
+        .both-sides .pain-area {
+            width: 72px;
+            height: 53px;
+
+            top: 24px;
+            left: 13px;
+
+            border-radius: 50%;
+        }
+
+        .back-head .pain-area {
+            width: 70px;
+            height: 27px;
+
+            bottom: 11px;
+            left: 13px;
+
+            border-radius: 50%;
+        }
+
+        .selected-locations {
+            margin-top: 16px;
+
+            padding: 12px;
+
+            background: #f5f8fa;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        #selectedPainText {
+            color: #377b96;
+
+            font-weight: 700;
+        }
+
+        .continue-btn {
+            width: 100%;
+
+            margin-top: 14px;
+
+            border: none;
+
+            border-radius: 11px;
+
+            padding: 13px;
+
+            background: #377b96;
+
+            color: white;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            font-size: 14px;
+        }
+
+        .continue-btn:hover {
+            background: #28677f;
+        }
+
+        /* =========================================
+           SYMPTOM PROGRESS
+        ========================================= */
+
+        .progress-card {
+            display: none;
+        }
+
+        .progress-card.active {
+            display: block;
+        }
+
+        .progress-title {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+
+            font-size: 13px;
+
+            color: #60758c;
+        }
+
+        .progress-bar {
+            height: 8px;
+
+            background: #e5ebef;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+
+            width: 0%;
+
+            background: #377b96;
+
+            transition: width 0.3s;
+        }
+
+        /* =========================================
+           SYMPTOM SUMMARY
+        ========================================= */
+
+        .summary-card {
+            display: none;
+        }
+
+        .summary-card.active {
+            display: block;
+        }
+
+        .summary-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 9px 0;
+
+            border-bottom: 1px solid #edf1f4;
+
+            font-size: 13px;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #71849a;
+        }
+
+        .summary-value {
+            color: #17324f;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* =========================================
+           ANALYSIS RESULT
+        ========================================= */
+
+        .result-card {
+            display: none;
+        }
+
+        .result-card.active {
+            display: block;
+        }
+
+        .risk-box {
+            border-radius: 12px;
+
+            padding: 16px;
+
+            margin-top: 14px;
+        }
+
+        .risk-green {
+            background: #eaf7ee;
+            border: 1px solid #b7dfc1;
+        }
+
+        .risk-yellow {
+            background: #fff5df;
+            border: 1px solid #f0d18d;
+        }
+
+        .risk-red {
+            background: #fff0ef;
+            border: 1px solid #efb5af;
+        }
+
+        .risk-title {
+            font-size: 17px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+        }
+
+        .risk-score {
+            font-size: 32px;
+
+            font-weight: 800;
+
+            margin: 10px 0;
+        }
+
+        .result-section {
+            margin-top: 17px;
+        }
+
+        .result-section h3 {
+            font-family: Georgia, serif;
+
+            color: #10233f;
+
+            margin-bottom: 8px;
+
+            font-size: 17px;
+        }
+
+        .result-section ul {
+            padding-left: 20px;
+        }
+
+        .result-section li {
+            margin-bottom: 7px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        .disclaimer {
+            margin-top: 18px;
+
+            padding: 13px;
+
+            border-radius: 10px;
+
+            background: #f5f7f9;
+
+            color: #63778d;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+        .restart-btn {
+            width: 100%;
+
+            margin-top: 18px;
+
+            padding: 12px;
+
+            border: 1px solid #377b96;
+
+            background: white;
+
+            color: #377b96;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+        }
+
+        /* =========================================
+           WHY HEADACHE SECTION
+        ========================================= */
+
+        .causes-card {
+            display: none;
+        }
+
+        .causes-card.active {
+            display: block;
+        }
+
+        .cause-item {
+            padding: 11px 0;
+
+            border-bottom: 1px solid #edf1f4;
+        }
+
+        .cause-item:last-child {
+            border-bottom: none;
+        }
+
+        .cause-item strong {
+            display: block;
+
+            color: #28445e;
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+        }
+
+        .cause-item p {
+            color: #708299;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+        /* =========================================
+           TYPING
+        ========================================= */
+
+        .typing {
+            display: flex;
+
+            gap: 5px;
+
+            align-items: center;
+        }
+
+        .typing span {
+            width: 7px;
+            height: 7px;
+
+            background: #7291a2;
+
+            border-radius: 50%;
+
+            animation: typing 1s infinite;
+        }
+
+        .typing span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .typing span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes typing {
+
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: .5;
+            }
+
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+
+        }
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @media (max-width: 950px) {
+
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-panel {
+                min-height: 600px;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .top-header {
+                padding: 0 12px;
+            }
+
+            .language-label {
+                display: none;
+            }
+
+            .online-status {
+                display: none;
+            }
+
+            .main-container {
+                padding: 12px;
+            }
+
+            .pain-map-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .message-bubble {
+                max-width: 88%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body data-ng-nav="off">
+
+
+<!-- =========================================
+     HEADER
+========================================= -->
+
+<header class="top-header">
+
+    <div class="brand-area">
+
+        <button
+            class="back-btn"
+            onclick="goBack()">
+            ←
+        </button>
+
+        <div class="logo">
+            NG
+        </div>
+
+        <div class="brand-text">
+
+            <h1>
+                NeuroGuardian AI
+            </h1>
+
+            <p id="headerSubtitle">
+                AI Health Assistant
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+        <span class="language-label"
+              id="languageLabel">
+            Language
+        </span>
+
+        <select id="languageSelect">
+
+            <option value="en">
+                🇬🇧 English
+            </option>
+
+            <option value="hi">
+                🇮🇳 Hindi
+            </option>
+
+            <option value="mr">
+                🇮🇳 Marathi
+            </option>
+
+            <option value="ur">
+                🇵🇰 Urdu
+            </option>
+
+        </select>
+
+        <div class="online-status">
+
+            <span class="online-dot"></span>
+
+            <span id="onlineText">
+                AI Assistant Online
+            </span>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<main class="main-container">
+
+
+    <!-- =====================================
+         CHAT
+    ====================================== -->
+
+    <section class="chat-panel">
+
+        <div class="chat-header">
+
+            <div class="ai-avatar">
+                🤖
+            </div>
+
+            <div>
+
+                <h2 id="chatTitle">
+                    NeuroGuardian AI
+                </h2>
+
+                <p id="chatSubtitle">
+                    Headache & symptom screening assistant
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="chatMessages"
+            class="chat-messages">
+        </div>
+
+
+        <div
+            id="quickOptions"
+            class="quick-options">
+        </div>
+
+
+        <div class="chat-input-area">
+
+            <textarea
+                id="chatInput"
+                placeholder="Describe your symptoms..."
+                rows="1">
+            </textarea>
+
+            <button
+                id="sendBtn"
+                onclick="sendUserMessage()">
+                ➤
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         RIGHT COLUMN
+    ====================================== -->
+
+    <section class="right-column">
+
+
+        <!-- =================================
+             PAIN MAP
+        ================================== -->
+
+        <div
+            class="card"
+            id="painMapSection">
+
+            <h2>
+                Headache Pain Map
+            </h2>
+
+            <p class="card-description"
+               id="painMapDescription">
+
+                Select all areas where you feel pain.
+
+            </p>
+
+
+            <div class="pain-map-grid">
+
+
+                <!-- FOREHEAD -->
+
+                <button
+                    class="pain-card"
+                    data-pain="Forehead">
+
+                    <div
+                        class="head-image forehead">
+
+                        <div class="pain-area"></div>
+
+                    </div>
+
+                    <span>
+                        Forehead
+                    </span>
+
+                </button>
+
+
+                <!-- LEFT -->
+
+                <button
+                    class="pain-card"
+                    data-pain="Left Side">
+
+                    <div
+                        class="head-image left-side">
+
+                        <div class="pain-area"></div>
+
+                    </div>
+
+                    <span>
+                        Left Side
+                    </span>
+
+                </button>
+
+
+                <!-- RIGHT -->
+
+                <button
+                    class="pain-card"
+                    data-pain="Right Side">
+
+                    <div
+                        class="head-image right-side">
+
+                        <div class="pain-area"></div>
+
+                    </div>
+
+                    <span>
+                        Right Side
+                    </span>
+
+                </button>
+
+
+                <!-- TEMPLES -->
+
+                <button
+                    class="pain-card"
+                    data-pain="Temples">
+
+                    <div
+                        class="head-image temples">
+
+                        <div class="pain-area"></div>
+
+                    </div>
+
+                    <span>
+                        Temples
+                    </span>
+
+                </button>
+
+
+                <!-- BOTH -->
+
+                <button
+                    class="pain-card"
+                    data-pain="Both Sides">
+
+                    <div
+                        class="head-image both-sides">
+
+                        <div class="pain-area"></div>
+
+                    </div>
+
+                    <span>
+                        Both Sides
+                    </span>
+
+                </button>
+
+
+                <!-- BACK -->
+
+                <button
+                    class="pain-card"
+                    data-pain="Back of Head">
+
+                    <div
+                        class="head-image back-head">
+
+                        <div class="pain-area"></div>
+
+                    </div>
+
+                    <span>
+                        Back of Head
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <div class="selected-locations">
+
+                <span id="selectedLabel">
+                    Selected pain areas:
+                </span>
+
+                <span id="selectedPainText">
+                    None selected
+                </span>
+
+            </div>
+
+
+            <button
+                id="continueToSymptoms"
+                class="continue-btn">
+
+                Continue to Symptoms →
+
+            </button>
+
+        </div>
+
+
+
+        <!-- =================================
+             PROGRESS
+        ================================== -->
+
+        <div
+            class="card progress-card"
+            id="progressCard">
+
+            <div class="progress-title">
+
+                <span id="progressText">
+                    Symptom assessment
+                </span>
+
+                <span id="progressPercent">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    id="progressFill">
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================
+             WHY HEADACHE
+        ================================== -->
+
+        <div
+            class="card causes-card"
+            id="causesCard">
+
+            <h2 id="causesTitle">
+                Why can headaches happen?
+            </h2>
+
+            <p
+                class="card-description"
+                id="causesDescription">
+
+                Headaches can have several possible triggers.
+                Your answers help the assistant identify patterns.
+
+            </p>
+
+
+            <div class="cause-item">
+
+                <strong id="cause1Title">
+                    🧠 Migraine pattern
+                </strong>
+
+                <p id="cause1Text">
+                    Migraine can involve moderate to severe
+                    headache, sometimes on one side, with
+                    nausea or sensitivity to light and sound.
+                </p>
+
+            </div>
+
+
+            <div class="cause-item">
+
+                <strong id="cause2Title">
+                    😣 Tension-type pattern
+                </strong>
+
+                <p id="cause2Text">
+                    A pressure-like or tight feeling around
+                    the forehead or both sides can occur
+                    with tension-type headaches.
+                </p>
+
+            </div>
+
+
+            <div class="cause-item">
+
+                <strong id="cause3Title">
+                    💧 Dehydration
+                </strong>
+
+                <p id="cause3Text">
+                    Not drinking enough fluids may contribute
+                    to headache symptoms in some people.
+                </p>
+
+            </div>
+
+
+            <div class="cause-item">
+
+                <strong id="cause4Title">
+                    😴 Sleep and stress
+                </strong>
+
+                <p id="cause4Text">
+                    Poor sleep, stress and prolonged work or
+                    study may contribute to headache symptoms.
+                </p>
+
+            </div>
+
+
+            <div class="cause-item">
+
+                <strong id="cause5Title">
+                    👁️ Eye strain
+                </strong>
+
+                <p id="cause5Text">
+                    Long screen exposure and visual strain
+                    can be associated with headache and
+                    eye discomfort.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================
+             SUMMARY
+        ================================== -->
+
+        <div
+            class="card summary-card"
+            id="summaryCard">
+
+            <h2 id="summaryTitle">
+                Symptom Summary
+            </h2>
+
+            <div id="summaryContent">
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================
+             RESULT
+        ================================== -->
+
+        <div
+            class="card result-card"
+            id="resultCard">
+
+            <h2 id="resultTitle">
+                AI Screening Result
+            </h2>
+
+            <div
+                id="riskBox"
+                class="risk-box">
+
+                <div
+                    id="riskTitle"
+                    class="risk-title">
+                </div>
+
+                <div
+                    id="riskScore"
+                    class="risk-score">
+                </div>
+
+                <div id="riskDescription">
+                </div>
+
+            </div>
+
+
+            <div class="result-section">
+
+                <h3 id="patternTitle">
+                    Possible symptom pattern
+                </h3>
+
+                <p id="patternResult">
+                </p>
+
+            </div>
+
+
+            <div class="result-section">
+
+                <h3 id="reasonTitle">
+                    Why this result?
+                </h3>
+
+                <ul id="reasonList">
+                </ul>
+
+            </div>
+
+
+            <div class="result-section">
+
+                <h3 id="recommendationTitle">
+                    Recommended next step
+                </h3>
+
+                <p id="recommendationText">
+                </p>
+
+            </div>
+
+
+            <div class="disclaimer"
+                 id="disclaimer">
+
+                This is an AI-assisted screening tool,
+                not a medical diagnosis. Symptoms can have
+                multiple causes. Consult a qualified
+                healthcare professional for diagnosis and
+                treatment.
+
+            </div>
+
+
+            <button
+                class="restart-btn"
+                id="restartBtn"
+                onclick="restartAssessment()">
+
+                Start New Assessment
+
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<script>
+
+/* =====================================================
+   NEUROGUARDIAN AI
+   MULTILINGUAL HEADACHE SCREENING
+===================================================== */
+
+
+/* =====================================================
+   LANGUAGE DATA
+===================================================== */
+
+const translations = {
+
+    en: {
+
+        headerSubtitle:
+            "AI Health Assistant",
+
+        chatSubtitle:
+            "Headache & symptom screening assistant",
+
+        language:
+            "Language",
+
+        online:
+            "AI Assistant Online",
+
+        painMapTitle:
+            "Headache Pain Map",
+
+        painMapDescription:
+            "Select all areas where you feel pain.",
+
+        selected:
+            "Selected pain areas:",
+
+        none:
+            "None selected",
+
+        continue:
+            "Continue to Symptoms →",
+
+        placeholder:
+            "Describe your symptoms...",
+
+        causesTitle:
+            "Why can headaches happen?",
+
+        causesDescription:
+            "Headaches can have several possible triggers. Your answers help the assistant identify patterns.",
+
+        summaryTitle:
+            "Symptom Summary",
+
+        resultTitle:
+            "AI Screening Result",
+
+        patternTitle:
+            "Possible symptom pattern",
+
+        reasonTitle:
+            "Why this result?",
+
+        recommendationTitle:
+            "Recommended next step",
+
+        restart:
+            "Start New Assessment"
+
+    },
+
+
+    hi: {
+
+        headerSubtitle:
+            "AI स्वास्थ्य सहायक",
+
+        chatSubtitle:
+            "सिरदर्द और लक्षण स्क्रीनिंग सहायक",
+
+        language:
+            "भाषा",
+
+        online:
+            "AI सहायक ऑनलाइन",
+
+        painMapTitle:
+            "सिरदर्द का दर्द मानचित्र",
+
+        painMapDescription:
+            "जहां-जहां दर्द महसूस हो रहा है, सभी स्थान चुनें।",
+
+        selected:
+            "चुने गए दर्द के स्थान:",
+
+        none:
+            "कोई स्थान नहीं चुना गया",
+
+        continue:
+            "लक्षणों पर जाएं →",
+
+        placeholder:
+            "अपने लक्षण बताएं...",
+
+        causesTitle:
+            "सिरदर्द क्यों हो सकता है?",
+
+        causesDescription:
+            "सिरदर्द के कई संभावित कारण हो सकते हैं। आपके उत्तर लक्षणों के पैटर्न को समझने में मदद करेंगे।",
+
+        summaryTitle:
+            "लक्षण सारांश",
+
+        resultTitle:
+            "AI स्क्रीनिंग परिणाम",
+
+        patternTitle:
+            "संभावित लक्षण पैटर्न",
+
+        reasonTitle:
+            "यह परिणाम क्यों?",
+
+        recommendationTitle:
+            "अगला सुझाया गया कदम",
+
+        restart:
+            "नई स्क्रीनिंग शुरू करें"
+
+    },
+
+
+    mr: {
+
+        headerSubtitle:
+            "AI आरोग्य सहाय्यक",
+
+        chatSubtitle:
+            "डोकेदुखी आणि लक्षण तपासणी सहाय्यक",
+
+        language:
+            "भाषा",
+
+        online:
+            "AI सहाय्यक ऑनलाइन",
+
+        painMapTitle:
+            "डोकेदुखीचा वेदना नकाशा",
+
+        painMapDescription:
+            "ज्या सर्व भागात वेदना जाणवतात ते भाग निवडा.",
+
+        selected:
+            "निवडलेले वेदना भाग:",
+
+        none:
+            "कोणताही भाग निवडलेला नाही",
+
+        continue:
+            "लक्षणांकडे जा →",
+
+        placeholder:
+            "तुमची लक्षणे सांगा...",
+
+        causesTitle:
+            "डोकेदुखी का होऊ शकते?",
+
+        causesDescription:
+            "डोकेदुखीची अनेक संभाव्य कारणे असू शकतात. तुमची उत्तरे लक्षणांचा पॅटर्न समजण्यास मदत करतील.",
+
+        summaryTitle:
+            "लक्षणांचा सारांश",
+
+        resultTitle:
+            "AI तपासणी निकाल",
+
+        patternTitle:
+            "संभाव्य लक्षणांचा पॅटर्न",
+
+        reasonTitle:
+            "हा निकाल का?",
+
+        recommendationTitle:
+            "सुचवलेले पुढील पाऊल",
+
+        restart:
+            "नवीन तपासणी सुरू करा"
+
+    },
+
+
+    ur: {
+
+        headerSubtitle:
+            "AI صحت معاون",
+
+        chatSubtitle:
+            "سر درد اور علامات کی اسکریننگ معاون",
+
+        language:
+            "زبان",
+
+        online:
+            "AI معاون آن لائن",
+
+        painMapTitle:
+            "سر درد کا نقشہ",
+
+        painMapDescription:
+            "جہاں جہاں درد محسوس ہو رہا ہے تمام جگہیں منتخب کریں۔",
+
+        selected:
+            "منتخب درد کے مقامات:",
+
+        none:
+            "کوئی مقام منتخب نہیں",
+
+        continue:
+            "علامات کی طرف جائیں →",
+
+        placeholder:
+            "اپنی علامات بیان کریں...",
+
+        causesTitle:
+            "سر درد کیوں ہو سکتا ہے؟",
+
+        causesDescription:
+            "سر درد کی کئی ممکنہ وجوہات ہو سکتی ہیں۔ آپ کے جوابات علامات کے پیٹرن کو سمجھنے میں مدد کریں گے۔",
+
+        summaryTitle:
+            "علامات کا خلاصہ",
+
+        resultTitle:
+            "AI اسکریننگ نتیجہ",
+
+        patternTitle:
+            "ممکنہ علامات کا پیٹرن",
+
+        reasonTitle:
+            "یہ نتیجہ کیوں؟",
+
+        recommendationTitle:
+            "تجویز کردہ اگلا قدم",
+
+        restart:
+            "نئی اسکریننگ شروع کریں"
+
+    }
+
+};
+
+
+/* =====================================================
+   APPLICATION STATE
+===================================================== */
+
+let currentLanguage = "en";
+
+let selectedPainAreas = [];
+
+let assessmentStarted = false;
+
+let currentQuestion = 0;
+
+let userAnswers = {
+
+    painType: "",
+    severity: "",
+    duration: "",
+    nausea: "",
+    vomiting: "",
+    lightSensitivity: "",
+    soundSensitivity: "",
+    dizziness: "",
+    blurredVision: "",
+    eyePain: "",
+    stress: "",
+    sleep: "",
+    hydration: "",
+    screenTime: "",
+    worsening: "",
+    suddenOnset: "",
+    confusion: "",
+    speechDifficulty: "",
+    suddenVisionLoss: ""
+
+};
+
+
+/* =====================================================
+   QUESTIONS
+===================================================== */
+
+const questions = [
+
+    {
+        key: "painType",
+
+        question: {
+            en: "How does your headache feel? Is it throbbing, pressure-like, tight, sharp, burning, or something else?",
+            hi: "आपके सिर में दर्द कैसा महसूस होता है? धड़कने वाला, दबाव जैसा, कसाव, तेज, जलन या कुछ और?",
+            mr: "तुमची डोकेदुखी कशी वाटते? ठणकणारी, दाबासारखी, घट्ट, तीव्र, जळजळ किंवा काही वेगळे?",
+            ur: "آپ کے سر میں درد کیسا محسوس ہوتا ہے؟ دھڑکنے والا، دباؤ جیسا، کھنچاؤ، تیز، جلن یا کچھ اور؟"
+        }
+
+    },
+
+
+    {
+        key: "severity",
+
+        question: {
+            en: "On a scale from 0 to 10, how severe is your headache?",
+            hi: "0 से 10 के पैमाने पर आपका सिरदर्द कितना तेज है?",
+            mr: "0 ते 10 या प्रमाणात तुमची डोकेदुखी किती तीव्र आहे?",
+            ur: "0 سے 10 کے پیمانے پر آپ کا سر درد کتنا شدید ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "duration",
+
+        question: {
+            en: "How long have you had this headache?",
+            hi: "आपको यह सिरदर्द कितने समय से है?",
+            mr: "तुम्हाला ही डोकेदुखी किती वेळापासून आहे?",
+            ur: "آپ کو یہ سر درد کتنے عرصے سے ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "nausea",
+
+        question: {
+            en: "Are you feeling nausea or feeling like you may vomit?",
+            hi: "क्या आपको मतली या उल्टी जैसा महसूस हो रहा है?",
+            mr: "तुम्हाला मळमळ किंवा उलटीसारखे वाटत आहे का?",
+            ur: "کیا آپ کو متلی یا قے جیسا محسوس ہو رہا ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "vomiting",
+
+        question: {
+            en: "Have you actually vomited?",
+            hi: "क्या आपको वास्तव में उल्टी हुई है?",
+            mr: "तुम्हाला प्रत्यक्ष उलटी झाली आहे का?",
+            ur: "کیا آپ کو واقعی قے ہوئی ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "lightSensitivity",
+
+        question: {
+            en: "Does bright light make your headache worse?",
+            hi: "क्या तेज रोशनी से आपका सिरदर्द बढ़ जाता है?",
+            mr: "तीव्र प्रकाशामुळे तुमची डोकेदुखी वाढते का?",
+            ur: "کیا تیز روشنی سے آپ کا سر درد بڑھ جاتا ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "soundSensitivity",
+
+        question: {
+            en: "Does loud sound make your headache worse?",
+            hi: "क्या तेज आवाज से आपका सिरदर्द बढ़ जाता है?",
+            mr: "मोठ्या आवाजामुळे तुमची डोकेदुखी वाढते का?",
+            ur: "کیا تیز آواز سے آپ کا سر درد بڑھ جاتا ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "dizziness",
+
+        question: {
+            en: "Are you experiencing dizziness or feeling unsteady?",
+            hi: "क्या आपको चक्कर या अस्थिर महसूस हो रहा है?",
+            mr: "तुम्हाला चक्कर किंवा अस्थिर वाटत आहे का?",
+            ur: "کیا آپ کو چکر آ رہے ہیں یا عدم توازن محسوس ہو رہا ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "blurredVision",
+
+        question: {
+            en: "Are you experiencing blurred or unusual vision?",
+            hi: "क्या आपको धुंधला या असामान्य दिखाई दे रहा है?",
+            mr: "तुम्हाला धूसर किंवा असामान्य दृष्टी जाणवत आहे का?",
+            ur: "کیا آپ کو دھندلا یا غیر معمولی نظر آ رہا ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "eyePain",
+
+        question: {
+            en: "Do you also have eye pain, redness, or excessive watering?",
+            hi: "क्या आपको आंखों में दर्द, लालिमा या ज्यादा पानी आना भी हो रहा है?",
+            mr: "तुमच्या डोळ्यांना वेदना, लालसरपणा किंवा जास्त पाणी येत आहे का?",
+            ur: "کیا آپ کی آنکھوں میں درد، سرخی یا زیادہ پانی آ رہا ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "stress",
+
+        question: {
+            en: "Have you been experiencing significant stress recently?",
+            hi: "क्या हाल ही में आपको ज्यादा तनाव रहा है?",
+            mr: "अलीकडे तुम्हाला जास्त ताण जाणवत आहे का?",
+            ur: "کیا حال ہی میں آپ کو زیادہ ذہنی دباؤ رہا ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "sleep",
+
+        question: {
+            en: "How has your sleep been recently? Poor, normal, or good?",
+            hi: "हाल में आपकी नींद कैसी रही है? खराब, सामान्य या अच्छी?",
+            mr: "अलीकडे तुमची झोप कशी आहे? खराब, सामान्य की चांगली?",
+            ur: "حال ہی میں آپ کی نیند کیسی رہی ہے؟ خراب، معمول کے مطابق یا اچھی؟"
+        }
+
+    },
+
+
+    {
+        key: "hydration",
+
+        question: {
+            en: "Have you been drinking enough water recently?",
+            hi: "क्या आप हाल में पर्याप्त पानी पी रहे हैं?",
+            mr: "तुम्ही अलीकडे पुरेसे पाणी पीत आहात का?",
+            ur: "کیا آپ حال ہی میں کافی پانی پی رہے ہیں؟"
+        }
+
+    },
+
+
+    {
+        key: "screenTime",
+
+        question: {
+            en: "Do you spend long hours using a phone, computer, or studying?",
+            hi: "क्या आप फोन, कंप्यूटर या पढ़ाई पर लंबे समय तक रहते हैं?",
+            mr: "तुम्ही फोन, संगणक किंवा अभ्यासासाठी बराच वेळ घालवता का?",
+            ur: "کیا آپ فون، کمپیوٹر یا پڑھائی پر زیادہ وقت گزارتے ہیں؟"
+        }
+
+    },
+
+
+    {
+        key: "worsening",
+
+        question: {
+            en: "Is your headache becoming worse or more frequent?",
+            hi: "क्या आपका सिरदर्द बढ़ रहा है या बार-बार हो रहा है?",
+            mr: "तुमची डोकेदुखी वाढत आहे किंवा वारंवार होत आहे का?",
+            ur: "کیا آپ کا سر درد بڑھ رہا ہے یا زیادہ بار ہو رہا ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "suddenOnset",
+
+        question: {
+            en: "Did the headache suddenly become extremely severe?",
+            hi: "क्या सिरदर्द अचानक बहुत ज्यादा और बेहद तेज हो गया?",
+            mr: "डोकेदुखी अचानक खूप तीव्र झाली का?",
+            ur: "کیا سر درد اچانک انتہائی شدید ہو گیا؟"
+        }
+
+    },
+
+
+    {
+        key: "confusion",
+
+        question: {
+            en: "Are you experiencing confusion, unusual behavior, or difficulty staying alert?",
+            hi: "क्या आपको भ्रम, असामान्य व्यवहार या होश में रहने में परेशानी हो रही है?",
+            mr: "तुम्हाला गोंधळ, असामान्य वर्तन किंवा जागरूक राहण्यात अडचण आहे का?",
+            ur: "کیا آپ کو الجھن، غیر معمولی رویہ یا ہوش میں رہنے میں مشکل ہو رہی ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "speechDifficulty",
+
+        question: {
+            en: "Are you having difficulty speaking or understanding speech?",
+            hi: "क्या आपको बोलने या बात समझने में परेशानी हो रही है?",
+            mr: "तुम्हाला बोलण्यात किंवा बोललेले समजण्यात अडचण आहे का?",
+            ur: "کیا آپ کو بولنے یا بات سمجھنے میں دشواری ہو رہی ہے؟"
+        }
+
+    },
+
+
+    {
+        key: "suddenVisionLoss",
+
+        question: {
+            en: "Have you suddenly lost vision or developed a major sudden change in vision?",
+            hi: "क्या आपकी दृष्टि अचानक चली गई है या अचानक बहुत बड़ा बदलाव हुआ है?",
+            mr: "तुमची दृष्टी अचानक गेली आहे किंवा अचानक मोठा बदल झाला आहे का?",
+            ur: "کیا آپ کی نظر اچانک چلی گئی ہے یا اچانک بہت بڑا فرق محسوس ہوا ہے؟"
+        }
+
+    }
+
+];
+
+
+/* =====================================================
+   DOM ELEMENTS
+===================================================== */
+
+const chatMessages =
+    document.getElementById("chatMessages");
+
+const chatInput =
+    document.getElementById("chatInput");
+
+const quickOptions =
+    document.getElementById("quickOptions");
+
+const languageSelect =
+    document.getElementById("languageSelect");
+
+const progressCard =
+    document.getElementById("progressCard");
+
+const progressFill =
+    document.getElementById("progressFill");
+
+const progressPercent =
+    document.getElementById("progressPercent");
+
+const progressText =
+    document.getElementById("progressText");
+
+const causesCard =
+    document.getElementById("causesCard");
+
+const summaryCard =
+    document.getElementById("summaryCard");
+
+const resultCard =
+    document.getElementById("resultCard");
+
+
+/* =====================================================
+   LOCAL STORAGE
+===================================================== */
+
+function loadSavedPainAreas() {
+
+    const saved =
+        localStorage.getItem(
+            "neuroGuardianPainAreas"
+        );
+
+    if (!saved) {
+        return;
+    }
+
+    try {
+
+        selectedPainAreas =
+            JSON.parse(saved);
+
+        if (!Array.isArray(selectedPainAreas)) {
+
+            selectedPainAreas = [];
+
+        }
+
+    } catch (error) {
+
+        selectedPainAreas = [];
+
+    }
+
+}
+
+
+/* =====================================================
+   SAVE PAIN AREAS
+===================================================== */
+
+function savePainAreas() {
+
+    localStorage.setItem(
+        "neuroGuardianPainAreas",
+        JSON.stringify(selectedPainAreas)
+    );
+
+    localStorage.setItem(
+        "neuroGuardianPainSavedAt",
+        new Date().toISOString()
+    );
+
+}
+
+
+/* =====================================================
+   UPDATE PAIN TEXT
+===================================================== */
+
+function updatePainText() {
+
+    const t =
+        translations[currentLanguage];
+
+    const text =
+        document.getElementById(
+            "selectedPainText"
+        );
+
+    if (selectedPainAreas.length === 0) {
+
+        text.textContent = t.none;
+
+    } else {
+
+        text.textContent =
+            selectedPainAreas.join(", ");
+
+    }
+
+}
+
+
+/* =====================================================
+   PAIN CARD SELECTION
+===================================================== */
+
+document
+    .querySelectorAll(".pain-card")
+    .forEach(card => {
+
+        card.addEventListener(
+            "click",
+            function () {
+
+                const pain =
+                    this.dataset.pain;
+
+                if (
+                    selectedPainAreas
+                        .includes(pain)
+                ) {
+
+                    selectedPainAreas =
+                        selectedPainAreas
+                            .filter(
+                                item =>
+                                    item !== pain
+                            );
+
+                    this.classList
+                        .remove("selected");
+
+                } else {
+
+                    selectedPainAreas
+                        .push(pain);
+
+                    this.classList
+                        .add("selected");
+
+                }
+
+                updatePainText();
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   RESTORE PAIN CARDS
+===================================================== */
+
+function restorePainCards() {
+
+    document
+        .querySelectorAll(".pain-card")
+        .forEach(card => {
+
+            const pain =
+                card.dataset.pain;
+
+            if (
+                selectedPainAreas
+                    .includes(pain)
+            ) {
+
+                card.classList
+                    .add("selected");
+
+            }
+
+        });
+
+}
+
+
+/* =====================================================
+   AI CHAT DATABASE CONNECTION
+===================================================== */
+
+const CHAT_API_URL = "/api/chat/messages";
+
+function getChatUserEmail() {
+
+    try {
+
+        if (window.NG && typeof NG.getSession === "function") {
+            const session = NG.getSession();
+            if (session && session.email) {
+                return String(session.email).trim().toLowerCase();
+            }
+        }
+
+        const session = JSON.parse(
+            localStorage.getItem("neuroguardianSession") || "null"
+        );
+
+        return session && session.email
+            ? String(session.email).trim().toLowerCase()
+            : "";
+
+    } catch (error) {
+        return "";
+    }
+}
+
+
+function getChatSessionId() {
+
+    let sessionId = localStorage.getItem(
+        "neuroGuardianChatSessionId"
+    );
+
+    if (!sessionId) {
+        sessionId =
+            "chat-" + Date.now() + "-" +
+            Math.random().toString(36).slice(2, 10);
+
+        localStorage.setItem(
+            "neuroGuardianChatSessionId",
+            sessionId
+        );
+    }
+
+    return sessionId;
+}
+
+
+async function saveChatMessageToDatabase(role, message) {
+
+    const email = getChatUserEmail();
+
+    if (!email || !message) {
+        return;
+    }
+
+    try {
+        await fetch(CHAT_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                session_id: getChatSessionId(),
+                role: role,
+                message: String(message),
+                language: currentLanguage
+            })
+        });
+    } catch (error) {
+        console.error("Chat database save failed:", error);
+    }
+}
+
+
+async function loadChatMessagesFromDatabase() {
+
+    const email = getChatUserEmail();
+
+    if (!email) {
+        return false;
+    }
+
+    try {
+
+        const response = await fetch(
+            CHAT_API_URL +
+            "?email=" + encodeURIComponent(email) +
+            "&session_id=" + encodeURIComponent(getChatSessionId())
+        );
+
+        if (!response.ok) {
+            return false;
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !Array.isArray(data.messages)) {
+            return false;
+        }
+
+        if (data.messages.length === 0) {
+            return false;
+        }
+
+        chatMessages.innerHTML = "";
+
+        data.messages.forEach(function (item) {
+
+            if (item.role === "user") {
+                addUserMessage(item.message, false);
+            } else if (item.role === "assistant") {
+                addAIMessage(item.message, false);
+            }
+
+        });
+
+        return true;
+
+    } catch (error) {
+        console.error("Chat database load failed:", error);
+        return false;
+    }
+}
+
+
+/* =====================================================
+   INITIAL AI MESSAGE
+===================================================== */
+
+async function startChat() {
+
+    chatMessages.innerHTML = "";
+
+    const restored = await loadChatMessagesFromDatabase();
+
+    if (restored) {
+        return;
+    }
+
+    addAIMessage(getWelcomeMessage());
+    addAIMessage(getPainQuestion());
+
+}
+
+
+/* =====================================================
+   WELCOME MESSAGE
+===================================================== */
+
+function getWelcomeMessage() {
+
+    if (currentLanguage === "hi") {
+
+        return `
+            नमस्ते! मैं <strong>NeuroGuardian AI</strong> हूं। 🤖<br><br>
+            मैं आपके सिरदर्द के लक्षणों को समझने,
+            संभावित पैटर्न पहचानने और यह देखने में मदद कर सकता हूं
+            कि आपको घर पर निगरानी, डॉक्टर की सलाह या तत्काल
+            चिकित्सा सहायता की आवश्यकता हो सकती है।
+            <br><br>
+            मैं मेडिकल डायग्नोसिस नहीं देता।
+        `;
+
+    }
+
+    if (currentLanguage === "mr") {
+
+        return `
+            नमस्कार! मी <strong>NeuroGuardian AI</strong> आहे। 🤖<br><br>
+            मी तुमच्या डोकेदुखीची लक्षणे समजून घेण्यास,
+            संभाव्य पॅटर्न ओळखण्यास आणि योग्य वैद्यकीय
+            मदतीची गरज आहे का हे समजण्यास मदत करू शकतो.
+            <br><br>
+            मी वैद्यकीय निदान देत नाही.
+        `;
+
+    }
+
+    if (currentLanguage === "ur") {
+
+        return `
+            السلام علیکم! میں <strong>NeuroGuardian AI</strong> ہوں۔ 🤖<br><br>
+            میں آپ کے سر درد کی علامات کو سمجھنے،
+            ممکنہ پیٹرن کی نشاندہی کرنے اور مناسب طبی
+            مدد کی ضرورت کو سمجھنے میں مدد کر سکتا ہوں۔
+            <br><br>
+            میں طبی تشخیص فراہم نہیں کرتا۔
+        `;
+
+    }
+
+    return `
+        Hello! I'm <strong>NeuroGuardian AI</strong>. 🤖<br><br>
+        I'll ask you a few questions about your headache,
+        symptoms and possible triggers. I'll then provide
+        an AI-assisted screening summary.
+        <br><br>
+        I do not provide a medical diagnosis.
+    `;
+
+}
+
+
+/* =====================================================
+   PAIN QUESTION
+===================================================== */
+
+function getPainQuestion() {
+
+    if (currentLanguage === "hi") {
+
+        return `
+            सबसे पहले, दाईं ओर दिए गए <strong>Headache Pain Map</strong>
+            में जहां-जहां आपको दर्द हो रहा है, उन सभी स्थानों को चुनें।
+            <br><br>
+            आप एक से ज्यादा स्थान चुन सकते हैं।
+        `;
+
+    }
+
+    if (currentLanguage === "mr") {
+
+        return `
+            प्रथम, उजवीकडील <strong>Headache Pain Map</strong>
+            मध्ये ज्या-ज्या भागात वेदना आहेत ते सर्व भाग निवडा.
+            <br><br>
+            तुम्ही एकापेक्षा जास्त भाग निवडू शकता.
+        `;
+
+    }
+
+    if (currentLanguage === "ur") {
+
+        return `
+            سب سے پہلے دائیں طرف موجود
+            <strong>Headache Pain Map</strong>
+            میں جہاں جہاں درد ہے وہ تمام مقامات منتخب کریں۔
+            <br><br>
+            آپ ایک سے زیادہ مقامات منتخب کر سکتے ہیں۔
+        `;
+
+    }
+
+    return `
+        First, use the <strong>Headache Pain Map</strong>
+        on the right to select every area where you feel pain.
+        <br><br>
+        You can select multiple areas.
+    `;
+
+}
+
+
+/* =====================================================
+   ADD AI MESSAGE
+===================================================== */
+
+function addAIMessage(text, saveToDatabase = true) {
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "message ai";
+
+    wrapper.innerHTML = `
+
+        <div class="message-avatar">
+            🤖
+        </div>
+
+        <div class="message-bubble">
+            ${text}
+        </div>
+
+    `;
+
+    chatMessages.appendChild(wrapper);
+
+    scrollChat();
+
+    if (saveToDatabase) {
+        saveChatMessageToDatabase("assistant", text);
+    }
+
+}
+
+
+/* =====================================================
+   ADD USER MESSAGE
+===================================================== */
+
+function addUserMessage(text, saveToDatabase = true) {
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "message user";
+
+    wrapper.innerHTML = `
+
+        <div class="message-bubble">
+            ${escapeHTML(text)}
+        </div>
+
+        <div class="message-avatar">
+            👤
+        </div>
+
+    `;
+
+    chatMessages.appendChild(wrapper);
+
+    scrollChat();
+
+    if (saveToDatabase) {
+        saveChatMessageToDatabase("user", text);
+    }
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(text) {
+
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =====================================================
+   SCROLL CHAT
+===================================================== */
+
+function scrollChat() {
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+}
+
+
+/* =====================================================
+   TYPING EFFECT
+===================================================== */
+
+function showTyping() {
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "message";
+
+    wrapper.id =
+        "typingMessage";
+
+    wrapper.innerHTML = `
+
+        <div class="message-avatar">
+            🤖
+        </div>
+
+        <div class="message-bubble">
+
+            <div class="typing">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        </div>
+
+    `;
+
+    chatMessages.appendChild(wrapper);
+
+    scrollChat();
+
+}
+
+
+function removeTyping() {
+
+    const typing =
+        document.getElementById(
+            "typingMessage"
+        );
+
+    if (typing) {
+        typing.remove();
+    }
+
+}
+
+
+/* =====================================================
+   CONTINUE TO SYMPTOMS
+===================================================== */
+
+document
+    .getElementById("continueToSymptoms")
+    .addEventListener(
+        "click",
+        function () {
+
+            if (
+                selectedPainAreas.length === 0
+            ) {
+
+                alert(
+                    currentLanguage === "hi"
+                        ? "कृपया कम से कम एक दर्द का स्थान चुनें।"
+                        :
+                    currentLanguage === "mr"
+                        ? "कृपया कमीत कमी एक वेदना भाग निवडा."
+                        :
+                    currentLanguage === "ur"
+                        ? "براہ کرم کم از کم ایک درد کا مقام منتخب کریں۔"
+                        :
+                        "Please select at least one pain location."
+                );
+
+                return;
+
+            }
+
+
+            savePainAreas();
+
+            assessmentStarted = true;
+
+            currentQuestion = 0;
+
+            progressCard.classList.add("active");
+
+            causesCard.classList.add("active");
+
+            updateProgress();
+
+            addUserMessage(
+                selectedPainAreas.join(", ")
+            );
+
+
+            let locationText = "";
+
+            if (currentLanguage === "hi") {
+
+                locationText =
+                    "ठीक है। मैंने आपके चुने हुए दर्द के स्थान सेव कर लिए हैं: ";
+
+            } else if (currentLanguage === "mr") {
+
+                locationText =
+                    "ठीक आहे. तुम्ही निवडलेले वेदना भाग सेव्ह केले आहेत: ";
+
+            } else if (currentLanguage === "ur") {
+
+                locationText =
+                    "ٹھیک ہے۔ میں نے آپ کے منتخب کردہ درد کے مقامات محفوظ کر لیے ہیں: ";
+
+            } else {
+
+                locationText =
+                    "Got it. I've saved the headache locations you selected: ";
+
+            }
+
+
+            showTyping();
+
+            setTimeout(() => {
+
+                removeTyping();
+
+                addAIMessage(
+                    locationText +
+                    "<strong>" +
+                    selectedPainAreas.join(", ") +
+                    "</strong>."
+                );
+
+                askNextQuestion();
+
+            }, 700);
+
+        }
+    );
+
+
+/* =====================================================
+   ASK NEXT QUESTION
+===================================================== */
+
+function askNextQuestion() {
+
+    if (
+        currentQuestion >=
+        questions.length
+    ) {
+
+        finishAssessment();
+
+        return;
+
+    }
+
+
+    const q =
+        questions[currentQuestion];
+
+    showTyping();
+
+    setTimeout(() => {
+
+        removeTyping();
+
+        addAIMessage(
+            q.question[currentLanguage]
+        );
+
+        updateQuickOptions(q.key);
+
+    }, 700);
+
+}
+
+
+/* =====================================================
+   QUICK OPTIONS
+===================================================== */
+
+function updateQuickOptions(key) {
+
+    quickOptions.innerHTML = "";
+
+    let options = [];
+
+    const yesNoKeys = [
+
+        "nausea",
+        "vomiting",
+        "lightSensitivity",
+        "soundSensitivity",
+        "dizziness",
+        "blurredVision",
+        "eyePain",
+        "stress",
+        "hydration",
+        "screenTime",
+        "worsening",
+        "suddenOnset",
+        "confusion",
+        "speechDifficulty",
+        "suddenVisionLoss"
+
+    ];
+
+
+    if (yesNoKeys.includes(key)) {
+
+        if (currentLanguage === "hi") {
+
+            options = [
+                ["हाँ", "yes"],
+                ["नहीं", "no"]
+            ];
+
+        } else if (currentLanguage === "mr") {
+
+            options = [
+                ["होय", "yes"],
+                ["नाही", "no"]
+            ];
+
+        } else if (currentLanguage === "ur") {
+
+            options = [
+                ["ہاں", "yes"],
+                ["نہیں", "no"]
+            ];
+
+        } else {
+
+            options = [
+                ["Yes", "yes"],
+                ["No", "no"]
+            ];
+
+        }
+
+    }
+
+
+    if (key === "severity") {
+
+        options = [
+            ["0–3", "3"],
+            ["4–6", "6"],
+            ["7–8", "8"],
+            ["9–10", "10"]
+        ];
+
+    }
+
+
+    if (key === "sleep") {
+
+        if (currentLanguage === "hi") {
+
+            options = [
+                ["खराब", "poor"],
+                ["सामान्य", "normal"],
+                ["अच्छी", "good"]
+            ];
+
+        } else if (currentLanguage === "mr") {
+
+            options = [
+                ["खराब", "poor"],
+                ["सामान्य", "normal"],
+                ["चांगली", "good"]
+            ];
+
+        } else if (currentLanguage === "ur") {
+
+            options = [
+                ["خراب", "poor"],
+                ["معمول", "normal"],
+                ["اچھی", "good"]
+            ];
+
+        } else {
+
+            options = [
+                ["Poor", "poor"],
+                ["Normal", "normal"],
+                ["Good", "good"]
+            ];
+
+        }
+
+    }
+
+
+    if (key === "painType") {
+
+        if (currentLanguage === "hi") {
+
+            options = [
+                ["धड़कने वाला", "throbbing"],
+                ["दबाव जैसा", "pressure"],
+                ["कसाव", "tight"],
+                ["तेज / चुभने वाला", "sharp"]
+            ];
+
+        } else if (currentLanguage === "mr") {
+
+            options = [
+                ["ठणकणारी", "throbbing"],
+                ["दाबासारखी", "pressure"],
+                ["घट्ट", "tight"],
+                ["तीव्र", "sharp"]
+            ];
+
+        } else if (currentLanguage === "ur") {
+
+            options = [
+                ["دھڑکنے والا", "throbbing"],
+                ["دباؤ جیسا", "pressure"],
+                ["کھنچاؤ", "tight"],
+                ["تیز", "sharp"]
+            ];
+
+        } else {
+
+            options = [
+                ["Throbbing", "throbbing"],
+                ["Pressure", "pressure"],
+                ["Tight", "tight"],
+                ["Sharp", "sharp"]
+            ];
+
+        }
+
+    }
+
+
+    if (key === "duration") {
+
+        if (currentLanguage === "hi") {
+
+            options = [
+                ["कुछ घंटे", "hours"],
+                ["1 दिन", "1day"],
+                ["2–3 दिन", "2_3days"],
+                ["एक सप्ताह+", "week"]
+            ];
+
+        } else if (currentLanguage === "mr") {
+
+            options = [
+                ["काही तास", "hours"],
+                ["1 दिवस", "1day"],
+                ["2–3 दिवस", "2_3days"],
+                ["एक आठवडा+", "week"]
+            ];
+
+        } else if (currentLanguage === "ur") {
+
+            options = [
+                ["کچھ گھنٹے", "hours"],
+                ["1 دن", "1day"],
+                ["2–3 دن", "2_3days"],
+                ["ایک ہفتہ+", "week"]
+            ];
+
+        } else {
+
+            options = [
+                ["A few hours", "hours"],
+                ["1 day", "1day"],
+                ["2–3 days", "2_3days"],
+                ["1 week+", "week"]
+            ];
+
+        }
+
+    }
+
+
+    options.forEach(option => {
+
+        const btn =
+            document.createElement("button");
+
+        btn.className =
+            "quick-btn";
+
+        btn.textContent =
+            option[0];
+
+        btn.onclick = () => {
+
+            processAnswer(
+                option[0],
+                option[1]
+            );
+
+        };
+
+        quickOptions.appendChild(btn);
+
+    });
+
+}
+
+
+/* =====================================================
+   SEND USER MESSAGE
+===================================================== */
+
+function sendUserMessage() {
+
+    const text =
+        chatInput.value.trim();
+
+    if (!text) {
+        return;
+    }
+
+
+    if (!assessmentStarted) {
+
+        addUserMessage(text);
+
+        chatInput.value = "";
+
+        addAIMessage(
+            currentLanguage === "hi"
+                ? "कृपया पहले दाईं ओर Headache Pain Map से दर्द के स्थान चुनें।"
+                :
+            currentLanguage === "mr"
+                ? "कृपया प्रथम उजवीकडील Headache Pain Map मधून वेदना भाग निवडा."
+                :
+            currentLanguage === "ur"
+                ? "براہ کرم پہلے دائیں طرف Headache Pain Map سے درد کے مقامات منتخب کریں۔"
+                :
+                "Please select your headache locations from the Headache Pain Map first."
+        );
+
+        return;
+
+    }
+
+
+    const q =
+        questions[currentQuestion];
+
+
+    processAnswer(
+        text,
+        parseAnswer(text, q.key)
+    );
+
+
+    chatInput.value = "";
+
+}
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+chatInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            sendUserMessage();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   PARSE ANSWER
+===================================================== */
+
+function parseAnswer(text, key) {
+
+    const lower =
+        text.toLowerCase();
+
+
+    if (
+        lower.includes("yes") ||
+        lower.includes("हाँ") ||
+        lower.includes("होय") ||
+        lower.includes("ہاں") ||
+        lower.includes("yes")
+    ) {
+
+        return "yes";
+
+    }
+
+
+    if (
+        lower.includes("no") ||
+        lower.includes("नहीं") ||
+        lower.includes("नाही") ||
+        lower.includes("نہیں")
+    ) {
+
+        return "no";
+
+    }
+
+
+    if (key === "severity") {
+
+        const number =
+            parseInt(
+                text.replace(
+                    /[^0-9]/g,
+                    ""
+                )
+            );
+
+        if (
+            !isNaN(number) &&
+            number >= 0 &&
+            number <= 10
+        ) {
+
+            return String(number);
+
+        }
+
+    }
+
+
+    return text;
+
+}
+
+
+/* =====================================================
+   PROCESS ANSWER
+===================================================== */
+
+function processAnswer(
+    displayAnswer,
+    actualAnswer
+) {
+
+    if (
+        currentQuestion >=
+        questions.length
+    ) {
+
+        return;
+
+    }
+
+
+    const q =
+        questions[currentQuestion];
+
+
+    addUserMessage(
+        displayAnswer
+    );
+
+
+    userAnswers[q.key] =
+        actualAnswer;
+
+
+    currentQuestion++;
+
+    updateProgress();
+
+
+    showTyping();
+
+    setTimeout(() => {
+
+        removeTyping();
+
+        addAIMessage(
+            generateAcknowledgement(
+                q.key,
+                actualAnswer
+            )
+        );
+
+        askNextQuestion();
+
+    }, 650);
+
+}
+
+
+/* =====================================================
+   ACKNOWLEDGEMENT
+===================================================== */
+
+function generateAcknowledgement(
+    key,
+    answer
+) {
+
+    if (currentLanguage === "hi") {
+
+        const messages = {
+
+            painType:
+                "समझ गया। दर्द के प्रकार को मैंने नोट कर लिया है।",
+
+            severity:
+                "ठीक है। सिरदर्द की तीव्रता नोट कर ली गई है।",
+
+            duration:
+                "समझ गया। दर्द कितने समय से है, यह भी महत्वपूर्ण है।",
+
+            nausea:
+                "ठीक है। मतली की जानकारी नोट कर ली है।",
+
+            vomiting:
+                "समझ गया। उल्टी की जानकारी भी नोट कर ली है।",
+
+            lightSensitivity:
+                "ठीक है। रोशनी से संबंधित जानकारी नोट कर ली है।",
+
+            soundSensitivity:
+                "ठीक है। आवाज के प्रति संवेदनशीलता भी नोट कर ली है।",
+
+            dizziness:
+                "चक्कर की जानकारी नोट कर ली है।",
+
+            blurredVision:
+                "दृष्टि संबंधी जानकारी नोट कर ली है।",
+
+            eyePain:
+                "आंखों से संबंधित लक्षण भी नोट कर लिए हैं।",
+
+            stress:
+                "तनाव के बारे में जानकारी नोट कर ली है।",
+
+            sleep:
+                "नींद का पैटर्न भी महत्वपूर्ण है। मैंने इसे नोट कर लिया है।",
+
+            hydration:
+                "पानी पीने की जानकारी नोट कर ली है।",
+
+            screenTime:
+                "स्क्रीन टाइम की जानकारी नोट कर ली है।",
+
+            worsening:
+                "समझ गया। सिरदर्द के बढ़ने की जानकारी महत्वपूर्ण है।",
+
+            suddenOnset:
+                "ठीक है। अचानक बहुत तेज सिरदर्द के बारे में जानकारी नोट कर ली है।",
+
+            confusion:
+                "समझ गया। यह एक महत्वपूर्ण warning sign है।",
+
+            speechDifficulty:
+                "समझ गया। बोलने में परेशानी एक महत्वपूर्ण warning sign हो सकती है।",
+
+            suddenVisionLoss:
+                "समझ गया। अचानक दृष्टि में बदलाव को विशेष ध्यान से देखा जाएगा।"
+
+        };
+
+        return messages[key] ||
+            "ठीक है, मैंने आपकी जानकारी नोट कर ली है।";
+
+    }
+
+
+    if (currentLanguage === "mr") {
+
+        const messages = {
+
+            painType:
+                "समजले. वेदनेचा प्रकार मी नोंदवला आहे.",
+
+            severity:
+                "ठीक आहे. डोकेदुखीची तीव्रता नोंदवली आहे.",
+
+            duration:
+                "समजले. डोकेदुखी किती काळापासून आहे हे महत्त्वाचे आहे.",
+
+            nausea:
+                "मळमळीची माहिती नोंदवली आहे.",
+
+            vomiting:
+                "उलटीची माहिती नोंदवली आहे.",
+
+            lightSensitivity:
+                "प्रकाशासंबंधी माहिती नोंदवली आहे.",
+
+            soundSensitivity:
+                "आवाजासंबंधी संवेदनशीलता नोंदवली आहे.",
+
+            dizziness:
+                "चक्कर येण्याची माहिती नोंदवली आहे.",
+
+            blurredVision:
+                "दृष्टीसंबंधी माहिती नोंदवली आहे.",
+
+            eyePain:
+                "डोळ्यांशी संबंधित लक्षणे नोंदवली आहेत.",
+
+            stress:
+                "तणावाची माहिती नोंदवली आहे.",
+
+            sleep:
+                "झोपेचा पॅटर्न नोंदवला आहे.",
+
+            hydration:
+                "पाणी पिण्याची माहिती नोंदवली आहे.",
+
+            screenTime:
+                "स्क्रीन टाइमची माहिती नोंदवली आहे.",
+
+            worsening:
+                "डोकेदुखी वाढत असल्याची माहिती महत्त्वाची आहे.",
+
+            suddenOnset:
+                "अचानक तीव्र डोकेदुखीबद्दल माहिती नोंदवली आहे.",
+
+            confusion:
+                "समजले. हा महत्त्वाचा warning sign आहे.",
+
+            speechDifficulty:
+                "बोलण्यातील अडचण महत्त्वाचा warning sign असू शकतो.",
+
+            suddenVisionLoss:
+                "अचानक दृष्टीतील बदलाकडे विशेष लक्ष दिले जाईल."
+
+        };
+
+        return messages[key] ||
+            "ठीक आहे, तुमची माहिती नोंदवली आहे.";
+
+    }
+
+
+    if (currentLanguage === "ur") {
+
+        const messages = {
+
+            painType:
+                "سمجھ گیا۔ درد کی قسم نوٹ کر لی گئی ہے۔",
+
+            severity:
+                "ٹھیک ہے۔ سر درد کی شدت نوٹ کر لی گئی ہے۔",
+
+            duration:
+                "سمجھ گیا۔ درد کا دورانیہ اہم ہے۔",
+
+            nausea:
+                "متلی کی معلومات نوٹ کر لی گئی ہیں۔",
+
+            vomiting:
+                "قے کی معلومات نوٹ کر لی گئی ہیں۔",
+
+            lightSensitivity:
+                "روشنی سے متعلق معلومات نوٹ کر لی گئی ہیں۔",
+
+            soundSensitivity:
+                "آواز سے حساسیت کی معلومات نوٹ کر لی گئی ہیں۔",
+
+            dizziness:
+                "چکر آنے کی معلومات نوٹ کر لی گئی ہیں۔",
+
+            blurredVision:
+                "نظر سے متعلق معلومات نوٹ کر لی گئی ہیں۔",
+
+            eyePain:
+                "آنکھوں سے متعلق علامات نوٹ کر لی گئی ہیں۔",
+
+            stress:
+                "ذہنی دباؤ کی معلومات نوٹ کر لی گئی ہیں۔",
+
+            sleep:
+                "نیند کا پیٹرن نوٹ کر لیا گیا ہے۔",
+
+            hydration:
+                "پانی پینے کی معلومات نوٹ کر لی گئی ہیں۔",
+
+            screenTime:
+                "اسکرین ٹائم کی معلومات نوٹ کر لی گئی ہیں۔",
+
+            worsening:
+                "سر درد کے بڑھنے کی معلومات اہم ہیں۔",
+
+            suddenOnset:
+                "اچانک شدید سر درد کے بارے میں معلومات نوٹ کر لی گئی ہیں۔",
+
+            confusion:
+                "سمجھ گیا۔ یہ ایک اہم warning sign ہے۔",
+
+            speechDifficulty:
+                "بولنے میں دشواری ایک اہم warning sign ہو سکتی ہے۔",
+
+            suddenVisionLoss:
+                "اچانک نظر میں تبدیلی پر خاص توجہ دی جائے گی۔"
+
+        };
+
+        return messages[key] ||
+            "ٹھیک ہے، آپ کی معلومات نوٹ کر لی گئی ہیں۔";
+
+    }
+
+
+    const messages = {
+
+        painType:
+            "Got it. I've noted the type of pain.",
+
+        severity:
+            "Okay. I've recorded the headache severity.",
+
+        duration:
+            "Understood. The duration of the headache is important.",
+
+        nausea:
+            "I've noted the nausea information.",
+
+        vomiting:
+            "I've noted the vomiting information.",
+
+        lightSensitivity:
+            "I've noted the light sensitivity information.",
+
+        soundSensitivity:
+            "I've noted the sound sensitivity information.",
+
+        dizziness:
+            "I've noted the dizziness information.",
+
+        blurredVision:
+            "I've noted the vision information.",
+
+        eyePain:
+            "I've noted the eye-related symptoms.",
+
+        stress:
+            "I've noted the stress information.",
+
+        sleep:
+            "Sleep pattern can be important. I've recorded it.",
+
+        hydration:
+            "I've noted the hydration information.",
+
+        screenTime:
+            "I've noted the screen-time information.",
+
+        worsening:
+            "I've noted whether the headache is getting worse.",
+
+        suddenOnset:
+            "I've noted the information about sudden severe headache.",
+
+        confusion:
+            "Understood. This is an important warning sign to check.",
+
+        speechDifficulty:
+            "Understood. Speech difficulty can be an important warning sign.",
+
+        suddenVisionLoss:
+            "Understood. Sudden vision changes need particular attention."
+
+    };
+
+    return messages[key] ||
+        "Okay, I've recorded your answer.";
+
+}
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+function updateProgress() {
+
+    const percent =
+        Math.round(
+            (currentQuestion /
+                questions.length) * 100
+        );
+
+    progressFill.style.width =
+        percent + "%";
+
+    progressPercent.textContent =
+        percent + "%";
+
+
+    if (currentLanguage === "hi") {
+
+        progressText.textContent =
+            "लक्षणों का मूल्यांकन";
+
+    } else if (currentLanguage === "mr") {
+
+        progressText.textContent =
+            "लक्षणांचे मूल्यांकन";
+
+    } else if (currentLanguage === "ur") {
+
+        progressText.textContent =
+            "علامات کا جائزہ";
+
+    } else {
+
+        progressText.textContent =
+            "Symptom assessment";
+
+    }
+
+}
+
+
+/* =====================================================
+   FINISH ASSESSMENT
+===================================================== */
+
+function finishAssessment() {
+
+    quickOptions.innerHTML = "";
+
+    progressFill.style.width = "100%";
+
+    progressPercent.textContent =
+        "100%";
+
+
+    showTyping();
+
+
+    setTimeout(() => {
+
+        removeTyping();
+
+        if (currentLanguage === "hi") {
+
+            addAIMessage(
+                `
+                मैंने आपकी दी गई जानकारी एकत्र कर ली है।
+                अब मैं आपके लक्षणों और चुने हुए headache locations
+                के आधार पर एक <strong>preliminary screening</strong>
+                तैयार कर रहा हूं।
+                <br><br>
+                यह मेडिकल diagnosis नहीं है।
+                `
+            );
+
+        } else if (currentLanguage === "mr") {
+
+            addAIMessage(
+                `
+                मी तुमची माहिती एकत्र केली आहे.
+                आता तुमची लक्षणे आणि निवडलेले headache locations
+                पाहून <strong>preliminary screening</strong>
+                तयार करत आहे.
+                <br><br>
+                हे वैद्यकीय निदान नाही.
+                `
+            );
+
+        } else if (currentLanguage === "ur") {
+
+            addAIMessage(
+                `
+                میں نے آپ کی معلومات جمع کر لی ہیں۔
+                اب آپ کی علامات اور منتخب headache locations
+                کی بنیاد پر <strong>preliminary screening</strong>
+                تیار کر رہا ہوں۔
+                <br><br>
+                یہ طبی تشخیص نہیں ہے۔
+                `
+            );
+
+        } else {
+
+            addAIMessage(
+                `
+                I've collected your information.
+                I'm now comparing your symptom pattern
+                and selected headache locations for a
+                <strong>preliminary screening</strong>.
+                <br><br>
+                This is not a medical diagnosis.
+                `
+            );
+
+        }
+
+
+        createSummary();
+
+        const result =
+            analyzeSymptoms();
+
+        displayResult(result);
+
+    }, 1200);
+
+}
+
+
+/* =====================================================
+   ANALYZE SYMPTOMS
+===================================================== */
+
+function analyzeSymptoms() {
+
+    let score = 0;
+
+    let emergency = false;
+
+    let migrainePoints = 0;
+
+    let tensionPoints = 0;
+
+    let triggerPoints = 0;
+
+    let reasons = [];
+
+
+    /* -----------------------------------------------
+       SEVERITY
+    ----------------------------------------------- */
+
+    const severity =
+        parseInt(
+            userAnswers.severity
+        ) || 0;
+
+    if (severity >= 7) {
+
+        score += 20;
+
+    } else if (severity >= 4) {
+
+        score += 10;
+
+    }
+
+
+    /* -----------------------------------------------
+       MIGRAINE PATTERN
+    ----------------------------------------------- */
+
+    if (
+        userAnswers.painType ===
+        "throbbing"
+    ) {
+
+        migrainePoints += 2;
+
+    }
+
+
+    if (
+        selectedPainAreas.includes(
+            "Left Side"
+        ) ||
+        selectedPainAreas.includes(
+            "Right Side"
+        )
+    ) {
+
+        migrainePoints += 2;
+
+    }
+
+
+    if (
+        userAnswers.nausea === "yes"
+    ) {
+
+        migrainePoints += 2;
+
+    }
+
+
+    if (
+        userAnswers.lightSensitivity ===
+        "yes"
+    ) {
+
+        migrainePoints += 2;
+
+    }
+
+
+    if (
+        userAnswers.soundSensitivity ===
+        "yes"
+    ) {
+
+        migrainePoints += 1;
+
+    }
+
+
+    if (
+        userAnswers.vomiting ===
+        "yes"
+    ) {
+
+        migrainePoints += 2;
+
+    }
+
+
+    /* -----------------------------------------------
+       TENSION PATTERN
+    ----------------------------------------------- */
+
+    if (
+        userAnswers.painType ===
+        "pressure" ||
+        userAnswers.painType ===
+        "tight"
+    ) {
+
+        tensionPoints += 2;
+
+    }
+
+
+    if (
+        selectedPainAreas.includes(
+            "Forehead"
+        )
+    ) {
+
+        tensionPoints += 1;
+
+    }
+
+
+    if (
+        selectedPainAreas.includes(
+            "Both Sides"
+        )
+    ) {
+
+        tensionPoints += 2;
+
+    }
+
+
+    if (
+        userAnswers.stress ===
+        "yes"
+    ) {
+
+        tensionPoints += 2;
+
+        triggerPoints += 1;
+
+    }
+
+
+    /* -----------------------------------------------
+       LIFESTYLE
+    ----------------------------------------------- */
+
+    if (
+        userAnswers.sleep ===
+        "poor"
+    ) {
+
+        triggerPoints += 2;
+
+    }
+
+
+    if (
+        userAnswers.hydration ===
+        "no"
+    ) {
+
+        triggerPoints += 2;
+
+    }
+
+
+    if (
+        userAnswers.screenTime ===
+        "yes"
+    ) {
+
+        triggerPoints += 2;
+
+    }
+
+
+    /* -----------------------------------------------
+       VISION / EYE
+    ----------------------------------------------- */
+
+    if (
+        userAnswers.blurredVision ===
+        "yes"
+    ) {
+
+        score += 8;
+
+    }
+
+
+    if (
+        userAnswers.eyePain ===
+        "yes"
+    ) {
+
+        score += 5;
+
+    }
+
+
+    /* -----------------------------------------------
+       WORSENING
+    ----------------------------------------------- */
+
+    if (
+        userAnswers.worsening ===
+        "yes"
+    ) {
+
+        score += 10;
+
+    }
+
+
+    /* -----------------------------------------------
+       EMERGENCY WARNING SIGNS
+    ----------------------------------------------- */
+
+    if (
+        userAnswers.suddenOnset ===
+        "yes"
+    ) {
+
+        emergency = true;
+
+        reasons.push(
+            "Sudden extremely severe headache was reported."
+        );
+
+    }
+
+
+    if (
+        userAnswers.confusion ===
+        "yes"
+    ) {
+
+        emergency = true;
+
+        reasons.push(
+            "Confusion or altered alertness was reported."
+        );
+
+    }
+
+
+    if (
+        userAnswers.speechDifficulty ===
+        "yes"
+    ) {
+
+        emergency = true;
+
+        reasons.push(
+            "Difficulty speaking or understanding speech was reported."
+        );
+
+    }
+
+
+    if (
+        userAnswers.suddenVisionLoss ===
+        "yes"
+    ) {
+
+        emergency = true;
+
+        reasons.push(
+            "Sudden major vision loss or change was reported."
+        );
+
+    }
+
+
+    /* -----------------------------------------------
+       BUILD RESULT
+    ----------------------------------------------- */
+
+    let level;
+
+    let pattern;
+
+    let recommendation;
+
+
+    if (emergency) {
+
+        level = "red";
+
+        score = 95;
+
+        pattern =
+            "Emergency warning-sign pattern";
+
+        recommendation =
+            "Seek immediate medical attention. Do not rely on this screening tool to determine the cause of these symptoms.";
+
+    }
+
+    else if (score >= 35 || severity >= 7) {
+
+        level = "yellow";
+
+        if (
+            migrainePoints >=
+            tensionPoints &&
+            migrainePoints >= 4
+        ) {
+
+            pattern =
+                "Symptoms may be consistent with a migraine-like pattern.";
+
+        }
+
+        else if (
+            tensionPoints >= 4
+        ) {
+
+            pattern =
+                "Symptoms may be consistent with a tension-type headache pattern.";
+
+        }
+
+        else {
+
+            pattern =
+                "A mixed headache symptom pattern was identified.";
+
+        }
+
+
+        recommendation =
+            "Consider discussing persistent, worsening, moderate or severe symptoms with a qualified healthcare professional.";
+
+    }
+
+    else {
+
+        level = "green";
+
+        pattern =
+            "No strong emergency pattern was identified from the information provided.";
+
+        recommendation =
+            "Monitor your symptoms, consider possible triggers, stay hydrated and maintain regular sleep. Seek professional advice if symptoms persist or worsen.";
+
+    }
+
+
+    /* -----------------------------------------------
+       ADD EXPLANATION REASONS
+    ----------------------------------------------- */
+
+    if (
+        selectedPainAreas.length > 0
+    ) {
+
+        reasons.push(
+            "Pain was reported in: " +
+            selectedPainAreas.join(", ") +
+            "."
+        );
+
+    }
+
+
+    if (
+        migrainePoints >= 4
+    ) {
+
+        reasons.push(
+            "The combination of headache features may resemble a migraine-like pattern."
+        );
+
+    }
+
+
+    if (
+        tensionPoints >= 3
+    ) {
+
+        reasons.push(
+            "Pressure/tightness and related symptoms may resemble a tension-type pattern."
+        );
+
+    }
+
+
+    if (
+        triggerPoints > 0
+    ) {
+
+        reasons.push(
+            "Lifestyle factors such as sleep, hydration, stress or prolonged screen use may contribute to symptoms."
+        );
+
+    }
+
+
+    if (
+        userAnswers.blurredVision ===
+        "yes" ||
+        userAnswers.eyePain ===
+        "yes"
+    ) {
+
+        reasons.push(
+            "Eye or vision-related symptoms were reported and should be considered separately."
+        );
+
+    }
+
+
+    return {
+
+        level,
+        score,
+        pattern,
+        recommendation,
+        reasons
+
+    };
+
+}
+
+
+/* =====================================================
+   CREATE SUMMARY
+===================================================== */
+
+function createSummary() {
+
+    summaryCard.classList.add(
+        "active"
+    );
+
+
+    const content =
+        document.getElementById(
+            "summaryContent"
+        );
+
+
+    const labels = {
+
+        pain:
+            "Pain location",
+
+        type:
+            "Pain type",
+
+        severity:
+            "Severity",
+
+        duration:
+            "Duration",
+
+        migraine:
+            "Migraine-related symptoms",
+
+        vision:
+            "Vision / eye symptoms",
+
+        lifestyle:
+            "Lifestyle factors"
+
+    };
+
+
+    let migraineSymptoms = [];
+
+    if (
+        userAnswers.nausea ===
+        "yes"
+    ) {
+
+        migraineSymptoms.push(
+            "Nausea"
+        );
+
+    }
+
+    if (
+        userAnswers.vomiting ===
+        "yes"
+    ) {
+
+        migraineSymptoms.push(
+            "Vomiting"
+        );
+
+    }
+
+    if (
+        userAnswers.lightSensitivity ===
+        "yes"
+    ) {
+
+        migraineSymptoms.push(
+            "Light sensitivity"
+        );
+
+    }
+
+    if (
+        userAnswers.soundSensitivity ===
+        "yes"
+    ) {
+
+        migraineSymptoms.push(
+            "Sound sensitivity"
+        );
+
+    }
+
+
+    let visionSymptoms = [];
+
+    if (
+        userAnswers.blurredVision ===
+        "yes"
+    ) {
+
+        visionSymptoms.push(
+            "Blurred vision"
+        );
+
+    }
+
+    if (
+        userAnswers.eyePain ===
+        "yes"
+    ) {
+
+        visionSymptoms.push(
+            "Eye symptoms"
+        );
+
+    }
+
+
+    let lifestyle = [];
+
+    if (
+        userAnswers.stress ===
+        "yes"
+    ) {
+
+        lifestyle.push(
+            "Stress"
+        );
+
+    }
+
+    if (
+        userAnswers.sleep ===
+        "poor"
+    ) {
+
+        lifestyle.push(
+            "Poor sleep"
+        );
+
+    }
+
+    if (
+        userAnswers.hydration ===
+        "no"
+    ) {
+
+        lifestyle.push(
+            "Possible low hydration"
+        );
+
+    }
+
+    if (
+        userAnswers.screenTime ===
+        "yes"
+    ) {
+
+        lifestyle.push(
+            "Prolonged screen use"
+        );
+
+    }
+
+
+    content.innerHTML = `
+
+        <div class="summary-row">
+
+            <span class="summary-label">
+                ${labels.pain}
+            </span>
+
+            <span class="summary-value">
+                ${selectedPainAreas.join(", ")}
+            </span>
+
+        </div>
+
+
+        <div class="summary-row">
+
+            <span class="summary-label">
+                ${labels.type}
+            </span>
+
+            <span class="summary-value">
+                ${escapeHTML(
+                    userAnswers.painType || "Not specified"
+                )}
+            </span>
+
+        </div>
+
+
+        <div class="summary-row">
+
+            <span class="summary-label">
+                ${labels.severity}
+            </span>
+
+            <span class="summary-value">
+                ${userAnswers.severity || "Not specified"}/10
+            </span>
+
+        </div>
+
+
+        <div class="summary-row">
+
+            <span class="summary-label">
+                ${labels.duration}
+            </span>
+
+            <span class="summary-value">
+                ${escapeHTML(
+                    userAnswers.duration || "Not specified"
+                )}
+            </span>
+
+        </div>
+
+
+        <div class="summary-row">
+
+            <span class="summary-label">
+                ${labels.migraine}
+            </span>
+
+            <span class="summary-value">
+                ${
+                    migraineSymptoms.length
+                        ?
+                        migraineSymptoms.join(", ")
+                        :
+                        "None reported"
+                }
+            </span>
+
+        </div>
+
+
+        <div class="summary-row">
+
+            <span class="summary-label">
+                ${labels.vision}
+            </span>
+
+            <span class="summary-value">
+                ${
+                    visionSymptoms.length
+                        ?
+                        visionSymptoms.join(", ")
+                        :
+                        "None reported"
+                }
+            </span>
+
+        </div>
+
+
+        <div class="summary-row">
+
+            <span class="summary-label">
+                ${labels.lifestyle}
+            </span>
+
+            <span class="summary-value">
+                ${
+                    lifestyle.length
+                        ?
+                        lifestyle.join(", ")
+                        :
+                        "No major triggers reported"
+                }
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   DISPLAY RESULT
+===================================================== */
+
+function displayResult(result) {
+
+    resultCard.classList.add(
+        "active"
+    );
+
+
+    const riskBox =
+        document.getElementById(
+            "riskBox"
+        );
+
+    riskBox.className =
+        "risk-box";
+
+
+    const riskTitle =
+        document.getElementById(
+            "riskTitle"
+        );
+
+    const riskScore =
+        document.getElementById(
+            "riskScore"
+        );
+
+    const riskDescription =
+        document.getElementById(
+            "riskDescription"
+        );
+
+
+    if (
+        result.level ===
+        "red"
+    ) {
+
+        riskBox.classList.add(
+            "risk-red"
+        );
+
+
+        if (currentLanguage === "hi") {
+
+            riskTitle.textContent =
+                "🔴 तत्काल चिकित्सा सहायता";
+
+            riskDescription.textContent =
+                "कुछ emergency warning signs पाए गए हैं।";
+
+        } else if (currentLanguage === "mr") {
+
+            riskTitle.textContent =
+                "🔴 तात्काळ वैद्यकीय मदत";
+
+            riskDescription.textContent =
+                "काही emergency warning signs आढळले आहेत.";
+
+        } else if (currentLanguage === "ur") {
+
+            riskTitle.textContent =
+                "🔴 فوری طبی مدد";
+
+            riskDescription.textContent =
+                "کچھ emergency warning signs پائے گئے ہیں۔";
+
+        } else {
+
+            riskTitle.textContent =
+                "🔴 Emergency Medical Care";
+
+            riskDescription.textContent =
+                "Potential emergency warning signs were reported.";
+
+        }
+
+    }
+
+    else if (
+        result.level ===
+        "yellow"
+    ) {
+
+        riskBox.classList.add(
+            "risk-yellow"
+        );
+
+
+        if (currentLanguage === "hi") {
+
+            riskTitle.textContent =
+                "🟡 डॉक्टर से परामर्श की सलाह";
+
+            riskDescription.textContent =
+                "आपके लक्षणों के आधार पर पेशेवर मूल्यांकन उपयोगी हो सकता है।";
+
+        } else if (currentLanguage === "mr") {
+
+            riskTitle.textContent =
+                "🟡 डॉक्टरांचा सल्ला आवश्यक असू शकतो";
+
+            riskDescription.textContent =
+                "तुमच्या लक्षणांवर आधारित व्यावसायिक तपासणी उपयुक्त ठरू शकते.";
+
+        } else if (currentLanguage === "ur") {
+
+            riskTitle.textContent =
+                "🟡 ڈاکٹر سے مشورہ تجویز کیا جاتا ہے";
+
+            riskDescription.textContent =
+                "آپ کی علامات کی بنیاد پر طبی معائنہ مفید ہو سکتا ہے۔";
+
+        } else {
+
+            riskTitle.textContent =
+                "🟡 Doctor Appointment Recommended";
+
+            riskDescription.textContent =
+                "Professional evaluation may be appropriate based on your symptoms.";
+
+        }
+
+    }
+
+    else {
+
+        riskBox.classList.add(
+            "risk-green"
+        );
+
+
+        if (currentLanguage === "hi") {
+
+            riskTitle.textContent =
+                "🟢 Home Monitoring";
+
+            riskDescription.textContent =
+                "इस screening में कोई प्रमुख emergency warning sign नहीं मिला।";
+
+        } else if (currentLanguage === "mr") {
+
+            riskTitle.textContent =
+                "🟢 घरच्या घरी निरीक्षण";
+
+            riskDescription.textContent =
+                "या तपासणीत कोणताही प्रमुख emergency warning sign आढळला नाही.";
+
+        } else if (currentLanguage === "ur") {
+
+            riskTitle.textContent =
+                "🟢 گھر پر نگرانی";
+
+            riskDescription.textContent =
+                "اس اسکریننگ میں کوئی بڑا emergency warning sign نہیں ملا۔";
+
+        } else {
+
+            riskTitle.textContent =
+                "🟢 Home Monitoring";
+
+            riskDescription.textContent =
+                "No major emergency warning sign was identified from the information provided.";
+
+        }
+
+    }
+
+
+    riskScore.textContent =
+        result.score + "/100";
+
+
+    document.getElementById(
+        "patternResult"
+    ).textContent =
+        result.pattern;
+
+
+    const reasonList =
+        document.getElementById(
+            "reasonList"
+        );
+
+    reasonList.innerHTML = "";
+
+
+    result.reasons.forEach(
+        reason => {
+
+            const li =
+                document.createElement(
+                    "li"
+                );
+
+            li.textContent =
+                reason;
+
+            reasonList.appendChild(
+                li
+            );
+
+        }
+    );
+
+
+    document.getElementById(
+        "recommendationText"
+    ).textContent =
+        result.recommendation;
+
+
+    resultCard.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+
+    /*
+     * SAVE COMPLETE SCREENING
+     */
+
+    localStorage.setItem(
+        "neuroGuardianAssessment",
+        JSON.stringify({
+
+            painAreas:
+                selectedPainAreas,
+
+            answers:
+                userAnswers,
+
+            result:
+                result,
+
+            completedAt:
+                new Date().toISOString()
+
+        })
+    );
+
+
+    /*
+     * SAVE TO REPORT HISTORY
+     */
+
+    if (window.NG) {
+
+        const tierLabel = {
+            red: "Emergency warning signs found",
+            yellow: "Doctor appointment recommended",
+            green: "Home monitoring"
+        };
+
+        NG.saveReport({
+            module: "symptom",
+            tier: result.level || "neutral",
+            title: "Headache Symptom Screening",
+            summary:
+                (tierLabel[result.level] || "Screening completed") +
+                ". " + (result.recommendation || ""),
+            details: {
+                "Risk score": result.score + "/100",
+                "Pattern": result.pattern || "-",
+                "Pain areas": (selectedPainAreas || []).join(", ") || "-",
+                "Severity": userAnswers.severity || "-",
+                "Duration": userAnswers.duration || "-"
+            }
+        });
+
+    }
+
+
+    /*
+     * AI final message
+     */
+
+    setTimeout(() => {
+
+        if (
+            result.level ===
+            "red"
+        ) {
+
+            if (currentLanguage === "hi") {
+
+                addAIMessage(
+                    "आपके उत्तरों में कुछ <strong>emergency warning signs</strong> दिखाई दिए हैं। कृपया तुरंत चिकित्सा सहायता लें।"
+                );
+
+            } else if (currentLanguage === "mr") {
+
+                addAIMessage(
+                    "तुमच्या उत्तरांमध्ये काही <strong>emergency warning signs</strong> आढळले आहेत. कृपया तात्काळ वैद्यकीय मदत घ्या."
+                );
+
+            } else if (currentLanguage === "ur") {
+
+                addAIMessage(
+                    "آپ کے جوابات میں کچھ <strong>emergency warning signs</strong> پائے گئے ہیں۔ براہ کرم فوری طبی مدد حاصل کریں۔"
+                );
+
+            } else {
+
+                addAIMessage(
+                    "Some <strong>emergency warning signs</strong> were reported. Please seek immediate medical attention."
+                );
+
+            }
+
+        } else {
+
+            if (currentLanguage === "hi") {
+
+                addAIMessage(
+                    "आपकी screening पूरी हो गई है। मैंने आपके दर्द के स्थान, लक्षण और संभावित triggers को एक साथ देखकर यह summary तैयार की है।"
+                );
+
+            } else if (currentLanguage === "mr") {
+
+                addAIMessage(
+                    "तुमची screening पूर्ण झाली आहे. मी तुमचे वेदना भाग, लक्षणे आणि संभाव्य triggers एकत्र पाहून हा सारांश तयार केला आहे."
+                );
+
+            } else if (currentLanguage === "ur") {
+
+                addAIMessage(
+                    "آپ کی اسکریننگ مکمل ہو گئی ہے۔ میں نے درد کے مقامات، علامات اور ممکنہ triggers کو ملا کر یہ خلاصہ تیار کیا ہے۔"
+                );
+
+            } else {
+
+                addAIMessage(
+                    "Your screening is complete. I've considered your pain locations, symptoms and possible triggers together to create this summary."
+                );
+
+            }
+
+        }
+
+    }, 500);
+
+}
+
+
+/* =====================================================
+   LANGUAGE CHANGE
+===================================================== */
+
+languageSelect.addEventListener(
+    "change",
+    function () {
+
+        currentLanguage =
+            this.value;
+
+        applyLanguage();
+
+    }
+);
+
+
+/* =====================================================
+   APPLY LANGUAGE
+===================================================== */
+
+function applyLanguage() {
+
+    const t =
+        translations[currentLanguage];
+
+
+    document.getElementById(
+        "headerSubtitle"
+    ).textContent =
+        t.headerSubtitle;
+
+
+    document.getElementById(
+        "chatSubtitle"
+    ).textContent =
+        t.chatSubtitle;
+
+
+    document.getElementById(
+        "languageLabel"
+    ).textContent =
+        t.language;
+
+
+    document.getElementById(
+        "onlineText"
+    ).textContent =
+        t.online;
+
+
+    document.querySelector(
+        "#painMapSection h2"
+    ).textContent =
+        t.painMapTitle;
+
+
+    document.getElementById(
+        "painMapDescription"
+    ).textContent =
+        t.painMapDescription;
+
+
+    document.getElementById(
+        "selectedLabel"
+    ).textContent =
+        t.selected;
+
+
+    document.getElementById(
+        "continueToSymptoms"
+    ).textContent =
+        t.continue;
+
+
+    document.getElementById(
+        "chatInput"
+    ).placeholder =
+        t.placeholder;
+
+
+    document.getElementById(
+        "causesTitle"
+    ).textContent =
+        t.causesTitle;
+
+
+    document.getElementById(
+        "causesDescription"
+    ).textContent =
+        t.causesDescription;
+
+
+    document.getElementById(
+        "summaryTitle"
+    ).textContent =
+        t.summaryTitle;
+
+
+    document.getElementById(
+        "resultTitle"
+    ).textContent =
+        t.resultTitle;
+
+
+    document.getElementById(
+        "patternTitle"
+    ).textContent =
+        t.patternTitle;
+
+
+    document.getElementById(
+        "reasonTitle"
+    ).textContent =
+        t.reasonTitle;
+
+
+    document.getElementById(
+        "recommendationTitle"
+    ).textContent =
+        t.recommendationTitle;
+
+
+    document.getElementById(
+        "restartBtn"
+    ).textContent =
+        t.restart;
+
+
+    updatePainText();
+
+}
+
+
+/* =====================================================
+   WHY HEADACHE - BUTTON
+===================================================== */
+
+function showWhyHeadache() {
+
+    causesCard.classList.add(
+        "active"
+    );
+
+    causesCard.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+}
+
+
+/* =====================================================
+   RESTART
+===================================================== */
+
+function restartAssessment() {
+
+    selectedPainAreas = [];
+
+    assessmentStarted = false;
+
+    currentQuestion = 0;
+
+
+    userAnswers = {
+
+        painType: "",
+        severity: "",
+        duration: "",
+        nausea: "",
+        vomiting: "",
+        lightSensitivity: "",
+        soundSensitivity: "",
+        dizziness: "",
+        blurredVision: "",
+        eyePain: "",
+        stress: "",
+        sleep: "",
+        hydration: "",
+        screenTime: "",
+        worsening: "",
+        suddenOnset: "",
+        confusion: "",
+        speechDifficulty: "",
+        suddenVisionLoss: ""
+
+    };
+
+
+    localStorage.removeItem(
+        "neuroGuardianPainAreas"
+    );
+
+    localStorage.removeItem(
+        "neuroGuardianPainSavedAt"
+    );
+
+    localStorage.removeItem(
+        "neuroGuardianAssessment"
+    );
+
+
+    document
+        .querySelectorAll(".pain-card")
+        .forEach(card => {
+
+            card.classList.remove(
+                "selected"
+            );
+
+        });
+
+
+    updatePainText();
+
+
+    progressCard.classList.remove(
+        "active"
+    );
+
+    causesCard.classList.remove(
+        "active"
+    );
+
+    summaryCard.classList.remove(
+        "active"
+    );
+
+    resultCard.classList.remove(
+        "active"
+    );
+
+
+    chatMessages.innerHTML = "";
+
+    quickOptions.innerHTML = "";
+
+    chatInput.value = "";
+
+
+    startChat();
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =====================================================
+   BACK BUTTON
+===================================================== */
+
+function goBack() {
+
+    window.location.href =
+        "Dashboard.html";
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+loadSavedPainAreas();
+
+restorePainCards();
+
+updatePainText();
+
+applyLanguage();
+
+startChat();
+
+
+/* =====================================================
+   ADD QUICK "WHY HEADACHE" BUTTON
+===================================================== */
+
+setTimeout(() => {
+
+    const btn =
+        document.createElement(
+            "button"
+        );
+
+    btn.className =
+        "quick-btn";
+
+    if (currentLanguage === "hi") {
+
+        btn.textContent =
+            "सिरदर्द क्यों होता है?";
+
+    } else if (currentLanguage === "mr") {
+
+        btn.textContent =
+            "डोकेदुखी का होते?";
+
+    } else if (currentLanguage === "ur") {
+
+        btn.textContent =
+            "سر درد کیوں ہوتا ہے؟";
+
+    } else {
+
+        btn.textContent =
+            "Why does headache happen?";
+
+    }
+
+
+    btn.onclick =
+        showWhyHeadache;
+
+
+    quickOptions.appendChild(
+        btn
+    );
+
+}, 100);
+
+
+</script>
+
+</body>
+
+</html>

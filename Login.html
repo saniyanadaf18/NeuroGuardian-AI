@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>NeuroGuardian AI — Login</title>
+
+  <script src="ng-core.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+
+    :root{
+      --ink:#101B2D;
+      --paper:#F4F6F8;
+      --panel:#FFFFFF;
+      --line:#E2E8F0;
+      --teal:#35708A;
+      --teal-deep:#24506A;
+      --green:#3F9142;
+      --green-bg:#E7F3E8;
+      --red:#C0392B;
+      --red-bg:#FBE4E1;
+      --text:#17202B;
+      --text-muted:#64748B;
+      --radius:18px;
+      --shadow:0 10px 30px rgba(16,27,45,.08);
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:'Inter',sans-serif;
+      background:var(--paper);
+      color:var(--text);
+    }
+
+    .auth-shell{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      min-height:100vh;
+    }
+
+    @media(max-width:860px){
+
+      .auth-shell{
+        grid-template-columns:1fr;
+      }
+
+      .auth-side{
+        display:none;
+      }
+
+    }
+
+    .auth-side{
+      background:linear-gradient(
+        165deg,
+        #101B2D 0%,
+        #16283F 60%,
+        #1A3350 100%
+      );
+
+      color:#fff;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      padding:56px;
+    }
+
+    .auth-side-inner{
+      max-width:420px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:40px;
+    }
+
+    .brand-logo{
+      width:48px;
+      height:48px;
+
+      border-radius:14px;
+
+      background:#8FD1B3;
+      color:#0F172A;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      font-weight:700;
+    }
+
+    .brand-name{
+      font-family:'Fraunces',serif;
+      font-size:1.35rem;
+      font-weight:600;
+    }
+
+    .brand-sub{
+      font-size:.75rem;
+      color:#AEB8C6;
+
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .auth-headline{
+      font-family:'Fraunces',serif;
+      font-size:3rem;
+      line-height:1.12;
+
+      margin:0 0 20px;
+    }
+
+    .auth-copy{
+      color:#C5CFDB;
+      line-height:1.7;
+      font-size:1rem;
+    }
+
+    .auth-main{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      padding:48px 28px;
+    }
+
+    .auth-card{
+      width:100%;
+      max-width:460px;
+
+      background:var(--panel);
+
+      border:1px solid var(--line);
+      border-radius:24px;
+
+      box-shadow:var(--shadow);
+
+      padding:36px;
+    }
+
+    .auth-card-title{
+      font-family:'Fraunces',serif;
+      font-size:2rem;
+
+      margin:0 0 8px;
+
+      color:var(--ink);
+    }
+
+    .auth-card-sub{
+      color:var(--text-muted);
+
+      margin:0 0 28px;
+
+      font-size:.95rem;
+    }
+
+    .auth-form{
+      display:flex;
+      flex-direction:column;
+
+      gap:18px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+
+      gap:8px;
+    }
+
+    .field label{
+      font-size:.9rem;
+      font-weight:600;
+
+      color:var(--ink);
+    }
+
+    .field input{
+      width:100%;
+
+      padding:14px 16px;
+
+      border:1px solid var(--line);
+      border-radius:14px;
+
+      font-size:.95rem;
+      font-family:'Inter',sans-serif;
+
+      transition:.2s;
+    }
+
+    .field input:focus{
+      outline:none;
+
+      border-color:var(--teal);
+
+      box-shadow:
+        0 0 0 3px rgba(53,112,138,.15);
+    }
+
+    .password-field{
+      position:relative;
+
+      display:flex;
+      align-items:center;
+    }
+
+    .password-field input{
+      padding-right:48px;
+    }
+
+    .pw-toggle{
+      position:absolute;
+      right:10px;
+
+      border:none;
+      background:none;
+
+      cursor:pointer;
+
+      color:var(--text-muted);
+
+      padding:8px;
+    }
+
+    .field-inline{
+      display:flex;
+
+      justify-content:space-between;
+      align-items:center;
+
+      font-size:.9rem;
+
+      color:var(--text-muted);
+    }
+
+    .checkbox-field{
+      display:flex;
+      align-items:center;
+
+      gap:8px;
+    }
+
+    .forgot-link{
+      color:var(--teal-deep);
+
+      text-decoration:none;
+
+      font-weight:600;
+    }
+
+    .forgot-link:hover{
+      text-decoration:underline;
+    }
+
+    .cta-button{
+      background:var(--ink);
+
+      color:#fff;
+
+      border:none;
+
+      padding:15px;
+
+      border-radius:14px;
+
+      font-size:1rem;
+      font-weight:600;
+
+      cursor:pointer;
+
+      transition:.2s;
+    }
+
+    .cta-button:hover{
+      background:var(--teal-deep);
+    }
+
+    .cta-button:disabled{
+      opacity:.65;
+      cursor:not-allowed;
+    }
+
+    .ghost-button{
+      background:#fff;
+
+      border:1px solid var(--line);
+
+      padding:14px;
+
+      border-radius:14px;
+
+      font-weight:600;
+
+      cursor:pointer;
+
+      transition:.2s;
+    }
+
+    .ghost-button:hover{
+      border-color:var(--teal);
+
+      color:var(--teal-deep);
+    }
+
+    .divider{
+      display:flex;
+
+      align-items:center;
+
+      gap:12px;
+
+      color:var(--text-muted);
+
+      font-size:.85rem;
+    }
+
+    .divider::before,
+    .divider::after{
+      content:'';
+
+      flex:1;
+
+      height:1px;
+
+      background:var(--line);
+    }
+
+    .form-error{
+      display:none;
+
+      background:var(--red-bg);
+
+      color:var(--red);
+
+      padding:12px 14px;
+
+      border-radius:12px;
+
+      font-size:.88rem;
+    }
+
+    .visible{
+      display:block;
+    }
+
+    .auth-switch{
+      text-align:center;
+
+      color:var(--text-muted);
+
+      font-size:.9rem;
+
+      margin-top:8px;
+    }
+
+    .auth-switch a{
+      color:var(--teal-deep);
+
+      text-decoration:none;
+
+      font-weight:600;
+    }
+
+    .auth-footer-note{
+      text-align:center;
+
+      color:var(--text-muted);
+
+      font-size:.76rem;
+
+      margin-top:22px;
+
+      line-height:1.6;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<div class="auth-shell">
+
+
+  <!-- ======================================================
+       LEFT SIDE
+  ======================================================= -->
+
+  <aside class="auth-side">
+
+    <div class="auth-side-inner">
+
+
+      <div class="brand">
+
+        <div class="brand-logo">
+          NG
+        </div>
+
+        <div>
+
+          <div class="brand-name">
+            NeuroGuardian AI
+          </div>
+
+          <div class="brand-sub">
+            AI Screening Platform
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <h1 class="auth-headline">
+        Welcome back.
+      </h1>
+
+
+      <p class="auth-copy">
+
+        Sign in to continue tracking your headache and eye-health symptoms,
+        CT scan reports, blood reports, vision screening history, and your
+        AI-powered Hospital Readiness Score.
+
+      </p>
+
+
+    </div>
+
+  </aside>
+
+
+  <!-- ======================================================
+       LOGIN AREA
+  ======================================================= -->
+
+  <main class="auth-main">
+
+
+    <div class="auth-card">
+
+
+      <h2 class="auth-card-title">
+        Sign in
+      </h2>
+
+
+      <p class="auth-card-sub">
+        Access your NeuroGuardian AI account.
+      </p>
+
+
+      <form
+        id="loginForm"
+        class="auth-form"
+      >
+
+
+        <!-- Error message -->
+
+        <div
+          class="form-error"
+          id="loginError">
+        </div>
+
+
+        <!-- Email -->
+
+        <div class="field">
+
+          <label for="loginEmail">
+            Email address
+          </label>
+
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="you@example.com"
+            autocomplete="username"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
+            inputmode="email"
+            required
+          >
+
+        </div>
+
+
+        <!-- Password -->
+
+        <div class="field">
+
+          <label for="loginPassword">
+            Password
+          </label>
+
+
+          <div class="password-field">
+
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            >
+
+
+            <button
+              type="button"
+              class="pw-toggle"
+              data-target="loginPassword"
+              title="Show password"
+            >
+              👁
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- Remember + Forgot -->
+
+        <div class="field-inline">
+
+
+          <label class="checkbox-field">
+
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked
+            >
+
+            <span>
+              Remember me
+            </span>
+
+          </label>
+
+
+          <a
+            href="#"
+            class="forgot-link"
+            id="forgotLink"
+          >
+            Forgot password?
+          </a>
+
+
+        </div>
+
+
+        <!-- Login -->
+
+        <button
+          type="submit"
+          class="cta-button"
+          id="loginButton"
+        >
+          Sign in
+        </button>
+
+
+        <!-- Divider -->
+
+        <div class="divider">
+          or
+        </div>
+
+
+        <!-- Guest -->
+
+        <button
+          type="button"
+          class="ghost-button"
+          id="guestBtn"
+        >
+          Continue as guest
+        </button>
+
+
+        <!-- Register -->
+
+        <p class="auth-switch">
+
+          Don’t have an account?
+
+          <a href="Register.html">
+            Create one
+          </a>
+
+        </p>
+
+
+      </form>
+
+
+      <p class="auth-footer-note">
+
+        NeuroGuardian AI provides screening-level guidance only and does not
+        replace professional medical advice.
+
+      </p>
+
+
+    </div>
+
+
+  </main>
+
+
+</div>
+
+
+
+<script>
+
+
+// ============================================================
+// NeuroGuardian AI — Login
+// Flask + SQLite Database Connection
+// ============================================================
+
+
+// ============================================================
+// API BASE
+// ============================================================
+//
+// If the HTML is opened directly using file://
+// it will connect to Flask at 127.0.0.1:5000.
+//
+// If the HTML is opened through Flask,
+// it uses the same server automatically.
+//
+
+const API_BASE =
+  (window.location.protocol === "file:")
+    ? "http://127.0.0.1:5000"
+    : "";
+
+
+// ============================================================
+// EMAIL VALIDATION
+// ============================================================
+
+const EMAIL_RE =
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+// ============================================================
+// PASSWORD SHOW / HIDE
+// ============================================================
+
+document
+  .querySelectorAll('.pw-toggle')
+  .forEach(btn => {
+
+    btn.addEventListener('click', () => {
+
+      const input =
+        document.getElementById(
+          btn.dataset.target
+        );
+
+      if(!input) return;
+
+
+      if(input.type === 'password'){
+
+        input.type = 'text';
+
+        btn.textContent = '🙈';
+
+        btn.title = 'Hide password';
+
+      }
+
+      else{
+
+        input.type = 'password';
+
+        btn.textContent = '👁';
+
+        btn.title = 'Show password';
+
+      }
+
+    });
+
+  });
+
+
+// ============================================================
+// ERROR MESSAGE
+// ============================================================
+
+function showError(msg){
+
+  const el =
+    document.getElementById(
+      'loginError'
+    );
+
+
+  el.textContent = msg;
+
+  el.classList.add('visible');
+
+}
+
+
+// ============================================================
+// HIDE ERROR
+// ============================================================
+
+function hideError(){
+
+  document
+    .getElementById(
+      'loginError'
+    )
+    .classList.remove(
+      'visible'
+    );
+
+}
+
+
+// ============================================================
+// LOGIN FORM
+// ============================================================
+
+document
+  .getElementById('loginForm')
+  .addEventListener(
+    'submit',
+    async function(e){
+
+      e.preventDefault();
+
+      hideError();
+
+
+      // ------------------------------------------------------
+      // Get form values
+      // ------------------------------------------------------
+
+      const email =
+        document
+          .getElementById('loginEmail')
+          .value
+          .trim()
+          .toLowerCase();
+
+
+      const password =
+        document
+          .getElementById('loginPassword')
+          .value;
+
+
+      const remember =
+        document
+          .getElementById('rememberMe')
+          .checked;
+
+
+      // ------------------------------------------------------
+      // Validate email
+      // ------------------------------------------------------
+
+      if(!EMAIL_RE.test(email)){
+
+        showError(
+          'Please enter a valid email address.'
+        );
+
+        return;
+
+      }
+
+
+      // ------------------------------------------------------
+      // Validate password
+      // ------------------------------------------------------
+
+      if(!password){
+
+        showError(
+          'Please enter your password.'
+        );
+
+        return;
+
+      }
+
+
+      // ------------------------------------------------------
+      // Login button
+      // ------------------------------------------------------
+
+      const loginButton =
+        document.getElementById(
+          'loginButton'
+        );
+
+
+      loginButton.disabled = true;
+
+      loginButton.textContent =
+        'Signing in...';
+
+
+      // ------------------------------------------------------
+      // CALL FLASK BACKEND
+      // ------------------------------------------------------
+
+      try{
+
+
+        const response =
+          await fetch(
+            API_BASE + '/api/login',
+            {
+
+              method:'POST',
+
+              headers:{
+                'Content-Type':
+                  'application/json'
+              },
+
+              body:JSON.stringify({
+
+                email:email,
+
+                password:password
+
+              })
+
+            }
+          );
+
+
+        // ----------------------------------------------------
+        // Read response
+        // ----------------------------------------------------
+
+        let data = null;
+
+
+        try{
+
+          data =
+            await response.json();
+
+        }
+
+        catch(jsonError){
+
+          data = null;
+
+        }
+
+
+        // ----------------------------------------------------
+        // Backend rejected login
+        // ----------------------------------------------------
+
+        if(!response.ok){
+
+          showError(
+
+            data &&
+            data.message
+
+              ? data.message
+
+              : 'Invalid email or password.'
+
+          );
+
+
+          loginButton.disabled = false;
+
+          loginButton.textContent =
+            'Sign in';
+
+
+          return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // SUCCESS
+        // ----------------------------------------------------
+
+        if(
+          data &&
+          data.success === true
+        ){
+
+
+          const user =
+            data.user || {};
+
+
+          // --------------------------------------------------
+          // Create frontend session
+          // --------------------------------------------------
+
+          const session = {
+
+            id:
+              user.id || null,
+
+            name:
+              user.name || '',
+
+            email:
+              user.email || email,
+
+            phone:
+              user.phone || ''
+
+          };
+
+
+          // --------------------------------------------------
+          // Save session
+          // --------------------------------------------------
+
+          try{
+
+
+            if(remember){
+
+              localStorage.setItem(
+                'neuroguardianSession',
+                JSON.stringify(session)
+              );
+
+
+              sessionStorage.removeItem(
+                'neuroguardianSession'
+              );
+
+            }
+
+            else{
+
+              sessionStorage.setItem(
+                'neuroguardianSession',
+                JSON.stringify(session)
+              );
+
+
+              localStorage.removeItem(
+                'neuroguardianSession'
+              );
+
+            }
+
+
+          }
+
+          catch(storageError){
+
+            showError(
+              'Could not start your session. Please try again.'
+            );
+
+
+            loginButton.disabled = false;
+
+            loginButton.textContent =
+              'Sign in';
+
+
+            return;
+
+          }
+
+
+          // --------------------------------------------------
+          // Redirect to Dashboard
+          // --------------------------------------------------
+
+          window.location.href =
+            'Dashboard.html';
+
+
+        }
+
+        else{
+
+
+          showError(
+
+            data &&
+            data.message
+
+              ? data.message
+
+              : 'Login failed. Please try again.'
+
+          );
+
+
+          loginButton.disabled = false;
+
+          loginButton.textContent =
+            'Sign in';
+
+        }
+
+
+      }
+
+
+      // ------------------------------------------------------
+      // FETCH / SERVER ERROR
+      // ------------------------------------------------------
+
+      catch(error){
+
+
+        console.error(
+          'Login fetch error:',
+          error
+        );
+
+
+        showError(
+
+          'Unable to connect to the NeuroGuardian AI server. Please make sure app.py is running.'
+
+        );
+
+
+        loginButton.disabled = false;
+
+        loginButton.textContent =
+          'Sign in';
+
+
+      }
+
+    }
+  );
+
+
+
+// ============================================================
+// GUEST LOGIN
+// ============================================================
+
+document
+  .getElementById('guestBtn')
+  .addEventListener(
+    'click',
+    function(){
+
+      try{
+
+
+        sessionStorage.setItem(
+
+          'neuroguardianSession',
+
+          JSON.stringify({
+
+            name:
+              'Guest User',
+
+            email:
+              'guest@neuroguardian.ai'
+
+          })
+
+        );
+
+
+        window.location.href =
+          'Dashboard.html';
+
+
+      }
+
+      catch(error){
+
+        showError(
+          'Could not start guest session.'
+        );
+
+      }
+
+    }
+  );
+
+
+
+// ============================================================
+// FORGOT PASSWORD
+// ============================================================
+//
+// NOTE:
+// Passwords are securely hashed inside Flask/SQLite.
+// Therefore the old localStorage demo-password method
+// cannot retrieve the actual database password.
+//
+// For the presentation, this button gives a safe message.
+//
+
+document
+  .getElementById('forgotLink')
+  .addEventListener(
+    'click',
+    function(e){
+
+      e.preventDefault();
+
+
+      const email =
+        document
+          .getElementById('loginEmail')
+          .value
+          .trim();
+
+
+      if(!email){
+
+        alert(
+          'Enter your email address first.'
+        );
+
+        return;
+
+      }
+
+
+      alert(
+        'Password recovery is not configured yet. Please contact the administrator to reset your account password.'
+      );
+
+    }
+  );
+
+
+</script>
+
+
+</body>
+
+</html>

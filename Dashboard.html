@@ -1,0 +1,2267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
+<meta
+    name="theme-color"
+    content="#101b2d"
+>
+
+<meta
+    name="mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+>
+
+<meta
+    name="apple-mobile-web-app-title"
+    content="NeuroGuardian AI"
+>
+
+<meta
+    name="format-detection"
+    content="telephone=no"
+>
+
+<title>NeuroGuardian AI — Dashboard</title>
+
+
+<style>
+
+/* =====================================================
+   RESET
+===================================================== */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html{
+    -webkit-text-size-adjust:100%;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f8;
+    color:#17202b;
+    overflow-x:hidden;
+}
+
+body.nav-open{
+    overflow:hidden;
+}
+
+
+/* =====================================================
+   LAYOUT
+===================================================== */
+
+.layout{
+    min-height:100vh;
+    min-height:100dvh;
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+
+    width:260px;
+    height:100vh;
+    height:100dvh;
+
+    background:linear-gradient(
+        180deg,
+        #101b2d,
+        #16283f
+    );
+
+    color:white;
+
+    padding:28px;
+
+    padding-top:
+        calc(28px + env(safe-area-inset-top));
+
+    padding-bottom:
+        calc(28px + env(safe-area-inset-bottom));
+
+    padding-left:
+        calc(28px + env(safe-area-inset-left));
+
+    display:flex;
+    flex-direction:column;
+    gap:24px;
+
+    z-index:1000;
+
+    transition:transform .3s ease;
+
+    overflow-y:auto;
+
+    -webkit-overflow-scrolling:touch;
+}
+
+
+/* Desktop sidebar closed */
+
+.sidebar.closed{
+    transform:translateX(-100%);
+}
+
+
+/* Mobile sidebar */
+
+@media(max-width:960px){
+
+    .sidebar{
+        transform:translateX(-100%);
+        box-shadow:
+            4px 0 24px rgba(0,0,0,.2);
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+}
+
+
+/* =====================================================
+   BACKDROP
+===================================================== */
+
+.backdrop{
+    position:fixed;
+    inset:0;
+
+    background:rgba(16,27,45,.5);
+
+    z-index:999;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:opacity .3s ease;
+
+    -webkit-backdrop-filter:blur(2px);
+    backdrop-filter:blur(2px);
+}
+
+.backdrop.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+
+/* =====================================================
+   BRAND
+===================================================== */
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-logo{
+    width:44px;
+    height:44px;
+
+    border-radius:12px;
+
+    background:#8fd1b3;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#0f172a;
+
+    font-weight:bold;
+
+    flex-shrink:0;
+}
+
+.brand h2{
+    font-size:20px;
+}
+
+.brand p{
+    color:#aab7c8;
+    font-size:11px;
+    margin-top:3px;
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.nav a{
+    color:#d7dfea;
+
+    text-decoration:none;
+
+    padding:12px 14px;
+
+    border-radius:10px;
+
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+    transition:.2s;
+
+    min-height:48px;
+
+    font-size:14px;
+}
+
+.nav a:hover,
+.nav a.active{
+    background:rgba(255,255,255,.1);
+    color:white;
+}
+
+.nav a:active{
+    background:rgba(255,255,255,.18);
+}
+
+
+/* =====================================================
+   SIDEBAR FOOTER
+===================================================== */
+
+.sidebar-footer{
+    margin-top:auto;
+
+    border-top:
+        1px solid rgba(255,255,255,.1);
+
+    padding-top:20px;
+}
+
+.logout-btn{
+    width:100%;
+
+    padding:12px;
+
+    min-height:48px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#1e293b;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    font-family:inherit;
+
+    font-size:15px;
+}
+
+.logout-btn:hover{
+    background:#27364d;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main{
+    padding:28px;
+
+    margin-left:260px;
+
+    transition:margin-left .3s ease;
+
+    min-width:0;
+}
+
+.main.full-width{
+    margin-left:0;
+}
+
+
+/* =====================================================
+   TOPBAR
+===================================================== */
+
+.topbar{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:28px;
+
+    gap:16px;
+
+    flex-wrap:wrap;
+}
+
+.topbar-left{
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    min-width:0;
+}
+
+
+/* =====================================================
+   MENU BUTTON
+===================================================== */
+
+.menu-btn{
+    display:flex;
+
+    width:48px;
+    height:48px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:white;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#101b2d;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.08);
+
+    flex-shrink:0;
+}
+
+.menu-btn:hover{
+    background:#eaf3f6;
+}
+
+
+/* =====================================================
+   TOPBAR TEXT
+===================================================== */
+
+.topbar h1{
+    font-size:30px;
+
+    color:#101b2d;
+
+    margin-bottom:6px;
+
+    line-height:1.25;
+}
+
+.topbar p{
+    color:#64748b;
+
+    line-height:1.5;
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+.profile{
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    flex-shrink:0;
+}
+
+.avatar{
+    width:46px;
+    height:46px;
+
+    border-radius:50%;
+
+    background:#35708a;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    font-weight:bold;
+
+    flex-shrink:0;
+}
+
+
+/* =====================================================
+   GRID
+===================================================== */
+
+.grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:22px;
+}
+
+.card{
+    background:white;
+
+    border:
+        1px solid #e2e8f0;
+
+    border-radius:18px;
+
+    padding:24px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(16,27,45,.07);
+
+    min-width:0;
+}
+
+.full-card{
+    grid-column:1/-1;
+}
+
+.card h3{
+    color:#101b2d;
+
+    margin-bottom:15px;
+}
+
+
+/* =====================================================
+   SCORE
+===================================================== */
+
+.score-card{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:14px;
+
+    flex-wrap:wrap;
+}
+
+.score-value{
+    font-size:48px;
+
+    font-weight:bold;
+
+    color:#101b2d;
+
+    line-height:1.1;
+}
+
+.status-pill{
+    padding:8px 13px;
+
+    border-radius:50px;
+
+    background:#fbf0dc;
+
+    color:#c98a1d;
+
+    font-weight:bold;
+
+    font-size:13px;
+
+    white-space:nowrap;
+}
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+.progress{
+    margin-top:18px;
+
+    height:10px;
+
+    background:#e8edf2;
+
+    border-radius:50px;
+
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+
+    width:72%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #c98a1d,
+            #35708a
+        );
+}
+
+
+/* =====================================================
+   SUMMARY
+===================================================== */
+
+.summary-box{
+    background:#f8fafc;
+
+    border:
+        1px solid #e2e8f0;
+
+    border-radius:13px;
+
+    padding:18px;
+
+    line-height:1.7;
+
+    color:#334155;
+}
+
+
+/* =====================================================
+   ALERT
+===================================================== */
+
+.alert{
+    margin-top:18px;
+
+    padding:16px;
+
+    border-radius:13px;
+
+    background:#fbf0dc;
+
+    border:
+        1px solid #f3d6a5;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:14px;
+
+    flex-wrap:wrap;
+}
+
+.alert button{
+    border:none;
+
+    padding:10px 16px;
+
+    min-height:44px;
+
+    border-radius:8px;
+
+    background:#c98a1d;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    flex-shrink:0;
+}
+
+.alert button:hover{
+    background:#b07914;
+}
+
+
+/* =====================================================
+   MODULE GRID
+===================================================== */
+
+.module-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:16px;
+
+    margin-top:16px;
+}
+
+.module{
+    border:
+        1px solid #e2e8f0;
+
+    border-radius:16px;
+
+    padding:18px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    text-decoration:none;
+
+    color:inherit;
+
+    display:block;
+
+    background:white;
+}
+
+.module:hover{
+    border-color:#35708a;
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 8px 20px
+        rgba(0,0,0,.07);
+}
+
+.module:active{
+    border-color:#35708a;
+
+    background:#f8fafc;
+}
+
+.module-icon{
+    width:48px;
+    height:48px;
+
+    border-radius:12px;
+
+    background:#eaf3f6;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:24px;
+
+    margin-bottom:12px;
+}
+
+.module h4{
+    color:#101b2d;
+
+    margin-bottom:7px;
+}
+
+.module p{
+    color:#64748b;
+
+    font-size:14px;
+
+    line-height:1.5;
+}
+
+
+/* =====================================================
+   RECENT ACTIVITY
+===================================================== */
+
+.recent{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+}
+
+.activity{
+    padding:14px;
+
+    border-radius:10px;
+
+    background:#f8fafc;
+
+    border:
+        1px solid #e2e8f0;
+
+    line-height:1.6;
+}
+
+
+/* =====================================================
+   LARGE DESKTOP
+===================================================== */
+
+@media(min-width:1500px){
+
+    .main{
+        padding:36px 44px;
+    }
+
+    .grid{
+        gap:26px;
+    }
+
+    .module-grid{
+        grid-template-columns:
+            repeat(4,1fr);
+    }
+
+}
+
+
+/* =====================================================
+   SMALL DESKTOP
+===================================================== */
+
+@media(max-width:1200px){
+
+    .module-grid{
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media(max-width:960px){
+
+    .main{
+        margin-left:0;
+
+        padding-top:
+            calc(
+                28px +
+                env(safe-area-inset-top)
+            );
+
+        padding-left:
+            calc(
+                28px +
+                env(safe-area-inset-left)
+            );
+
+        padding-right:
+            calc(
+                28px +
+                env(safe-area-inset-right)
+            );
+
+        padding-bottom:
+            calc(
+                28px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .module-grid{
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .topbar{
+        align-items:flex-start;
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:600px){
+
+    .main{
+        padding:16px;
+
+        padding-top:
+            calc(
+                16px +
+                env(safe-area-inset-top)
+            );
+
+        padding-left:
+            calc(
+                16px +
+                env(safe-area-inset-left)
+            );
+
+        padding-right:
+            calc(
+                16px +
+                env(safe-area-inset-right)
+            );
+
+        padding-bottom:
+            calc(
+                20px +
+                env(safe-area-inset-bottom)
+            );
+    }
+
+    .sidebar{
+        width:min(85vw,300px);
+    }
+
+    .module-grid{
+        grid-template-columns:1fr;
+    }
+
+    .topbar{
+        flex-direction:column;
+
+        gap:15px;
+
+        margin-bottom:20px;
+    }
+
+    .topbar-left{
+        width:100%;
+    }
+
+    .topbar h1{
+        font-size:24px;
+    }
+
+    .topbar p{
+        font-size:14px;
+    }
+
+    .profile{
+        width:100%;
+
+        padding:12px 14px;
+
+        background:white;
+
+        border:
+            1px solid #e2e8f0;
+
+        border-radius:14px;
+    }
+
+    .grid{
+        gap:16px;
+    }
+
+    .card{
+        padding:18px;
+
+        border-radius:16px;
+    }
+
+    .score-value{
+        font-size:40px;
+    }
+
+    .summary-box{
+        padding:15px;
+    }
+
+    .alert{
+        padding:14px;
+    }
+
+    .alert button{
+        width:100%;
+    }
+
+    .module{
+        padding:16px;
+    }
+
+    .module-icon{
+        width:42px;
+        height:42px;
+
+        font-size:21px;
+
+        margin-bottom:10px;
+    }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media(max-width:380px){
+
+    .topbar h1{
+        font-size:21px;
+    }
+
+    .score-value{
+        font-size:36px;
+    }
+
+    .brand h2{
+        font-size:18px;
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE LANDSCAPE
+===================================================== */
+
+@media(
+    max-height:500px
+) and (
+    orientation:landscape
+){
+
+    .sidebar{
+        padding-top:16px;
+
+        padding-bottom:16px;
+
+        gap:16px;
+    }
+
+    .nav a{
+        padding:9px 14px;
+
+        min-height:40px;
+    }
+
+}
+
+
+/* =====================================================
+   REDUCED MOTION
+===================================================== */
+
+@media(
+    prefers-reduced-motion:reduce
+){
+
+    *{
+        transition:none !important;
+    }
+
+}
+
+</style>
+
+<script src="ng-core.js"></script>
+
+</head>
+
+
+<body>
+
+
+<div class="layout">
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside
+    class="sidebar"
+    id="sidebar"
+>
+
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            NG
+        </div>
+
+        <div>
+
+            <h2>
+                NeuroGuardian AI
+            </h2>
+
+            <p>
+                Neurology &amp; Eye Screening Platform
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <nav class="nav">
+
+
+        <a
+            href="Dashboard.html"
+            class="active"
+        >
+            🏠
+            <span>Dashboard</span>
+        </a>
+
+
+        <a
+            href="ai_chat.html"
+        >
+            🤖
+            <span>AI Health Assistant</span>
+        </a>
+
+
+        <a
+            href="blood_report.html"
+        >
+            🩸
+            <span>Blood Report</span>
+        </a>
+
+
+        <a
+            href="brain_disease.html"
+        >
+            🧠
+            <span>Brain Disease Screening</span>
+        </a>
+
+
+        <a
+            href="ct_mri.html"
+        >
+            🩻
+            <span>CT / MRI Reports</span>
+        </a>
+
+
+        <a
+            href="migraine_analysis.html"
+        >
+            🤕
+            <span>Migraine Analysis</span>
+        </a>
+
+
+        <a
+            href="vision.html"
+        >
+            👁️
+            <span>Vision Test</span>
+        </a>
+
+
+        <a
+            href="eye_neuro_screening.html"
+        >
+            📷
+            <span>Eye &amp; Neurological Screening</span>
+        </a>
+
+
+        <a
+            href="report_history.html"
+        >
+            📋
+            <span>Report History</span>
+        </a>
+
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+        <button
+            class="logout-btn"
+            type="button"
+            onclick="logout()"
+        >
+            Logout
+        </button>
+
+    </div>
+
+
+</aside>
+
+
+<!-- =====================================================
+     BACKDROP
+===================================================== -->
+
+<div
+    class="backdrop"
+    id="backdrop"
+    onclick="closeSidebar()"
+></div>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main
+    class="main"
+    id="main"
+>
+
+
+    <div class="topbar">
+
+
+        <div class="topbar-left">
+
+
+            <button
+                class="menu-btn"
+                id="menuBtn"
+                type="button"
+                onclick="toggleSidebar()"
+                aria-label="Toggle navigation"
+            >
+                ☰
+            </button>
+
+
+            <div>
+
+                <h1>
+                    Welcome back, <span id="userName">Saniya</span>
+                </h1>
+
+                <p>
+                    AI-powered neurological and eye health
+                    monitoring dashboard
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="profile">
+
+            <div class="avatar">
+                S
+            </div>
+
+            <div>
+
+                <strong>
+                    Patient Profile
+                </strong>
+
+                <div
+                    style="
+                        color:#64748b;
+                        font-size:13px;
+                    "
+                >
+                    Last updated: Today
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="grid">
+
+
+        <!-- =================================================
+             HOSPITAL READINESS SCORE
+        ================================================== -->
+
+        <div class="card">
+
+
+            <div class="score-card">
+
+
+                <div>
+
+                    <h3>
+                        Hospital Readiness Score
+                    </h3>
+
+                    <div
+                        class="score-value"
+                        id="scoreValue"
+                    >
+                        72
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="status-pill"
+                    id="statusPill"
+                >
+                    ● Yellow Priority
+                </div>
+
+
+            </div>
+
+
+            <div class="progress">
+
+                <div
+                    class="progress-bar"
+                    id="scoreBar"
+                ></div>
+
+            </div>
+
+
+            <p
+                style="
+                    margin-top:16px;
+                    color:#64748b;
+                    line-height:1.6;
+                "
+            >
+
+                Your recent information suggests a
+                moderate neurological screening priority.
+                A doctor appointment may be appropriate
+                if symptoms persist or worsen.
+
+            </p>
+
+
+        </div>
+
+
+        <!-- =================================================
+             AI SUMMARY
+        ================================================== -->
+
+        <div class="card">
+
+
+            <h3>
+                AI Neurological Summary
+            </h3>
+
+
+            <div class="summary-box">
+
+                Based on the available health information,
+                NeuroGuardian AI can help organize
+                headache, neurological and eye-related
+                symptoms for preliminary screening.
+
+            </div>
+
+
+            <div class="alert">
+
+
+                <div>
+
+                    <strong>
+                        Recommended next step
+                    </strong>
+
+                    <br>
+
+                    Complete neurological screening.
+
+                </div>
+
+
+                <button
+                    type="button"
+                    onclick="openBrainDisease()"
+                >
+                    Start
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             QUICK ACCESS
+        ================================================== -->
+
+        <div class="card full-card">
+
+
+            <h3>
+                Quick Access
+            </h3>
+
+
+            <div class="module-grid">
+
+
+                <a
+                    href="ai_chat.html"
+                    class="module"
+                >
+
+                    <div class="module-icon">
+                        🤖
+                    </div>
+
+                    <h4>
+                        AI Health Assistant
+                    </h4>
+
+                    <p>
+                        Talk with the NeuroGuardian AI
+                        health assistant.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="blood_report.html"
+                    class="module"
+                >
+
+                    <div class="module-icon">
+                        🩸
+                    </div>
+
+                    <h4>
+                        Blood Report
+                    </h4>
+
+                    <p>
+                        Upload and analyze relevant
+                        blood-report findings.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="brain_disease.html"
+                    class="module"
+                >
+
+                    <div class="module-icon">
+                        🧠
+                    </div>
+
+                    <h4>
+                        Brain Disease Screening
+                    </h4>
+
+                    <p>
+                        AI-assisted neurological risk
+                        screening.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="ct_mri.html"
+                    class="module"
+                >
+
+                    <div class="module-icon">
+                        🩻
+                    </div>
+
+                    <h4>
+                        CT / MRI Reports
+                    </h4>
+
+                    <p>
+                        Upload and review neurological
+                        reports.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="migraine_analysis.html"
+                    class="module"
+                >
+
+                    <div class="module-icon">
+                        🤕
+                    </div>
+
+                    <h4>
+                        Migraine Analysis
+                    </h4>
+
+                    <p>
+                        Monitor headache and migraine
+                        patterns.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="vision.html"
+                    class="module"
+                >
+
+                    <div class="module-icon">
+                        👁️
+                    </div>
+
+                    <h4>
+                        Vision Test
+                    </h4>
+
+                    <p>
+                        Perform an AI-assisted
+                        vision assessment.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="eye_neuro_screening.html"
+                    class="module"
+                >
+
+                    <div class="module-icon">
+                        📷
+                    </div>
+
+                    <h4>
+                        Eye &amp; Neurological Screening
+                    </h4>
+
+                    <p>
+                        Screen eye and neurological
+                        symptoms with camera and voice.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="report_history.html"
+                    class="module"
+                >
+
+                    <div class="module-icon">
+                        📋
+                    </div>
+
+                    <h4>
+                        Report History
+                    </h4>
+
+                    <p>
+                        View saved blood, brain,
+                        migraine and screening reports.
+                    </p>
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             RECENT ACTIVITY
+        ================================================== -->
+
+        <div
+            class="card full-card"
+        >
+
+
+            <h3>
+                Recent Activity
+            </h3>
+
+
+            <div class="recent">
+
+
+                <div class="activity">
+
+                    🧠
+
+                    <strong>
+                        Brain Disease Screening
+                    </strong>
+
+                    <br>
+
+                    <span
+                        style="
+                            color:#64748b;
+                            font-size:13px;
+                        "
+                    >
+                        Your neurological screening
+                        results will appear in
+                        Report History.
+                    </span>
+
+                </div>
+
+
+                <div class="activity">
+
+                    🩸
+
+                    <strong>
+                        Blood Report
+                    </strong>
+
+                    <br>
+
+                    <span
+                        style="
+                            color:#64748b;
+                            font-size:13px;
+                        "
+                    >
+                        Uploaded blood reports will be
+                        available in Report History.
+                    </span>
+
+                </div>
+
+
+                <div class="activity">
+
+                    🤕
+
+                    <strong>
+                        Migraine Analysis
+                    </strong>
+
+                    <br>
+
+                    <span
+                        style="
+                            color:#64748b;
+                            font-size:13px;
+                        "
+                    >
+                        Headache and migraine analysis
+                        reports will be tracked.
+                    </span>
+
+                </div>
+
+
+                <div class="activity">
+
+                    👁️
+
+                    <strong>
+                        Vision Screening
+                    </strong>
+
+                    <br>
+
+                    <span
+                        style="
+                            color:#64748b;
+                            font-size:13px;
+                        "
+                    >
+                        Vision screening results can be
+                        reviewed from the Vision Test.
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</main>
+
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+/* =====================================================
+   MOBILE BREAKPOINT
+===================================================== */
+
+const MOBILE_BREAKPOINT = 960;
+
+
+function isMobileView(){
+
+    return window.innerWidth <= MOBILE_BREAKPOINT;
+
+}
+
+
+/* =====================================================
+   TOGGLE SIDEBAR
+===================================================== */
+
+function toggleSidebar(){
+
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+
+    const main =
+        document.getElementById("main");
+
+
+    const backdrop =
+        document.getElementById("backdrop");
+
+
+    if(!isMobileView()){
+
+
+        sidebar.classList.toggle(
+            "closed"
+        );
+
+
+        main.classList.toggle(
+            "full-width"
+        );
+
+
+        return;
+
+    }
+
+
+    const opened =
+        sidebar.classList.toggle(
+            "open"
+        );
+
+
+    backdrop.classList.toggle(
+        "show",
+        opened
+    );
+
+
+    document.body.classList.toggle(
+        "nav-open",
+        opened
+    );
+
+
+}
+
+
+/* =====================================================
+   CLOSE SIDEBAR
+===================================================== */
+
+function closeSidebar(){
+
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+
+    const backdrop =
+        document.getElementById("backdrop");
+
+
+    sidebar.classList.remove(
+        "open"
+    );
+
+
+    backdrop.classList.remove(
+        "show"
+    );
+
+
+    document.body.classList.remove(
+        "nav-open"
+    );
+
+
+}
+
+
+/* =====================================================
+   ESCAPE KEY
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key === "Escape"){
+
+            closeSidebar();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   BRAIN DISEASE
+===================================================== */
+
+function openBrainDisease(){
+
+    window.location.href =
+        "brain_disease.html";
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logout(){
+
+
+    const confirmLogout =
+        confirm(
+            "Do you want to logout from NeuroGuardian AI?"
+        );
+
+
+    if(confirmLogout){
+
+        NG.logout();
+
+    }
+
+}
+
+
+/* =====================================================
+   CLOSE MOBILE SIDEBAR AFTER CLICK
+===================================================== */
+
+document
+.querySelectorAll(".nav a")
+.forEach(
+    function(link){
+
+        link.addEventListener(
+            "click",
+            function(){
+
+                if(isMobileView()){
+
+                    closeSidebar();
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+/* =====================================================
+   WINDOW RESIZE
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    function(){
+
+
+        const sidebar =
+            document.getElementById("sidebar");
+
+
+        const main =
+            document.getElementById("main");
+
+
+        const backdrop =
+            document.getElementById("backdrop");
+
+
+        if(!isMobileView()){
+
+
+            sidebar.classList.remove(
+                "open"
+            );
+
+
+            backdrop.classList.remove(
+                "show"
+            );
+
+
+            document.body.classList.remove(
+                "nav-open"
+            );
+
+
+        }
+        else{
+
+
+            sidebar.classList.remove(
+                "closed"
+            );
+
+
+            main.classList.remove(
+                "full-width"
+            );
+
+        }
+
+    }
+);
+
+
+</script>
+
+
+<script>
+
+/* =====================================================
+   USER NAME + DATABASE READINESS STATUS
+===================================================== */
+
+(function(){
+
+
+    /*
+       Get logged-in user from session.
+    */
+
+    var session =
+        NG.getSession() || {};
+
+
+    /*
+       Show user's first name.
+    */
+
+    if(session.name){
+
+        var userName =
+            document.getElementById(
+                "userName"
+            );
+
+
+        if(userName){
+
+            userName.textContent =
+                session.name.split(" ")[0];
+
+        }
+
+    }
+
+
+    /*
+       If there is no logged-in email,
+       keep the default dashboard.
+    */
+
+    if(!session.email){
+
+        return;
+
+    }
+
+
+    /*
+       ------------------------------------------------------
+       LOAD REPORTS FROM FLASK DATABASE
+       ------------------------------------------------------
+
+       Instead of:
+
+       localStorage.getItem("ng_reports")
+
+       we now request:
+
+       GET /api/reports?email=user@email.com
+    */
+
+    var apiBase =
+
+        (window.location.protocol === "file:")
+            ? "http://127.0.0.1:5000"
+            : "";
+
+
+    fetch(
+        apiBase +
+        "/api/reports?email=" +
+        encodeURIComponent(session.email)
+    )
+
+    .then(function(response){
+
+        if(!response.ok){
+
+            throw new Error(
+                "Failed to load reports"
+            );
+
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data){
+
+
+        /*
+           Flask returns:
+
+           {
+              success:true,
+              reports:[...]
+           }
+        */
+
+        var reports =
+            data &&
+            Array.isArray(data.reports)
+                ? data.reports
+                : [];
+
+
+        /*
+           --------------------------------------------------
+           Latest report of each module
+           --------------------------------------------------
+        */
+
+        var latest = {};
+
+
+        reports.forEach(
+            function(r){
+
+                if(
+                    !r ||
+                    !r.module
+                ){
+
+                    return;
+
+                }
+
+
+                if(
+                    !latest[r.module] ||
+                    new Date(r.date || r.created_at || 0)
+                    >
+                    new Date(
+                        latest[r.module].date ||
+                        latest[r.module].created_at ||
+                        0
+                    )
+                ){
+
+                    latest[r.module] =
+                        r;
+
+                }
+
+            }
+        );
+
+
+        /*
+           --------------------------------------------------
+           Determine highest priority
+           --------------------------------------------------
+        */
+
+        var worst = null;
+
+
+        Object.keys(latest)
+        .forEach(
+            function(k){
+
+                var t =
+                    String(
+                        latest[k].tier || ""
+                    ).toLowerCase();
+
+
+                if(t === "red"){
+
+                    worst = "red";
+
+                }
+
+                else if(
+                    t === "yellow" &&
+                    worst !== "red"
+                ){
+
+                    worst = "yellow";
+
+                }
+
+                else if(
+                    t === "green" &&
+                    !worst
+                ){
+
+                    worst = "green";
+
+                }
+
+            }
+        );
+
+
+        /*
+           No reports yet.
+
+           Keep the existing default dashboard.
+        */
+
+        if(!worst){
+
+            return;
+
+        }
+
+
+        /*
+           --------------------------------------------------
+           Dashboard score mapping
+           --------------------------------------------------
+        */
+
+        var look = {
+
+            red:{
+                score:40,
+                text:"● Red Priority",
+                bg:"#fde8e8",
+                fg:"#c0392b"
+            },
+
+            yellow:{
+                score:72,
+                text:"● Yellow Priority",
+                bg:"#fbf0dc",
+                fg:"#c98a1d"
+            },
+
+            green:{
+                score:88,
+                text:"● Green Priority",
+                bg:"#e3f6ec",
+                fg:"#1f8a52"
+            }
+
+        }[worst];
+
+
+        /*
+           --------------------------------------------------
+           Update score
+           --------------------------------------------------
+        */
+
+        var scoreValue =
+            document.getElementById(
+                "scoreValue"
+            );
+
+
+        if(scoreValue){
+
+            scoreValue.textContent =
+                look.score;
+
+        }
+
+
+        /*
+           --------------------------------------------------
+           Update progress
+           --------------------------------------------------
+        */
+
+        var scoreBar =
+            document.getElementById(
+                "scoreBar"
+            );
+
+
+        if(scoreBar){
+
+            scoreBar.style.width =
+                look.score + "%";
+
+        }
+
+
+        /*
+           --------------------------------------------------
+           Update priority pill
+           --------------------------------------------------
+        */
+
+        var pill =
+            document.getElementById(
+                "statusPill"
+            );
+
+
+        if(pill){
+
+            pill.textContent =
+                look.text;
+
+            pill.style.background =
+                look.bg;
+
+            pill.style.color =
+                look.fg;
+
+        }
+
+
+    })
+
+
+    /*
+       ------------------------------------------------------
+       BACKEND ERROR
+       ------------------------------------------------------
+
+       Do NOT break the dashboard if the backend is
+       temporarily unavailable.
+
+       The dashboard will simply keep its default
+       72 / Yellow Priority design.
+    */
+
+    .catch(function(error){
+
+        console.warn(
+            "Could not load reports from Flask:",
+            error
+        );
+
+    });
+
+
+})();
+
+</script>
+
+
+</body>
+
+</html>
